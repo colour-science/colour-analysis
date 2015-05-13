@@ -2,52 +2,77 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+from vispy.color.color_array import ColorArray
+from vispy.gloo import set_state
 from vispy.scene.visuals import create_visual_node
 from vispy.visuals.mesh import MeshVisual
-from vispy.gloo import set_state
-from vispy.color.color_array import ColorArray
 
 from colour_vispy.geometry import plane, box
 
 
-class PlaneVisual(MeshVisual):
+class GenericMeshVisual(MeshVisual):
+    def __init__(self,
+                 vertices,
+                 faces,
+                 uniform_colour=(0.5, 0.5, 1.0),
+                 uniform_opacity=1.0,
+                 vertex_colours=None,
+                 wireframe=False,
+                 wireframe_offset=None):
+        self.__wireframe = wireframe
+        self.__wireframe_offset = wireframe_offset
+        mode = 'lines' if self.__wireframe else 'triangles'
+
+        positions = vertices['position']
+
+        uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+        if vertex_colours is not None:
+            vertex_colours[..., 3] = uniform_opacity
+
+        MeshVisual.__init__(
+            self,
+            positions,
+            faces,
+            vertex_colours,
+            None,
+            uniform_colour,
+            mode=mode)
+
+    def draw(self, transforms):
+        MeshVisual.draw(self, transforms)
+        if self.__wireframe and self.__wireframe_offset:
+            set_state(polygon_offset=self.__wireframe_offset,
+                      polygon_offset_fill=True)
+
+
+class PlaneVisual(GenericMeshVisual):
     def __init__(self,
                  width=1,
                  height=1,
                  width_segments=1,
                  height_segments=1,
                  direction='+z',
-                 vertex_colors=None,
-                 face_colors=None,
-                 color=(0.5, 0.5, 1, 1),
-                 edge_color=None):
-        vertices, filled_indices, outline_indices = plane(
-            width, height, width_segments, height_segments, direction)
+                 uniform_colour=(0.5, 0.5, 1.0),
+                 uniform_opacity=1.0,
+                 vertex_colours=None,
+                 wireframe=False,
+                 wireframe_offset=None):
+        vertices, faces, outline = plane(width, height,
+                                         width_segments, height_segments,
+                                         direction)
 
-        MeshVisual.__init__(self, vertices['position'], filled_indices,
-                            vertex_colors, face_colors, color)
-        if edge_color is not None:
-            edge_color = ColorArray(edge_color).rgba
-            if edge_color.shape[0] == 1:
-                self._outline = MeshVisual(vertices['position'],
-                                           outline_indices,
-                                           color=edge_color, mode='lines')
-            else:
-                self._outline = MeshVisual(vertices['position'],
-                                           outline_indices,
-                                           vertex_colors=edge_color,
-                                           mode='lines')
-        else:
-            self._outline = None
-
-    def draw(self, transforms):
-        MeshVisual.draw(self, transforms)
-        if self._outline:
-            set_state(polygon_offset=(1, 1), polygon_offset_fill=True)
-            self._outline.draw(transforms)
+        GenericMeshVisual.__init__(
+            self,
+            vertices,
+            outline if wireframe else faces,
+            uniform_colour,
+            uniform_opacity,
+            vertex_colours,
+            wireframe,
+            wireframe_offset)
 
 
-class BoxVisual(MeshVisual):
+class BoxVisual(GenericMeshVisual):
     def __init__(self,
                  width=1,
                  height=1,
@@ -55,36 +80,27 @@ class BoxVisual(MeshVisual):
                  width_segments=1,
                  height_segments=1,
                  depth_segments=1,
-                 sides=None,
-                 vertex_colors=None,
-                 face_colors=None,
-                 color=(0.5, 0.5, 1, 1),
-                 edge_color=None):
-        vertices, filled_indices, outline_indices = box(
-            width, height, depth,
-            width_segments, height_segments, depth_segments, sides)
+                 planes=None,
+                 uniform_colour=(0.5, 0.5, 1.0),
+                 uniform_opacity=1.0,
+                 vertex_colours=None,
+                 wireframe=False,
+                 wireframe_offset=None):
+        vertices, faces, outline = box(width, height, depth,
+                                       width_segments,
+                                       height_segments,
+                                       depth_segments,
+                                       planes)
 
-        MeshVisual.__init__(self, vertices['position'], filled_indices,
-                            vertex_colors, face_colors, color)
-        if edge_color is not None:
-            edge_color = ColorArray(edge_color).rgba
-            if edge_color.shape[0] == 1:
-                self._outline = MeshVisual(vertices['position'],
-                                           outline_indices,
-                                           color=edge_color, mode='lines')
-            else:
-                self._outline = MeshVisual(vertices['position'],
-                                           outline_indices,
-                                           vertex_colors=edge_color,
-                                           mode='lines')
-        else:
-            self._outline = None
-
-    def draw(self, transforms):
-        MeshVisual.draw(self, transforms)
-        if self._outline:
-            set_state(polygon_offset=(1, 1), polygon_offset_fill=True)
-            self._outline.draw(transforms)
+        GenericMeshVisual.__init__(
+            self,
+            vertices,
+            outline if wireframe else faces,
+            uniform_colour,
+            uniform_opacity,
+            vertex_colours,
+            wireframe,
+            wireframe_offset)
 
 
 Plane = create_visual_node(PlaneVisual)

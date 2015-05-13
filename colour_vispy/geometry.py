@@ -19,7 +19,7 @@ def plane(width=1,
     # Positions, normals and uvs.
     positions = np.zeros(x_grid1 * y_grid1 * 3)
     normals = np.zeros(x_grid1 * y_grid1 * 3)
-    texcoords = np.zeros(x_grid1 * y_grid1 * 2)
+    uvs = np.zeros(x_grid1 * y_grid1 * 2)
 
     offset = offset1 = 0
     for i_y in range(y_grid1):
@@ -32,15 +32,15 @@ def plane(width=1,
 
             normals[offset + 2] = 1
 
-            texcoords[offset1] = i_x / x_grid
-            texcoords[offset1 + 1] = 1 - (i_y / y_grid)
+            uvs[offset1] = i_x / x_grid
+            uvs[offset1 + 1] = 1 - (i_y / y_grid)
 
             offset += 3
             offset1 += 2
 
-    # Faces and lines.
+    # triangles and quads.
     faces = np.zeros(x_grid * y_grid * 6, dtype=np.uint32)
-    lines = np.zeros(x_grid * y_grid * 8, dtype=np.uint32)
+    outline = np.zeros(x_grid * y_grid * 8, dtype=np.uint32)
 
     offset = offset1 = 0
     for i_y in range(y_grid):
@@ -58,17 +58,17 @@ def plane(width=1,
             faces[offset + 4] = c
             faces[offset + 5] = d
 
-            lines[offset1] = a
-            lines[offset1 + 1] = b
+            outline[offset1] = a
+            outline[offset1 + 1] = b
 
-            lines[offset1 + 2] = b
-            lines[offset1 + 3] = c
+            outline[offset1 + 2] = b
+            outline[offset1 + 3] = c
 
-            lines[offset1 + 4] = c
-            lines[offset1 + 5] = d
+            outline[offset1 + 4] = c
+            outline[offset1 + 5] = d
 
-            lines[offset1 + 6] = d
-            lines[offset1 + 7] = a
+            outline[offset1 + 6] = d
+            outline[offset1 + 7] = a
 
             offset += 6
             offset1 += 8
@@ -76,7 +76,7 @@ def plane(width=1,
     positions = np.reshape(positions, (-1, 3))
     normals = np.reshape(normals, (-1, 3))
     faces = np.reshape(faces, (-1, 3))
-    lines = np.reshape(lines, (-1, 2))
+    outline = np.reshape(outline, (-1, 2))  # Check for duplicated outline.
 
     direction = direction.lower()
     if direction in ('-x', '+x'):
@@ -98,20 +98,20 @@ def plane(width=1,
                                     positions.shape),
                          np.ones((positions.shape[0], 1))))
     colours[..., neutral_axis] = 0
-    texcoords = np.reshape(texcoords, (-1, 2))
+    uvs = np.reshape(uvs, (-1, 2))
 
     vertices = np.zeros(positions.shape[0],
                         [('position', np.float32, 3),
-                         ('texcoord', np.float32, 2),
+                         ('uv', np.float32, 2),
                          ('normal', np.float32, 3),
-                         ('color', np.float32, 4)])
+                         ('colour', np.float32, 4)])
 
     vertices['position'] = positions
     vertices['normal'] = normals
-    vertices['color'] = colours
-    vertices['texcoord'] = texcoords
+    vertices['colour'] = colours
+    vertices['uv'] = uvs
 
-    return vertices, faces, lines
+    return vertices, faces, outline
 
 
 def box(width=1,
@@ -120,57 +120,57 @@ def box(width=1,
         width_segments=1,
         height_segments=1,
         depth_segments=1,
-        sides=None):
-    sides = (('+x', '-x', '+y', '-y', '+z', '-z')
-             if sides is None else
-             [d.lower() for d in sides])
+        planes=None):
+    planes = (('+x', '-x', '+y', '-y', '+z', '-z')
+              if planes is None else
+              [d.lower() for d in planes])
 
     w_s, h_s, d_s = width_segments, height_segments, depth_segments
 
-    planes = []
-    if '-z' in sides:
-        planes.append(plane(width, depth, w_s, d_s, '-z'))
-        planes[-1][0]['position'][..., 2] -= height / 2
-    if '+z' in sides:
-        planes.append(plane(width, depth, w_s, d_s, '+z'))
-        planes[-1][0]['position'][..., 2] += height / 2
+    planes_m = []
+    if '-z' in planes:
+        planes_m.append(plane(width, depth, w_s, d_s, '-z'))
+        planes_m[-1][0]['position'][..., 2] -= height / 2
+    if '+z' in planes:
+        planes_m.append(plane(width, depth, w_s, d_s, '+z'))
+        planes_m[-1][0]['position'][..., 2] += height / 2
 
-    if '-y' in sides:
-        planes.append(plane(height, width, h_s, w_s, '-y'))
-        planes[-1][0]['position'][..., 1] -= depth / 2
-    if '+y' in sides:
-        planes.append(plane(height, width, h_s, w_s, '+y'))
-        planes[-1][0]['position'][..., 1] += depth / 2
+    if '-y' in planes:
+        planes_m.append(plane(height, width, h_s, w_s, '-y'))
+        planes_m[-1][0]['position'][..., 1] -= depth / 2
+    if '+y' in planes:
+        planes_m.append(plane(height, width, h_s, w_s, '+y'))
+        planes_m[-1][0]['position'][..., 1] += depth / 2
 
-    if '-x' in sides:
-        planes.append(plane(height, depth, h_s, d_s, '-x'))
-        planes[-1][0]['position'][..., 0] -= width / 2
-    if '+x' in sides:
-        planes.append(plane(height, depth, h_s, d_s, '+x'))
-        planes[-1][0]['position'][..., 0] += width / 2
+    if '-x' in planes:
+        planes_m.append(plane(height, depth, h_s, d_s, '-x'))
+        planes_m[-1][0]['position'][..., 0] -= width / 2
+    if '+x' in planes:
+        planes_m.append(plane(height, depth, h_s, d_s, '+x'))
+        planes_m[-1][0]['position'][..., 0] += width / 2
 
     positions = np.zeros((0, 3))
-    texcoords = np.zeros((0, 2))
+    uvs = np.zeros((0, 2))
     normals = np.zeros((0, 3))
 
     faces = np.zeros((0, 3), dtype=np.uint32)
-    lines = np.zeros((0, 2), dtype=np.uint32)
+    outline = np.zeros((0, 2), dtype=np.uint32)
 
     offset = 0
-    for vertices_p, faces_p, lines_p in planes:
+    for vertices_p, faces_p, outline_p in planes_m:
         positions = np.vstack((positions, vertices_p['position']))
-        texcoords = np.vstack((texcoords, vertices_p['texcoord']))
+        uvs = np.vstack((uvs, vertices_p['uv']))
         normals = np.vstack((normals, vertices_p['normal']))
 
         faces = np.vstack((faces, faces_p + offset))
-        lines = np.vstack((lines, lines_p + offset))
+        outline = np.vstack((outline, outline_p + offset))
         offset += vertices_p['position'].shape[0]
 
     vertices = np.zeros(positions.shape[0],
                         [('position', np.float32, 3),
-                         ('texcoord', np.float32, 2),
+                         ('uv', np.float32, 2),
                          ('normal', np.float32, 3),
-                         ('color', np.float32, 4)])
+                         ('colour', np.float32, 4)])
 
     colours = np.ravel(positions)
     colours = np.hstack((np.reshape(np.interp(colours,
@@ -182,7 +182,7 @@ def box(width=1,
 
     vertices['position'] = positions
     vertices['normal'] = normals
-    vertices['color'] = colours
-    vertices['texcoord'] = texcoords
+    vertices['colour'] = colours
+    vertices['uv'] = uvs
 
-    return vertices, faces, lines
+    return vertices, faces, outline
