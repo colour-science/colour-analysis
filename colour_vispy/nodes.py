@@ -21,7 +21,7 @@ def RGB_identity_cube(width_segments=16,
                       height_segments=16,
                       depth_segments=16,
                       planes=None,
-                      uniform_colour=(0.5, 0.5, 1.0),
+                      uniform_colour=None,
                       uniform_opacity=1.0,
                       vertex_colours=True,
                       wireframe=False,
@@ -65,6 +65,7 @@ def RGB_colourspace_gamut_node(colourspace='Rec. 709',
     node = scene.Node(parent)
 
     colourspace = get_RGB_colourspace(colourspace)
+
     RGB_cube_f = RGB_identity_cube(
         width_segments=segments,
         height_segments=segments,
@@ -100,6 +101,53 @@ def RGB_colourspace_gamut_node(colourspace='Rec. 709',
         RGB_cube_w.mesh_data.set_vertices(value)
 
     return node
+
+
+def RGB_scatter_node(RGB,
+                     colourspace='Rec. 709',
+                     reference_colourspace='CIE xyY',
+                     size=4.0,
+                     edge_size=0.5,
+                     uniform_colour=None,
+                     uniform_opacity=1.0,
+                     uniform_edge_colour=None,
+                     uniform_edge_opacity=1.0,
+                     parent=None):
+    colourspace = get_RGB_colourspace(colourspace)
+
+    XYZ = RGB_to_XYZ(
+        RGB,
+        colourspace.whitepoint,
+        colourspace.whitepoint,
+        colourspace.RGB_to_XYZ_matrix)
+
+    points = XYZ_to_reference_colourspace(XYZ,
+                                          colourspace.whitepoint,
+                                          reference_colourspace)
+
+    if uniform_colour is None:
+        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity)))
+    else:
+        RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+
+    if uniform_edge_colour is None:
+        RGB_e = RGB
+    else:
+        RGB_e = ColorArray(uniform_edge_colour,
+                           alpha=uniform_edge_opacity).rgba
+
+    markers = scene.visuals.Markers()
+    markers.set_data(points,
+                     size=size,
+                     edge_width=edge_size,
+                     face_color=RGB,
+                     edge_color=RGB_e)
+    markers.set_symbol('disc')
+
+    if parent is not None:
+        parent.add(markers)
+
+    return markers
 
 
 def spectral_locus_node(reference_colourspace='CIE xyY',
@@ -140,9 +188,7 @@ if __name__ == '__main__':
 
     reference_colourspace = 'CIE xyY'
 
-    canvas = scene.SceneCanvas(keys='interactive',
-                               size=(800, 600),
-                               show=True)
+    canvas = scene.SceneCanvas(keys='interactive', show=True)
 
     view = canvas.central_widget.add_view()
     camera = scene.cameras.TurntableCamera(fov=45,
@@ -181,6 +227,16 @@ if __name__ == '__main__':
     transform.translate((2, 0, 0))
     aces_cg.transform = transform
 
+    RGB_scatter = RGB_scatter_node(
+        np.random.random((50000, 3)),
+        reference_colourspace=reference_colourspace,
+        parent=view)
+
     axis = scene.visuals.XYZAxis(parent=view.scene)
 
-    canvas.app.run()
+    text = scene.visuals.Text('Origin',
+                              pos=(0.0, 0.0, 0.0),
+                              font_size=32,
+                              color='w', parent=view.scene)
+
+canvas.app.run()
