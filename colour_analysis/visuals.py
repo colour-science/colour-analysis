@@ -7,7 +7,7 @@ from vispy.gloo import set_state
 from vispy.scene.visuals import create_visual_node
 from vispy.visuals.mesh import MeshVisual
 
-from colour_vispy.geometry import plane, box
+from colour_analysis.geometry import plane, box
 
 
 class GenericMeshVisual(MeshVisual):
