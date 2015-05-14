@@ -38,7 +38,7 @@ def plane(width=1,
             offset += 3
             offset1 += 2
 
-    # triangles and quads.
+    # Faces and outline.
     faces = np.zeros(x_grid * y_grid * 6, dtype=np.uint32)
     outline = np.zeros(x_grid * y_grid * 8, dtype=np.uint32)
 
@@ -76,7 +76,7 @@ def plane(width=1,
     positions = np.reshape(positions, (-1, 3))
     normals = np.reshape(normals, (-1, 3))
     faces = np.reshape(faces, (-1, 3))
-    outline = np.reshape(outline, (-1, 2))  # Check for duplicated outline.
+    outline = np.reshape(outline, (-1, 2))
 
     direction = direction.lower()
     if direction in ('-x', '+x'):
@@ -102,8 +102,8 @@ def plane(width=1,
 
     vertices = np.zeros(positions.shape[0],
                         [('position', np.float32, 3),
-                         ('uv', np.float32, 2),
                          ('normal', np.float32, 3),
+                         ('uv', np.float32, 2),
                          ('colour', np.float32, 4)])
 
     vertices['position'] = positions
@@ -143,10 +143,10 @@ def box(width=1,
         planes_m[-1][0]['position'][..., 1] += depth / 2
 
     if '-x' in planes:
-        planes_m.append(plane(height, depth, h_s, d_s, '-x'))
+        planes_m.append(plane(depth, height, d_s, h_s, '-x'))
         planes_m[-1][0]['position'][..., 0] -= width / 2
     if '+x' in planes:
-        planes_m.append(plane(height, depth, h_s, d_s, '+x'))
+        planes_m.append(plane(depth, height, d_s, h_s, '+x'))
         planes_m[-1][0]['position'][..., 0] += width / 2
 
     positions = np.zeros((0, 3))
