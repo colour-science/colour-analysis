@@ -18,7 +18,16 @@ from colour import (
 DEFAULT_PLOTTING_ILLUMINANT = ILLUMINANTS.get(
     'CIE 1931 2 Degree Standard Observer').get('D65')
 
-COLOURSPACE_TO_LABELS = {
+REFERENCE_COLOURSPACES = (
+    'CIE XYZ',
+    'CIE xyY',
+    'CIE Lab',
+    'CIE Luv',
+    'CIE UCS',
+    'CIE UVW',
+    'IPT')
+
+REFERENCE_COLOURSPACES_TO_LABELS = {
     'CIE XYZ': ('X', 'Y', 'Z'),
     'CIE xyY': ('x', 'y', 'Y'),
     'CIE Lab': ('a', 'b', '$L^*$'),
@@ -27,9 +36,9 @@ COLOURSPACE_TO_LABELS = {
     'CIE UVW': ('U', 'V', 'W'),
     'IPT': ('P', 'T', 'I')}
 """
-Colourspace to labels mapping.
+Reference colourspaces to labels mapping.
 
-COLOURSPACE_TO_LABELS : dict
+REFERENCE_COLOURSPACES_TO_LABELS : dict
     **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
     'IPT'}**
 """
@@ -120,6 +129,7 @@ def XYZ_to_reference_colourspace(XYZ,
         Reference colourspace values.
     """
 
+    value = None
     if reference_colourspace == 'CIE XYZ':
         value = XYZ
     if reference_colourspace == 'CIE xyY':
@@ -138,4 +148,9 @@ def XYZ_to_reference_colourspace(XYZ,
         I, P, T = tsplit(XYZ_to_IPT(XYZ))
         value = tstack((P, T, I))
 
+    if value is None:
+        raise ValueError(
+            ('"{0}" not found in reference colourspace models: '
+             '"{1}".').format(reference_colourspace,
+                              ', '.join(REFERENCE_COLOURSPACES)))
     return value
