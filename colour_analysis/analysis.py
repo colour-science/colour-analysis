@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+import json
 import numpy as np
 import os
+from collections import namedtuple
 
 from vispy.scene import SceneCanvas
 from vispy.scene.cameras import PanZoomCamera, TurntableCamera
@@ -11,6 +13,7 @@ from vispy.scene.cameras import PanZoomCamera, TurntableCamera
 from colour import RGB_COLOURSPACES, read_image
 
 from colour_analysis.common import REFERENCE_COLOURSPACES
+from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
 from colour_analysis.visuals import (
     RGB_colourspace_gamut_visual,
     RGB_scatter_visual,
@@ -18,9 +21,10 @@ from colour_analysis.visuals import (
     image_visual,
     spectral_locus_visual)
 
-RESOURCES_DIRECTORY = os.path.join(os.path.dirname(__file__), 'resources')
-IMAGES_DIRECTORY = os.path.join(RESOURCES_DIRECTORY, 'images')
-DEFAULT_IMAGE = os.path.join(IMAGES_DIRECTORY, 'Digital_LAD_2048x1556.exr')
+
+Sequence = namedtuple('Sequence', ('modifiers', 'key'))
+
+Action = namedtuple('Action', ('name', 'description', 'sequence'))
 
 
 class Analysis(SceneCanvas):
@@ -29,7 +33,8 @@ class Analysis(SceneCanvas):
                  input_colourspace,
                  input_oecf,
                  reference_colourspace,
-                 correlate_colourspace):
+                 correlate_colourspace,
+                 settings=None):
         SceneCanvas.__init__(self,
                              keys='interactive',
                              title="Colour - Analysis")
@@ -44,11 +49,15 @@ class Analysis(SceneCanvas):
         self.reference_colourspace = reference_colourspace
         self.__correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
+        self.__settings = (json.load(open(SETTINGS_FILE))
+                           if settings is None else
+                           settings)
+        self.__actions = {}
 
         self.__image = None
         # self.image = read_image(image_path)
         import skimage.data
-
+        #
         self.image = skimage.data.lena() / 255
 
         self.__grid = None
@@ -67,6 +76,7 @@ class Analysis(SceneCanvas):
         self.initialise_views()
         self.initialise_visuals()
         self.initialise_cameras()
+        self.initialise_actions()
 
         self.show()
 
@@ -96,8 +106,7 @@ class Analysis(SceneCanvas):
 
         if value is not None:
             assert os.path.exists(value), (
-                '"{0}" input image doesn\'t exists!'.format('image_path',
-                                                            value))
+                '"{0}" input image doesn\'t exists!'.format(value))
         self.__image_path = value
 
     @property
@@ -266,6 +275,33 @@ class Analysis(SceneCanvas):
                  '"ndarray" or "matrix"!').format('image', value))
         self.__image = value
 
+    @property
+    def settings(self):
+        """
+        Property for **self.__settings** private attribute.
+
+        Returns
+        -------
+        dict
+            self.__settings.
+        """
+
+        return self.__settings
+
+    @settings.setter
+    def settings(self, value):
+        """
+        Setter for **self.__settings** private attribute.
+
+        Parameters
+        ----------
+        value : dict
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('settings'))
+
     def initialise_views(self):
         self.__grid = self.central_widget.add_grid()
 
@@ -303,15 +339,74 @@ class Analysis(SceneCanvas):
 
         # Diagram View.
 
-        # Image View.
-        # TODO: Remove rotation whenever
-        # https://github.com/vispy/vispy/issues/904 is addressed.
-        self.__image_visual = image_visual(
-            np.rot90(self.__image, 2), parent=self.__image_view.scene)
+        self.__image_visual = image_visual(self.__image,
+                                           parent=self.__image_view.scene)
 
     def initialise_cameras(self):
         self.__gamut_view.camera = TurntableCamera(fov=45, up='+z')
 
         self.__diagram_view.camera = PanZoomCamera(aspect=1)
+        self.__image_view.camera.flip = (False, True, False)
 
         self.__image_view.camera = PanZoomCamera(aspect=1)
+        self.__image_view.camera.flip = (False, True, False)
+
+    def initialise_actions(self):
+        self.__actions = {}
+        for key, value in self.__settings.get('actions', []).items():
+            if value.get('sequence') is not None:
+                sequence = Sequence(
+                    modifiers=value['sequence']['modifiers'],
+                    key=value['sequence']['key'])
+            else:
+                sequence = Sequence(modifiers=[], key=None)
+
+            self.__actions[key] = Action(
+                name=key,
+                description=value.get('description'),
+                sequence=sequence)
+
+    def toggle_input_colourspace_visual_visibility_action(self):
+        print('toggle_input_colourspace_visual_visibility')
+
+    def cycle_input_colourspace_visual_style_action(self):
+        print('cycle_input_colourspace_visual_style')
+
+    def toggle_correlate_colourspace_visual_visibility_action(self):
+        print('toggle_correlate_colourspace_visual_visibility')
+
+    def cycle_correlate_colourspace_visual_style_action(self):
+        print('cycle_correlate_colourspace_visual_style')
+
+    def cycle_correlate_colourspace_visual_colourspace_action(self):
+        print('cycle_correlate_colourspace_visual_colourspace')
+
+    def toggle_spectral_locus_visual_visibility_action(self):
+        print('toggle_spectral_locus_visual_visibility')
+
+    def cycle_spectral_locus_visual_style_action(self):
+        print('cycle_spectral_locus_visual_style')
+
+    def toggle_rgb_scatter_visual_visibility_action(self):
+        print('toggle_rgb_scatter_visual_visibility')
+
+    def cycle_rgb_scatter_visual_style_action(self):
+        print('cycle_rgb_scatter_visual_style')
+
+    def toggle_pointer_gamut_visual_visibility_action(self):
+        print('toggle_pointer_gamut_visual_visibility')
+
+    def cycle_pointer_gamut_visual_style_action(self):
+        print('cycle_pointer_gamut_visual_style')
+
+    def toggle_axis_visual_visibility_action(self):
+        print('toggle_axis_visual_visibility')
+
+    def fit_image_visual_image_action(self):
+        print('fit_image_visual_image')
+
+    def on_key_press(self, event):
+        print(event.key, event.modifiers)
+        for action in self.__actions.values():
+            if event.key == action.sequence.key:
+                getattr(self, '{0}_action'.format(action.name))()

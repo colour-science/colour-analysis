@@ -19,10 +19,10 @@ from colour_analysis.geometry import plane, box
 from colour import RGB_to_XYZ, XYZ_to_sRGB
 
 from colour_analysis.common import (
-    DEFAULT_PLOTTING_ILLUMINANT,
     XYZ_to_reference_colourspace,
     get_cmfs,
     get_RGB_colourspace)
+from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
 
 class GenericMeshVisual(MeshVisual):
@@ -33,7 +33,11 @@ class GenericMeshVisual(MeshVisual):
                  uniform_opacity=1.0,
                  vertex_colours=None,
                  wireframe=False,
-                 wireframe_offset=None):
+                 wireframe_offset=None,
+                 visible=True):
+
+        self.__visible = None
+        self.visible = visible
         self.__wireframe = wireframe
         self.__wireframe_offset = wireframe_offset
         mode = 'lines' if self.__wireframe else 'triangles'
@@ -54,10 +58,46 @@ class GenericMeshVisual(MeshVisual):
             mode=mode)
 
     def draw(self, transforms):
+        if not self.visible:
+            return
+
         MeshVisual.draw(self, transforms)
         if self.__wireframe and self.__wireframe_offset:
             set_state(polygon_offset=self.__wireframe_offset,
                       polygon_offset_fill=True)
+
+    @property
+    def visible(self):
+        """
+        Property for **self.__visible** private attribute.
+
+        Returns
+        -------
+        int or bool
+            self.__visible.
+        """
+
+        return self.__visible
+
+    @visible.setter
+    def visible(self, value):
+        """
+        Setter for **self.__visible** private attribute.
+
+        Parameters
+        ----------
+        value : int or bool
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (int, bool), (
+                ('"{0}" attribute: "{1}" type is not "int" or "bool"!').format(
+                    'visible', value))
+            if type(value) is int:
+                assert value in (0, 1), (
+                    ('"{0}" value must be 0 or 1!').format('visible', value))
+        self.__visible = value
 
 
 class PlaneVisual(GenericMeshVisual):

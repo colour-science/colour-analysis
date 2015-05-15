@@ -4,11 +4,14 @@ from __future__ import division
 
 import argparse
 import functools
+import json
+import os
 import sys
 import traceback
 from vispy.app import run
 
 from colour_analysis.analysis import Analysis
+from colour_analysis.constants import SETTINGS_FILE
 
 
 class ManualAction(argparse.Action):
@@ -42,6 +45,7 @@ SYNOPSIS
              [--input-oecf INPUT_OECF]
              [--reference-colourspace REFERENCE_COLOURSPACE]
              [--correlate-colourspace CORRELATE_COLOURSPACE]
+             [--settings-file SETTINGS_FILE]
 
 DESCRIPTION
     This tool implements various image analysis tools based on 'Colour',
@@ -65,6 +69,8 @@ ARGUMENTS
         Input image colourspace.
     -l, --correlate-colourspace, ['ACEScg']
         Correlate colourspace.
+    -s, --settings-file, ['ACEScg']
+        Settings file.
 
 EXAMPLES
 """)
@@ -164,6 +170,13 @@ def command_line_arguments():
                         default='ACEScg',
                         help='Correlate colourspace.')
 
+    parser.add_argument('--settings-file',
+                        '-s',
+                        action='store',
+                        dest='settings_file',
+                        default=None,
+                        help='Settings file.')
+
     return parser.parse_args()
 
 
@@ -179,11 +192,18 @@ def main():
     """
 
     arguments = command_line_arguments()
+    settings = json.load(open(SETTINGS_FILE))
+    if arguments.settings_file is not None:
+        assert os.path.exists(arguments.settings_file), (
+            '"{0}" file doesn\'t exists!'.format(arguments.settings_file))
+        settings.update(json.load(open(arguments.settings_file)))
+
     Analysis(arguments.input_image,
              arguments.input_colourspace,
              arguments.input_oecf,
              arguments.reference_colourspace,
-             arguments.correlate_colourspace)
+             arguments.correlate_colourspace,
+             settings)
     return run()
 
 

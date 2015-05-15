@@ -4,7 +4,6 @@ from __future__ import division
 
 from colour import (
     CMFS,
-    ILLUMINANTS,
     RGB_COLOURSPACES,
     XYZ_to_IPT,
     XYZ_to_Lab,
@@ -15,33 +14,7 @@ from colour import (
     tsplit,
     tstack)
 
-DEFAULT_PLOTTING_ILLUMINANT = ILLUMINANTS.get(
-    'CIE 1931 2 Degree Standard Observer').get('D65')
-
-REFERENCE_COLOURSPACES = (
-    'CIE XYZ',
-    'CIE xyY',
-    'CIE Lab',
-    'CIE Luv',
-    'CIE UCS',
-    'CIE UVW',
-    'IPT')
-
-REFERENCE_COLOURSPACES_TO_LABELS = {
-    'CIE XYZ': ('X', 'Y', 'Z'),
-    'CIE xyY': ('x', 'y', 'Y'),
-    'CIE Lab': ('a', 'b', '$L^*$'),
-    'CIE Luv': ('$u^\prime$', '$v^\prime$', '$L^*$'),
-    'CIE UCS': ('U', 'V', 'W'),
-    'CIE UVW': ('U', 'V', 'W'),
-    'IPT': ('P', 'T', 'I')}
-"""
-Reference colourspaces to labels mapping.
-
-REFERENCE_COLOURSPACES_TO_LABELS : dict
-    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-    'IPT'}**
-"""
+from colour_analysis.constants import REFERENCE_COLOURSPACES
 
 
 def get_RGB_colourspace(colourspace):
