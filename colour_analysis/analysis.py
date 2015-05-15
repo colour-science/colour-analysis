@@ -69,6 +69,7 @@ class Analysis(SceneCanvas):
         self.__correlate_colourspace_visual = None
         self.__spectral_locus_visual = None
         self.__RGB_scatter_visual = None
+        self.__pointer_gamut_visual = None
         self.__axis_visual = None
 
         self.__image_visual = None
@@ -353,13 +354,13 @@ class Analysis(SceneCanvas):
 
     def initialise_actions(self):
         self.__actions = {}
-        for key, value in self.__settings.get('actions', []).items():
+        for key, value in self.__settings.get('actions', ()).items():
             if value.get('sequence') is not None:
                 sequence = Sequence(
-                    modifiers=value['sequence']['modifiers'],
-                    key=value['sequence']['key'])
+                    modifiers=value.get('sequence').get('modifiers', ()),
+                    key=value.get('sequence').get('key'))
             else:
-                sequence = Sequence(modifiers=[], key=None)
+                sequence = Sequence(modifiers=(), key=None)
 
             self.__actions[key] = Action(
                 name=key,
@@ -367,46 +368,65 @@ class Analysis(SceneCanvas):
                 sequence=sequence)
 
     def toggle_input_colourspace_visual_visibility_action(self):
-        print('toggle_input_colourspace_visual_visibility')
+        for visual in self.__input_colourspace_visual.children:
+            visual.visible = not visual.visible
 
     def cycle_input_colourspace_visual_style_action(self):
-        print('cycle_input_colourspace_visual_style')
+        self.__input_colourspace_visual.remove_parent(self.__gamut_view.scene)
+
+        self.update()
 
     def toggle_correlate_colourspace_visual_visibility_action(self):
-        print('toggle_correlate_colourspace_visual_visibility')
+        for visual in self.__correlate_colourspace_visual.children:
+            visual.visible = not visual.visible
 
     def cycle_correlate_colourspace_visual_style_action(self):
-        print('cycle_correlate_colourspace_visual_style')
+        self.__correlate_colourspace_visual.remove_parent(
+            self.__gamut_view.scene)
+
+        self.update()
 
     def cycle_correlate_colourspace_visual_colourspace_action(self):
         print('cycle_correlate_colourspace_visual_colourspace')
 
     def toggle_spectral_locus_visual_visibility_action(self):
-        print('toggle_spectral_locus_visual_visibility')
+        self.__spectral_locus_visual.visible = (
+            not self.__spectral_locus_visual.visible)
 
     def cycle_spectral_locus_visual_style_action(self):
-        print('cycle_spectral_locus_visual_style')
+        self.__spectral_locus_visual.remove_parent(self.__gamut_view.scene)
 
-    def toggle_rgb_scatter_visual_visibility_action(self):
-        print('toggle_rgb_scatter_visual_visibility')
+        self.update()
 
-    def cycle_rgb_scatter_visual_style_action(self):
-        print('cycle_rgb_scatter_visual_style')
+    def toggle_RGB_scatter_visual_visibility_action(self):
+        self.__RGB_scatter_visual.visible = (
+            not self.__RGB_scatter_visual.visible)
+
+    def cycle_RGB_scatter_visual_style_action(self):
+        self.__RGB_scatter_visual.remove_parent(self.__gamut_view.scene)
+
+        self.update()
 
     def toggle_pointer_gamut_visual_visibility_action(self):
-        print('toggle_pointer_gamut_visual_visibility')
+        self.__pointer_gamut_visual.visible = (
+            not self.__pointer_gamut_visual.visible)
 
     def cycle_pointer_gamut_visual_style_action(self):
-        print('cycle_pointer_gamut_visual_style')
+        self.__pointer_gamut_visual.remove_parent(self.__gamut_view.scene)
+
+        self.update()
 
     def toggle_axis_visual_visibility_action(self):
-        print('toggle_axis_visual_visibility')
+        self.__axis_visual.visible = (
+            not self.__axis_visual.visible)
 
     def fit_image_visual_image_action(self):
         print('fit_image_visual_image')
 
     def on_key_press(self, event):
-        print(event.key, event.modifiers)
+        key = event.key.name
+        modifiers = sorted([modifier.name for modifier in event.modifiers])
         for action in self.__actions.values():
-            if event.key == action.sequence.key:
+            if (key == action.sequence.key and
+                        modifiers == sorted(action.sequence.modifiers)):
                 getattr(self, '{0}_action'.format(action.name))()

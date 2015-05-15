@@ -33,11 +33,8 @@ class GenericMeshVisual(MeshVisual):
                  uniform_opacity=1.0,
                  vertex_colours=None,
                  wireframe=False,
-                 wireframe_offset=None,
-                 visible=True):
+                 wireframe_offset=None):
 
-        self.__visible = None
-        self.visible = visible
         self.__wireframe = wireframe
         self.__wireframe_offset = wireframe_offset
         mode = 'lines' if self.__wireframe else 'triangles'
@@ -58,46 +55,10 @@ class GenericMeshVisual(MeshVisual):
             mode=mode)
 
     def draw(self, transforms):
-        if not self.visible:
-            return
-
         MeshVisual.draw(self, transforms)
         if self.__wireframe and self.__wireframe_offset:
             set_state(polygon_offset=self.__wireframe_offset,
                       polygon_offset_fill=True)
-
-    @property
-    def visible(self):
-        """
-        Property for **self.__visible** private attribute.
-
-        Returns
-        -------
-        int or bool
-            self.__visible.
-        """
-
-        return self.__visible
-
-    @visible.setter
-    def visible(self, value):
-        """
-        Setter for **self.__visible** private attribute.
-
-        Parameters
-        ----------
-        value : int or bool
-            Attribute value.
-        """
-
-        if value is not None:
-            assert type(value) in (int, bool), (
-                ('"{0}" attribute: "{1}" type is not "int" or "bool"!').format(
-                    'visible', value))
-            if type(value) is int:
-                assert value in (0, 1), (
-                    ('"{0}" value must be 0 or 1!').format('visible', value))
-        self.__visible = value
 
 
 class PlaneVisual(GenericMeshVisual):
@@ -125,6 +86,9 @@ class PlaneVisual(GenericMeshVisual):
             vertex_colours,
             wireframe,
             wireframe_offset)
+
+
+Plane = create_visual_node(PlaneVisual)
 
 
 class BoxVisual(GenericMeshVisual):
@@ -158,8 +122,28 @@ class BoxVisual(GenericMeshVisual):
             wireframe_offset)
 
 
-Plane = create_visual_node(PlaneVisual)
 Box = create_visual_node(BoxVisual)
+
+
+class PointsVisual(Markers):
+    def __init__(self,
+                 points=None,
+                 size=4.0,
+                 edge_size=0.5,
+                 face_color=None,
+                 edge_color=None,
+                 parent=None):
+        Markers.__init__(self)
+
+        self.set_data(points,
+                      size=size,
+                      edge_width=edge_size,
+                      face_color=face_color,
+                      edge_color=edge_color)
+        self.set_symbol('disc')
+
+        if parent is not None:
+            parent.add(self)
 
 
 def RGB_identity_cube(width_segments=16,
@@ -283,16 +267,12 @@ def RGB_scatter_visual(RGB,
         RGB_e = ColorArray(uniform_edge_colour,
                            alpha=uniform_edge_opacity).rgba
 
-    markers = Markers()
-    markers.set_data(points,
-                     size=size,
-                     edge_width=edge_size,
-                     face_color=RGB,
-                     edge_color=RGB_e)
-    markers.set_symbol('disc')
-
-    if parent is not None:
-        parent.add(markers)
+    markers = PointsVisual(points=points,
+                           size=size,
+                           edge_size=edge_size,
+                           face_color=RGB,
+                           edge_color=RGB_e,
+                           parent=parent)
 
     return markers
 
