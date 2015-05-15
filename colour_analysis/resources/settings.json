@@ -2,6 +2,7 @@
   "settings": {},
   "actions": {
     "toggle_input_colourspace_visual_visibility": {
+      "name": "toggle_input_colourspace_visual_visibility",
       "description": "Toggle Input Colourspace Visual visibility",
       "sequence": {
         "modifiers": [
@@ -10,6 +11,7 @@
       }
     },
     "cycle_input_colourspace_visual_style": {
+      "name": "cycle_input_colourspace_visual_style",
       "description": "Cycle Input Colourspace Visual style",
       "sequence": {
         "modifiers": [
@@ -19,6 +21,7 @@
       }
     },
     "toggle_correlate_colourspace_visual_visibility": {
+      "name": "toggle_correlate_colourspace_visual_visibility",
       "description": "Toggle Correlate Colourspace Visual visibility",
       "sequence": {
         "modifiers": [
@@ -27,6 +30,7 @@
       }
     },
     "cycle_correlate_colourspace_visual_style": {
+      "name": "cycle_correlate_colourspace_visual_style",
       "description": "Cycle Input Colourspace Visual style",
       "sequence": {
         "modifiers": [
@@ -36,15 +40,17 @@
       }
     },
     "cycle_correlate_colourspace_visual_colourspace": {
+      "name": "cycle_correlate_colourspace_visual_colourspace",
       "description": "Cycle Correlate Colourspace Visual colourspace",
       "sequence": {
         "modifiers": [
           "Shift"
         ],
-        "key": "2"
+        "key": "@"
       }
     },
     "toggle_spectral_locus_visual_visibility": {
+      "name": "toggle_spectral_locus_visual_visibility",
       "description": "Toggle Spectral Locus Visual visibility",
       "sequence": {
         "modifiers": [
@@ -53,6 +59,7 @@
       }
     },
     "cycle_spectral_locus_visual_style": {
+      "name": "cycle_spectral_locus_visual_style",
       "description": "Cycle Spectral Locus Visual style",
       "sequence": {
         "modifiers": [
@@ -62,6 +69,7 @@
       }
     },
     "toggle_RGB_scatter_visual_visibility": {
+      "name": "toggle_RGB_scatter_visual_visibility",
       "description": "Toggle RGB Scatter Visual visibility",
       "sequence": {
         "modifiers": [
@@ -70,6 +78,7 @@
       }
     },
     "cycle_RGB_scatter_visual_style": {
+      "name": "cycle_RGB_scatter_visual_style",
       "description": "Cycle RGB Scatter Visual style",
       "sequence": {
         "modifiers": [
@@ -79,6 +88,7 @@
       }
     },
     "toggle_pointer_gamut_visual_visibility": {
+      "name": "toggle_pointer_gamut_visual_visibility",
       "description": "Toggle Pointer's Gamut Visual visibility",
       "sequence": {
         "modifiers": [
@@ -87,6 +97,7 @@
       }
     },
     "cycle_pointer_gamut_visual_style": {
+      "name": "cycle_pointer_gamut_visual_style",
       "description": "Cycle Pointer's Gamut Visual style",
       "sequence": {
         "modifiers": [
@@ -96,6 +107,7 @@
       }
     },
     "toggle_axis_visual_visibility": {
+      "name": "toggle_axis_visual_visibility",
       "description": "Toggle Axis Visual visibility",
       "sequence": {
         "modifiers": [
@@ -104,6 +116,7 @@
       }
     },
     "fit_image_visual_image": {
+      "name": "fit_image_visual_image",
       "description": "Fit Image",
       "sequence": {
         "modifiers": [
@@ -111,5 +124,115 @@
         "key": "f"
       }
     }
+  },
+  "styles": {
+    "input_colourspace_visual": [
+      {
+        "name": "input_colourspace_visual_style_1",
+        "segments": 16,
+        "uniform_colour": null,
+        "uniform_opacity": 0.5,
+        "wireframe": true,
+        "wireframe_colour": null,
+        "wireframe_opacity": 1.0
+      },
+      {
+        "name": "input_colourspace_visual_style_2",
+        "segments": 16,
+        "uniform_colour": null,
+        "uniform_opacity": 0.5,
+        "wireframe": false,
+        "wireframe_colour": null,
+        "wireframe_opacity": 1.0
+      },
+      {
+        "name": "input_colourspace_visual_style_3",
+        "segments": 16,
+        "uniform_colour": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "uniform_opacity": 1.0,
+        "wireframe": true,
+        "wireframe_colour": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "wireframe_opacity": 1.0
+      },
+      {
+        "name": "input_colourspace_visual_style_4",
+        "segments": 16,
+        "uniform_colour": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "uniform_opacity": 0.0,
+        "wireframe": true,
+        "wireframe_colour": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "wireframe_opacity": 0.8
+      }
+    ],
+    "correlate_colourspace_visual": [
+      {
+        "name": "correlate_colourspace_visual_style_1",
+        "segments": 16,
+        "uniform_colour": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "uniform_opacity": 0.0,
+        "wireframe": true,
+        "wireframe_colour": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "wireframe_opacity": 0.8
+      },
+      {
+        "name": "correlate_colourspace_visual_style_2",
+        "segments": 16,
+        "uniform_colour": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "uniform_opacity": 1.0,
+        "wireframe": true,
+        "wireframe_colour": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "wireframe_opacity": 1.0
+      },
+      {
+        "name": "correlate_colourspace_visual_style_3",
+        "segments": 16,
+        "uniform_colour": null,
+        "uniform_opacity": 0.5,
+        "wireframe": false,
+        "wireframe_colour": null,
+        "wireframe_opacity": 1.0
+      },
+      {
+        "name": "correlate_colourspace_visual_style_4",
+        "segments": 16,
+        "uniform_colour": null,
+        "uniform_opacity": 0.5,
+        "wireframe": true,
+        "wireframe_colour": null,
+        "wireframe_opacity": 1.0
+      }
+    ]
   }
 }

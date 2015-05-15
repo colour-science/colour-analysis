@@ -5,7 +5,8 @@ from __future__ import division
 import json
 import numpy as np
 import os
-from collections import namedtuple
+from collections import OrderedDict, namedtuple
+from itertools import cycle
 
 from vispy.scene import SceneCanvas
 from vispy.scene.cameras import PanZoomCamera, TurntableCamera
@@ -25,6 +26,29 @@ from colour_analysis.visuals import (
 Sequence = namedtuple('Sequence', ('modifiers', 'key'))
 
 Action = namedtuple('Action', ('name', 'description', 'sequence'))
+
+RGB_colourspace_gamut_visual_style = namedtuple(
+    'RGB_colourspace_gamut_visual_style',
+    ('name',
+     'uniform_colour',
+     'uniform_opacity',
+     'wireframe',
+     'wireframe_colour',
+     'wireframe_opacity'))
+
+
+class Styles(object):
+    def __init__(self, styles):
+        self.__styles = styles
+        self.__indexes = np.arange(len(styles))
+
+    def current_style(self):
+        return self.__styles[self.__indexes[0]]
+
+    def next_style(self):
+        self.__indexes = np.roll(self.__indexes, -1)
+
+        return self.current_style()
 
 
 class Analysis(SceneCanvas):
@@ -53,11 +77,13 @@ class Analysis(SceneCanvas):
                            if settings is None else
                            settings)
         self.__actions = {}
+        self.__styles = {}
 
         self.__image = None
         # self.image = read_image(image_path)
+
         import skimage.data
-        #
+
         self.image = skimage.data.lena() / 255
 
         self.__grid = None
@@ -74,10 +100,16 @@ class Analysis(SceneCanvas):
 
         self.__image_visual = None
 
+        self.__RGB_colourspaces_cycle = cycle(
+            [c for c in sorted(RGB_COLOURSPACES)
+             if c not in ('aces', 'adobe1998', 'prophoto')])
+
+        self.initialise_actions()
+        self.initialise_styles()
+
         self.initialise_views()
         self.initialise_visuals()
         self.initialise_cameras()
-        self.initialise_actions()
 
         self.show()
 
@@ -303,6 +335,37 @@ class Analysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('settings'))
 
+    def __colourspace_visual_initialise(self, style, colourspace=None):
+        return RGB_colourspace_gamut_visual(
+            colourspace=colourspace,
+            reference_colourspace=self.__reference_colourspace,
+            uniform_colour=style.uniform_colour,
+            uniform_opacity=style.uniform_opacity,
+            wireframe=style.wireframe,
+            wireframe_colour=style.wireframe_colour,
+            wireframe_opacity=style.wireframe_opacity,
+            parent=self.__gamut_view.scene)
+
+    def __input_colourspace_visual_initialise(self,
+                                              style,
+                                              colourspace=None):
+        colourspace = (self.__input_colourspace
+                       if colourspace is None else
+                       colourspace)
+
+        self.__input_colourspace_visual = (
+            self.__colourspace_visual_initialise(style, colourspace))
+
+    def __correlate_colourspace_visual_initialise(self,
+                                                  style,
+                                                  colourspace=None):
+        colourspace = (self.__correlate_colourspace
+                       if colourspace is None else
+                       colourspace)
+
+        self.__correlate_colourspace_visual = (
+            self.__colourspace_visual_initialise(style, colourspace))
+
     def initialise_views(self):
         self.__grid = self.central_widget.add_grid()
 
@@ -317,29 +380,26 @@ class Analysis(SceneCanvas):
 
     def initialise_visuals(self):
         # Gamut View.
-        self.__input_colourspace_visual = RGB_colourspace_gamut_visual(
-            colourspace=self.__input_colourspace,
-            reference_colourspace=self.__reference_colourspace,
-            parent=self.__gamut_view.scene)
-
-        self.__correlate_colourspace_visual = RGB_colourspace_gamut_visual(
-            colourspace=self.__correlate_colourspace,
-            reference_colourspace=self.__reference_colourspace,
-            parent=self.__gamut_view.scene)
-
-        self.__spectral_locus_visual = spectral_locus_visual(
-            reference_colourspace=self.__reference_colourspace,
-            parent=self.__gamut_view.scene)
-
         self.__RGB_scatter_visual = RGB_scatter_visual(
             self.__image,
             reference_colourspace=self.__reference_colourspace,
             parent=self.__gamut_view)
 
+        self.__input_colourspace_visual_initialise(
+            self.__styles['input_colourspace_visual'].current_style())
+
+        self.__correlate_colourspace_visual_initialise(
+            self.__styles['correlate_colourspace_visual'].current_style())
+
+        self.__spectral_locus_visual = spectral_locus_visual(
+            reference_colourspace=self.__reference_colourspace,
+            parent=self.__gamut_view.scene)
+
         self.__axis_visual = axis_visual(parent=self.__gamut_view.scene)
 
         # Diagram View.
 
+        # Image View.
         self.__image_visual = image_visual(self.__image,
                                            parent=self.__image_view.scene)
 
@@ -363,9 +423,23 @@ class Analysis(SceneCanvas):
                 sequence = Sequence(modifiers=(), key=None)
 
             self.__actions[key] = Action(
-                name=key,
+                name=value.get('name'),
                 description=value.get('description'),
                 sequence=sequence)
+
+    def initialise_styles(self):
+        self.__styles = OrderedDict()
+        for key, value in self.__settings.get('styles', ()).items():
+            self.__styles[key] = []
+            for style in value:
+                self.__styles[key].append(RGB_colourspace_gamut_visual_style(
+                    name=style.get('name'),
+                    uniform_colour=style.get('uniform_colour'),
+                    uniform_opacity=style.get('uniform_opacity'),
+                    wireframe=style.get('wireframe'),
+                    wireframe_colour=style.get('wireframe_colour'),
+                    wireframe_opacity=style.get('wireframe_opacity')))
+            self.__styles[key] = Styles(self.__styles[key])
 
     def toggle_input_colourspace_visual_visibility_action(self):
         for visual in self.__input_colourspace_visual.children:
@@ -373,6 +447,9 @@ class Analysis(SceneCanvas):
 
     def cycle_input_colourspace_visual_style_action(self):
         self.__input_colourspace_visual.remove_parent(self.__gamut_view.scene)
+
+        self.__input_colourspace_visual_initialise(
+            self.__styles['input_colourspace_visual'].next_style())
 
         self.update()
 
@@ -384,10 +461,20 @@ class Analysis(SceneCanvas):
         self.__correlate_colourspace_visual.remove_parent(
             self.__gamut_view.scene)
 
+        self.__correlate_colourspace_visual_initialise(
+            self.__styles['correlate_colourspace_visual'].next_style())
+
         self.update()
 
     def cycle_correlate_colourspace_visual_colourspace_action(self):
-        print('cycle_correlate_colourspace_visual_colourspace')
+        self.__correlate_colourspace_visual.remove_parent(
+            self.__gamut_view.scene)
+
+        self.__correlate_colourspace_visual_initialise(
+            self.__styles['correlate_colourspace_visual'].current_style(),
+            next(self.__RGB_colourspaces_cycle))
+
+        self.update()
 
     def toggle_spectral_locus_visual_visibility_action(self):
         self.__spectral_locus_visual.visible = (
