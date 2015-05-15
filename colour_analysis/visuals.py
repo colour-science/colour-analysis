@@ -241,10 +241,14 @@ def RGB_scatter_visual(RGB,
                        uniform_opacity=1.0,
                        uniform_edge_colour=None,
                        uniform_edge_opacity=1.0,
+                       maximum_points=10 ** 5,
                        parent=None):
     colourspace = get_RGB_colourspace(colourspace)
 
-    RGB = np.asarray(RGB).reshape((-1, 3))
+    RGB = np.clip(RGB, 0, 1).reshape((-1, 3))
+
+    if RGB.shape[0] > maximum_points:
+        RGB = RGB[np.random.choice(RGB.shape[0], maximum_points)]
 
     XYZ = RGB_to_XYZ(
         RGB,
@@ -307,6 +311,8 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
 
 def image_visual(image,
                  parent=None):
+    image = np.clip(image, 0, 1)
+
     return Image(image, parent=parent)
 
 

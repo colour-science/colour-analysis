@@ -80,11 +80,7 @@ class Analysis(SceneCanvas):
         self.__styles = {}
 
         self.__image = None
-        # self.image = read_image(image_path)
-
-        import skimage.data
-
-        self.image = skimage.data.lena() / 255
+        self.image = read_image(self.__image_path)
 
         self.__grid = None
         self.__gamut_view = None
