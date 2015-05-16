@@ -25,7 +25,7 @@ from colour_analysis.common import (
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
 
-class GenericMeshVisual(MeshVisual):
+class PrimitiveVisual(MeshVisual):
     def __init__(self,
                  vertices,
                  faces,
@@ -61,7 +61,7 @@ class GenericMeshVisual(MeshVisual):
                       polygon_offset_fill=True)
 
 
-class PlaneVisual(GenericMeshVisual):
+class PlaneVisual(PrimitiveVisual):
     def __init__(self,
                  width=1,
                  height=1,
@@ -77,7 +77,7 @@ class PlaneVisual(GenericMeshVisual):
                                          width_segments, height_segments,
                                          direction)
 
-        GenericMeshVisual.__init__(
+        PrimitiveVisual.__init__(
             self,
             vertices,
             outline if wireframe else faces,
@@ -91,7 +91,7 @@ class PlaneVisual(GenericMeshVisual):
 Plane = create_visual_node(PlaneVisual)
 
 
-class BoxVisual(GenericMeshVisual):
+class BoxVisual(PrimitiveVisual):
     def __init__(self,
                  width=1,
                  height=1,
@@ -111,7 +111,7 @@ class BoxVisual(GenericMeshVisual):
                                        depth_segments,
                                        planes)
 
-        GenericMeshVisual.__init__(
+        PrimitiveVisual.__init__(
             self,
             vertices,
             outline if wireframe else faces,

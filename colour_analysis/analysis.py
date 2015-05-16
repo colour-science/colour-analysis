@@ -568,7 +568,6 @@ class Analysis(SceneCanvas):
         visible['axis_visual'] = (
             self.__axis_visual.visible)
 
-        print(visible)
         self.__gamut_view_visuals_visibility = visible
 
     def __restore_gamut_view_visuals_visibility(self):
