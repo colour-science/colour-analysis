@@ -245,7 +245,7 @@ def RGB_scatter_visual(RGB,
                        parent=None):
     colourspace = get_RGB_colourspace(colourspace)
 
-    RGB = np.clip(RGB, 0, 1).reshape((-1, 3))
+    RGB = np.asarray(RGB).reshape((-1, 3))
 
     if RGB.shape[0] > maximum_points:
         RGB = RGB[np.random.choice(RGB.shape[0], maximum_points)]
@@ -259,6 +259,8 @@ def RGB_scatter_visual(RGB,
     points = XYZ_to_reference_colourspace(XYZ,
                                           colourspace.whitepoint,
                                           reference_colourspace)
+
+    RGB = np.clip(RGB, 0, 1)
 
     if uniform_colour is None:
         RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity)))

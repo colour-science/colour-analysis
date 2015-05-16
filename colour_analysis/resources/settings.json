@@ -1,5 +1,4 @@
 {
-  "settings": {},
   "actions": {
     "toggle_input_colourspace_visual_visibility": {
       "name": "toggle_input_colourspace_visual_visibility",
@@ -129,6 +128,7 @@
     "input_colourspace_visual": [
       {
         "name": "input_colourspace_visual_style_1",
+        "description": "Input Colourspace - Visual Style 1",
         "segments": 16,
         "uniform_colour": null,
         "uniform_opacity": 0.5,
@@ -138,6 +138,7 @@
       },
       {
         "name": "input_colourspace_visual_style_2",
+        "description": "Input Colourspace - Visual Style 2",
         "segments": 16,
         "uniform_colour": null,
         "uniform_opacity": 0.5,
@@ -147,6 +148,7 @@
       },
       {
         "name": "input_colourspace_visual_style_3",
+        "description": "Input Colourspace - Visual Style 3",
         "segments": 16,
         "uniform_colour": [
           1.0,
@@ -164,6 +166,7 @@
       },
       {
         "name": "input_colourspace_visual_style_4",
+        "description": "Input Colourspace - Visual Style 4",
         "segments": 16,
         "uniform_colour": [
           0.0,
@@ -183,6 +186,7 @@
     "correlate_colourspace_visual": [
       {
         "name": "correlate_colourspace_visual_style_1",
+        "description": "Correlate Colourspace - Visual Style 1",
         "segments": 16,
         "uniform_colour": [
           0.0,
@@ -200,6 +204,7 @@
       },
       {
         "name": "correlate_colourspace_visual_style_2",
+        "description": "Correlate Colourspace - Visual Style 2",
         "segments": 16,
         "uniform_colour": [
           1.0,
@@ -217,6 +222,7 @@
       },
       {
         "name": "correlate_colourspace_visual_style_3",
+        "description": "Correlate Colourspace - Visual Style 3",
         "segments": 16,
         "uniform_colour": null,
         "uniform_opacity": 0.5,
@@ -226,6 +232,7 @@
       },
       {
         "name": "correlate_colourspace_visual_style_4",
+        "description": "Correlate Colourspace - Visual Style 4",
         "segments": 16,
         "uniform_colour": null,
         "uniform_opacity": 0.5,
@@ -234,5 +241,114 @@
         "wireframe_opacity": 1.0
       }
     ]
+  },
+  "cameras": {
+    "gamut_view": {
+      "CIE XYZ": {
+        "name": "gamut_view_camera_CIE_XYZ",
+        "description": "Gamut View Camera - CIE XYZ",
+        "reference_colourspace": "CIE XYZ",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 2.0,
+        "center": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "up": "+z"
+      },
+      "CIE xyY": {
+        "name": "gamut_view_camera_CIE_xyY",
+        "description": "Gamut View Camera - CIE xyY",
+        "reference_colourspace": "CIE xyY",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 2.0,
+        "center": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "up": "+z"
+      },
+      "CIE Lab": {
+        "name": "gamut_view_camera_CIE_Lab",
+        "description": "Gamut View Camera - CIE Lab",
+        "reference_colourspace": "CIE Lab",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 500.0,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
+      },
+      "CIE Luv": {
+        "name": "gamut_view_camera_CIE_Luv",
+        "description": "Gamut View Camera - CIE Luv",
+        "reference_colourspace": "CIE Luv",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 500.0,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
+      },
+      "CIE UCS": {
+        "name": "gamut_view_camera_CIE_UCS",
+        "description": "Gamut View Camera - CIE UCS",
+        "reference_colourspace": "CIE UCS",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 3.0,
+        "center": [
+          0.5,
+          0.5,
+          1.0
+        ],
+        "up": "+z"
+      },
+      "CIE UVW": {
+        "name": "gamut_view_camera_CIE_UVW",
+        "description": "Gamut View Camera - CIE UVW",
+        "reference_colourspace": "CIE UVW",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 400.0,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
+      },
+      "IPT": {
+        "name": "gamut_view_camera_CIE_UVW",
+        "description": "Gamut View Camera - IPT",
+        "reference_colourspace": "IPT",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 3.0,
+        "center": [
+          0.0,
+          0.0,
+          0.5
+        ],
+        "up": "+z"
+      }
+    }
   }
 }

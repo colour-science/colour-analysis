@@ -41,3 +41,5 @@ REFERENCE_COLOURSPACES_TO_LABELS : dict
     **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
     'IPT'}**
 """
+
+LINEAR_IMAGE_FORMATS = ('exr', 'hdr')

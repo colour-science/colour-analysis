@@ -8,10 +8,14 @@ import json
 import os
 import sys
 import traceback
+import warnings
 from vispy.app import run
 
 from colour_analysis.analysis import Analysis
-from colour_analysis.constants import SETTINGS_FILE
+from colour_analysis.constants import (
+    DEFAULT_IMAGE,
+    LINEAR_IMAGE_FORMATS,
+    SETTINGS_FILE)
 
 
 class ManualAction(argparse.Action):
@@ -43,9 +47,11 @@ SYNOPSIS
     analysis [-v] [-h] [-m] [--input-image INPUT_IMAGE]
              [--input-colourspace INPUT_COLOURSPACE]
              [--input-oecf INPUT_OECF]
+             [--input-linearity INPUT_LINEARITY]
              [--reference-colourspace REFERENCE_COLOURSPACE]
              [--correlate-colourspace CORRELATE_COLOURSPACE]
              [--settings-file SETTINGS_FILE]
+             [--suppress-warnings SUPPRESS_WARNINGS]
 
 DESCRIPTION
     This tool implements various image analysis tools based on 'Colour',
@@ -61,16 +67,34 @@ ARGUMENTS
         Displays detailed manual with usage examples.
     -i, --input-image
         Image to analyse.
-    -c, --input-colourspace, 'Rec. 709'
+    -c, --input-colourspace
+        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
+        'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
+        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
+        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
+        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
+        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'sRGB'}
+
         Input image colourspace.
     -f, --input-oecf, None
-        Input image colourspace.
+        Input image OECF, see *input-colourspace* for possible values.
+    -l, --input-linearity
+        {'auto', 'linear', 'oecf'}
+
+        Input image linearity.
     -r, --reference-colourspace, 'CIE xyY'
+        {'CIE xyY', 'CIE XYZ', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT'}
+
         Input image colourspace.
-    -l, --correlate-colourspace, ['ACEScg']
-        Correlate colourspace.
-    -s, --settings-file, ['ACEScg']
+    -t, --correlate-colourspace
+        Correlate colourspace, see *input-colourspace* for possible values.
+    -s, --settings-file
         Settings file.
+    -w, --suppress-warnings
+        Suppress warnings.
 
 EXAMPLES
 """)
@@ -140,6 +164,7 @@ def command_line_arguments():
                         '-i',
                         action='store',
                         dest='input_image',
+                        default=DEFAULT_IMAGE,
                         help='Image to analyse.')
 
     parser.add_argument('--input-colourspace',
@@ -153,8 +178,15 @@ def command_line_arguments():
                         '-f',
                         action='store',
                         dest='input_oecf',
-                        default=None,
-                        help='Input image colourspace.')
+                        default='Rec. 709',
+                        help='Input image OECF.')
+
+    parser.add_argument('--input-linearity',
+                        '-l',
+                        action='store',
+                        dest='input_linearity',
+                        default='auto',
+                        help='Input image linearity.')
 
     parser.add_argument('--reference-colourspace',
                         '-r',
@@ -164,7 +196,7 @@ def command_line_arguments():
                         help='Input image colourspace.')
 
     parser.add_argument('--correlate-colourspace',
-                        '-l',
+                        '-t',
                         action='store',
                         dest='correlate_colourspace',
                         default='ACEScg',
@@ -175,6 +207,13 @@ def command_line_arguments():
                         action='store',
                         dest='settings_file',
                         default=None,
+                        help='Settings file.')
+
+    parser.add_argument('--suppress-warnings',
+                        '-w',
+                        action='store_true',
+                        dest='suppress_warnings',
+                        default=False,
                         help='Settings file.')
 
     return parser.parse_args()
@@ -198,9 +237,25 @@ def main():
             '"{0}" file doesn\'t exists!'.format(arguments.settings_file))
         settings.update(json.load(open(arguments.settings_file)))
 
+    input_linearity = arguments.input_linearity.lower()
+    if input_linearity == 'linear':
+        input_linear = True
+    elif input_linearity == 'oecf':
+        input_linear = False
+    else:
+        input_extension = os.path.splitext(arguments.input_image)[1].lower()
+        if input_extension in LINEAR_IMAGE_FORMATS:
+            input_linear = True
+        else:
+            input_linear = False
+
+    if arguments.suppress_warnings:
+        warnings.filterwarnings("ignore")
+
     Analysis(arguments.input_image,
              arguments.input_colourspace,
              arguments.input_oecf,
+             input_linear,
              arguments.reference_colourspace,
              arguments.correlate_colourspace,
              settings)

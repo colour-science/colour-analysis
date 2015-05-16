@@ -30,11 +30,24 @@ Action = namedtuple('Action', ('name', 'description', 'sequence'))
 RGB_colourspace_gamut_visual_style = namedtuple(
     'RGB_colourspace_gamut_visual_style',
     ('name',
+     'description',
      'uniform_colour',
      'uniform_opacity',
      'wireframe',
      'wireframe_colour',
      'wireframe_opacity'))
+
+GamutViewCamera = namedtuple(
+    'GamutViewCamera',
+    ('name',
+     'description',
+     'reference_colourspace',
+     'fov',
+     'elevation',
+     'azimuth',
+     'distance',
+     'center',
+     'up'))
 
 
 class Styles(object):
@@ -53,22 +66,25 @@ class Styles(object):
 
 class Analysis(SceneCanvas):
     def __init__(self,
-                 image_path,
-                 input_colourspace,
-                 input_oecf,
-                 reference_colourspace,
-                 correlate_colourspace,
+                 image_path=DEFAULT_IMAGE,
+                 input_colourspace='Rec. 709',
+                 input_oecf='Rec. 709',
+                 input_linear=True,
+                 reference_colourspace='CIE xyY',
+                 correlate_colourspace='ACEScg',
                  settings=None):
         SceneCanvas.__init__(self,
                              keys='interactive',
                              title="Colour - Analysis")
 
         self.__image_path = None
-        self.image_path = image_path or DEFAULT_IMAGE
+        self.image_path = image_path
         self.__input_colourspace = None
         self.input_colourspace = input_colourspace
         self.__input_oecf = None
         self.input_oecf = input_oecf
+        self.__input_linear = None
+        self.input_linear = input_linear
         self.__reference_colourspace = None
         self.reference_colourspace = reference_colourspace
         self.__correlate_colourspace = None
@@ -76,11 +92,13 @@ class Analysis(SceneCanvas):
         self.__settings = (json.load(open(SETTINGS_FILE))
                            if settings is None else
                            settings)
-        self.__actions = {}
-        self.__styles = {}
+
+        self.__actions_settings = {}
+        self.__styles_settings = {}
+        self.__cameras_settings = {}
 
         self.__image = None
-        self.image = read_image(self.__image_path)
+        self.image = np.random.random((256, 256, 3))
 
         self.__grid = None
         self.__gamut_view = None
@@ -100,9 +118,11 @@ class Analysis(SceneCanvas):
             [c for c in sorted(RGB_COLOURSPACES)
              if c not in ('aces', 'adobe1998', 'prophoto')])
 
-        self.initialise_actions()
-        self.initialise_styles()
+        self.__initialise_actions_settings()
+        self.__initialise_styles_settings()
+        self.__initialise_cameras_settings()
 
+        self.initialise_image()
         self.initialise_views()
         self.initialise_visuals()
         self.initialise_cameras()
@@ -205,6 +225,37 @@ class Analysis(SceneCanvas):
                 'RGB colourspaces: "{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
         self.__input_oecf = value
+
+    @property
+    def input_linear(self):
+        """
+        Property for **self.__input_linear** private attribute.
+
+        Returns
+        -------
+        bool
+            self.__input_linear.
+        """
+
+        return self.__input_linear
+
+    @input_linear.setter
+    def input_linear(self, value):
+        """
+        Setter for **self.__input_linear** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) is bool, (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"bool"!').format('input_linear', value))
+
+        self.__input_linear = value
 
     @property
     def reference_colourspace(self):
@@ -331,7 +382,64 @@ class Analysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('settings'))
 
-    def __colourspace_visual_initialise(self, style, colourspace=None):
+    def __initialise_actions_settings(self):
+        self.__actions_settings = {}
+
+        for name, action in self.__settings.get('actions', ()).items():
+            if action.get('sequence') is not None:
+                sequence = Sequence(
+                    modifiers=action.get('sequence').get('modifiers', ()),
+                    key=action.get('sequence').get('key'))
+            else:
+                sequence = Sequence(modifiers=(), key=None)
+
+            self.__actions_settings[name] = Action(
+                name=action.get('name'),
+                description=action.get('description'),
+                sequence=sequence)
+
+    def __initialise_styles_settings(self):
+        self.__styles_settings = OrderedDict()
+
+        for visual, styles in self.__settings.get('styles', ()).items():
+            self.__styles_settings[visual] = []
+
+            for style in styles:
+                self.__styles_settings[visual].append(
+                    RGB_colourspace_gamut_visual_style(
+                        name=style.get('name'),
+                        description=style.get('description'),
+                        uniform_colour=style.get('uniform_colour'),
+                        uniform_opacity=style.get('uniform_opacity'),
+                        wireframe=style.get('wireframe'),
+                        wireframe_colour=style.get('wireframe_colour'),
+                        wireframe_opacity=style.get('wireframe_opacity')))
+
+            self.__styles_settings[visual] = Styles(
+                self.__styles_settings[visual])
+
+    def __initialise_cameras_settings(self):
+        self.__cameras_settings = {}
+
+        for view, cameras in self.__settings.get('cameras', ()).items():
+            if view == 'gamut_view':
+                self.__cameras_settings['gamut_view'] = {}
+
+                for camera in cameras.values():
+                    self.__cameras_settings[view][camera.get(
+                        'reference_colourspace')] = GamutViewCamera(
+                        name=camera.get('name'),
+                        description=camera.get('description'),
+                        reference_colourspace=camera.get(
+                            'reference_colourspace'),
+                        fov=camera.get('fov'),
+                        elevation=camera.get('elevation'),
+                        azimuth=camera.get('azimuth'),
+                        distance=camera.get('distance'),
+                        center=camera.get('center'),
+                        up=camera.get('up'))
+
+    def __initialise_colourspace_visual(self, style, colourspace=None):
         return RGB_colourspace_gamut_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
@@ -342,7 +450,7 @@ class Analysis(SceneCanvas):
             wireframe_opacity=style.wireframe_opacity,
             parent=self.__gamut_view.scene)
 
-    def __input_colourspace_visual_initialise(self,
+    def __initialise_input_colourspace_visual(self,
                                               style,
                                               colourspace=None):
         colourspace = (self.__input_colourspace
@@ -350,9 +458,9 @@ class Analysis(SceneCanvas):
                        colourspace)
 
         self.__input_colourspace_visual = (
-            self.__colourspace_visual_initialise(style, colourspace))
+            self.__initialise_colourspace_visual(style, colourspace))
 
-    def __correlate_colourspace_visual_initialise(self,
+    def __initialise_correlate_colourspace_visual(self,
                                                   style,
                                                   colourspace=None):
         colourspace = (self.__correlate_colourspace
@@ -360,7 +468,17 @@ class Analysis(SceneCanvas):
                        colourspace)
 
         self.__correlate_colourspace_visual = (
-            self.__colourspace_visual_initialise(style, colourspace))
+            self.__initialise_colourspace_visual(style, colourspace))
+
+    def initialise_image(self):
+        image = read_image(self.__image_path)
+        if not self.__input_linear:
+            colourspace = RGB_COLOURSPACES[self.__input_oecf]
+            image = colourspace.inverse_transfer_function(image)
+
+        self.__image = image
+
+        return True
 
     def initialise_views(self):
         self.__grid = self.central_widget.add_grid()
@@ -374,6 +492,8 @@ class Analysis(SceneCanvas):
         self.__image_view = self.__grid.add_view(row=1, col=1)
         self.__image_view.border_color = (0.5, 0.5, 0.5, 1)
 
+        return True
+
     def initialise_visuals(self):
         # Gamut View.
         self.__RGB_scatter_visual = RGB_scatter_visual(
@@ -381,11 +501,12 @@ class Analysis(SceneCanvas):
             reference_colourspace=self.__reference_colourspace,
             parent=self.__gamut_view)
 
-        self.__input_colourspace_visual_initialise(
-            self.__styles['input_colourspace_visual'].current_style())
+        self.__initialise_input_colourspace_visual(
+            self.__styles_settings['input_colourspace_visual'].current_style())
 
-        self.__correlate_colourspace_visual_initialise(
-            self.__styles['correlate_colourspace_visual'].current_style())
+        self.__initialise_correlate_colourspace_visual(
+            self.__styles_settings[
+                'correlate_colourspace_visual'].current_style())
 
         self.__spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=self.__reference_colourspace,
@@ -396,11 +517,24 @@ class Analysis(SceneCanvas):
         # Diagram View.
 
         # Image View.
-        self.__image_visual = image_visual(self.__image,
+        colourspace = RGB_COLOURSPACES[self.__input_oecf]
+        image = colourspace.transfer_function(self.__image)
+        self.__image_visual = image_visual(image,
                                            parent=self.__image_view.scene)
 
+        return True
+
     def initialise_cameras(self):
-        self.__gamut_view.camera = TurntableCamera(fov=45, up='+z')
+        camera_settings = self.__cameras_settings['gamut_view'][
+            self.__reference_colourspace]
+
+        self.__gamut_view.camera = TurntableCamera(
+            fov=camera_settings.fov,
+            elevation=camera_settings.elevation,
+            azimuth=camera_settings.azimuth,
+            distance=camera_settings.distance,
+            center=camera_settings.center,
+            up=camera_settings.up)
 
         self.__diagram_view.camera = PanZoomCamera(aspect=1)
         self.__image_view.camera.flip = (False, True, False)
@@ -408,69 +542,55 @@ class Analysis(SceneCanvas):
         self.__image_view.camera = PanZoomCamera(aspect=1)
         self.__image_view.camera.flip = (False, True, False)
 
-    def initialise_actions(self):
-        self.__actions = {}
-        for key, value in self.__settings.get('actions', ()).items():
-            if value.get('sequence') is not None:
-                sequence = Sequence(
-                    modifiers=value.get('sequence').get('modifiers', ()),
-                    key=value.get('sequence').get('key'))
-            else:
-                sequence = Sequence(modifiers=(), key=None)
+        return True
 
-            self.__actions[key] = Action(
-                name=value.get('name'),
-                description=value.get('description'),
-                sequence=sequence)
-
-    def initialise_styles(self):
-        self.__styles = OrderedDict()
-        for key, value in self.__settings.get('styles', ()).items():
-            self.__styles[key] = []
-            for style in value:
-                self.__styles[key].append(RGB_colourspace_gamut_visual_style(
-                    name=style.get('name'),
-                    uniform_colour=style.get('uniform_colour'),
-                    uniform_opacity=style.get('uniform_opacity'),
-                    wireframe=style.get('wireframe'),
-                    wireframe_colour=style.get('wireframe_colour'),
-                    wireframe_opacity=style.get('wireframe_opacity')))
-            self.__styles[key] = Styles(self.__styles[key])
 
     def toggle_input_colourspace_visual_visibility_action(self):
         for visual in self.__input_colourspace_visual.children:
             visual.visible = not visual.visible
 
+        return True
+
     def cycle_input_colourspace_visual_style_action(self):
         self.__input_colourspace_visual.remove_parent(self.__gamut_view.scene)
 
-        self.__input_colourspace_visual_initialise(
-            self.__styles['input_colourspace_visual'].next_style())
+        self.__initialise_input_colourspace_visual(
+            self.__styles_settings['input_colourspace_visual'].next_style())
 
         self.update()
+
+        return True
 
     def toggle_correlate_colourspace_visual_visibility_action(self):
         for visual in self.__correlate_colourspace_visual.children:
             visual.visible = not visual.visible
 
+        return True
+
     def cycle_correlate_colourspace_visual_style_action(self):
         self.__correlate_colourspace_visual.remove_parent(
             self.__gamut_view.scene)
 
-        self.__correlate_colourspace_visual_initialise(
-            self.__styles['correlate_colourspace_visual'].next_style())
+        self.__initialise_correlate_colourspace_visual(
+            self.__styles_settings[
+                'correlate_colourspace_visual'].next_style())
 
         self.update()
+
+        return True
 
     def cycle_correlate_colourspace_visual_colourspace_action(self):
         self.__correlate_colourspace_visual.remove_parent(
             self.__gamut_view.scene)
 
-        self.__correlate_colourspace_visual_initialise(
-            self.__styles['correlate_colourspace_visual'].current_style(),
+        self.__initialise_correlate_colourspace_visual(
+            self.__styles_settings[
+                'correlate_colourspace_visual'].current_style(),
             next(self.__RGB_colourspaces_cycle))
 
         self.update()
+
+        return True
 
     def toggle_spectral_locus_visual_visibility_action(self):
         self.__spectral_locus_visual.visible = (
@@ -481,35 +601,49 @@ class Analysis(SceneCanvas):
 
         self.update()
 
+        return True
+
     def toggle_RGB_scatter_visual_visibility_action(self):
         self.__RGB_scatter_visual.visible = (
             not self.__RGB_scatter_visual.visible)
+
+        return True
 
     def cycle_RGB_scatter_visual_style_action(self):
         self.__RGB_scatter_visual.remove_parent(self.__gamut_view.scene)
 
         self.update()
 
+        return True
+
     def toggle_pointer_gamut_visual_visibility_action(self):
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
+
+        return True
 
     def cycle_pointer_gamut_visual_style_action(self):
         self.__pointer_gamut_visual.remove_parent(self.__gamut_view.scene)
 
         self.update()
 
+        return True
+
     def toggle_axis_visual_visibility_action(self):
         self.__axis_visual.visible = (
             not self.__axis_visual.visible)
 
+        return True
+
     def fit_image_visual_image_action(self):
         print('fit_image_visual_image')
+
+        return True
 
     def on_key_press(self, event):
         key = event.key.name
         modifiers = sorted([modifier.name for modifier in event.modifiers])
-        for action in self.__actions.values():
+        for action in self.__actions_settings.values():
             if (key == action.sequence.key and
                         modifiers == sorted(action.sequence.modifiers)):
                 getattr(self, '{0}_action'.format(action.name))()
