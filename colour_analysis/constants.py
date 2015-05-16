@@ -42,4 +42,4 @@ REFERENCE_COLOURSPACES_TO_LABELS : dict
     'IPT'}**
 """
 
-LINEAR_IMAGE_FORMATS = ('exr', 'hdr')
+LINEAR_IMAGE_FORMATS = ('.exr', '.hdr')

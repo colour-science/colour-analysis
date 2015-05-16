@@ -116,11 +116,29 @@
     },
     "fit_image_visual_image": {
       "name": "fit_image_visual_image",
-      "description": "Fit Image",
+      "description": "Fit image",
       "sequence": {
         "modifiers": [
         ],
-        "key": "f"
+        "key": "F"
+      }
+    },
+    "toggle_blacks_clamp": {
+      "name": "toggle_blacks_clamp",
+      "description": "Toggle image blacks clamping",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "B"
+      }
+    },
+    "toggle_whites_clamp": {
+      "name": "toggle_whites_clamp",
+      "description": "Toggle image whites clamping",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "W"
       }
     }
   },

@@ -100,6 +100,9 @@ class Analysis(SceneCanvas):
         self.__image = None
         self.image = np.random.random((256, 256, 3))
 
+        self.__clamp_blacks = False
+        self.__clamp_whites = True
+
         self.__grid = None
         self.__gamut_view = None
         self.__diagram_view = None
@@ -113,6 +116,8 @@ class Analysis(SceneCanvas):
         self.__axis_visual = None
 
         self.__image_visual = None
+
+        self.__gamut_view_visuals_visibility = None
 
         self.__RGB_colourspaces_cycle = cycle(
             [c for c in sorted(RGB_COLOURSPACES)
@@ -246,14 +251,14 @@ class Analysis(SceneCanvas):
 
         Parameters
         ----------
-        value : unicode
+        value : bool
             Attribute value.
         """
 
         if value is not None:
             assert type(value) is bool, (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"bool"!').format('input_linear', value))
+                '"{0}" attribute: "{1}" type is not "bool"!'.format(
+                    'input_linear', value))
 
         self.__input_linear = value
 
@@ -439,7 +444,23 @@ class Analysis(SceneCanvas):
                         center=camera.get('center'),
                         up=camera.get('up'))
 
-    def __initialise_colourspace_visual(self, style, colourspace=None):
+    def __create_RGB_scatter_image(self):
+        image = self.__image
+
+        if self.__clamp_blacks:
+            image = np.clip(image, 0, np.inf)
+
+        if self.__clamp_whites:
+            image = np.clip(image, -np.inf, 1)
+
+        return image
+
+    def __create_image_view_image(self):
+        colourspace = RGB_COLOURSPACES[self.__input_oecf]
+
+        return colourspace.transfer_function(self.__image)
+
+    def __create_colourspace_visual(self, style, colourspace=None):
         return RGB_colourspace_gamut_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
@@ -450,25 +471,117 @@ class Analysis(SceneCanvas):
             wireframe_opacity=style.wireframe_opacity,
             parent=self.__gamut_view.scene)
 
-    def __initialise_input_colourspace_visual(self,
-                                              style,
-                                              colourspace=None):
+    def __attach_input_colourspace_visual(self,
+                                          style,
+                                          colourspace=None):
         colourspace = (self.__input_colourspace
                        if colourspace is None else
                        colourspace)
 
         self.__input_colourspace_visual = (
-            self.__initialise_colourspace_visual(style, colourspace))
+            self.__create_colourspace_visual(style, colourspace))
 
-    def __initialise_correlate_colourspace_visual(self,
-                                                  style,
-                                                  colourspace=None):
+    def __detach_input_colourspace_visual(self):
+        self.__input_colourspace_visual.remove_parent(self.__gamut_view.scene)
+
+    def __attach_correlate_colourspace_visual(self,
+                                              style,
+                                              colourspace=None):
         colourspace = (self.__correlate_colourspace
                        if colourspace is None else
                        colourspace)
 
         self.__correlate_colourspace_visual = (
-            self.__initialise_colourspace_visual(style, colourspace))
+            self.__create_colourspace_visual(style, colourspace))
+
+    def __detach_correlate_colourspace_visual(self):
+        self.__correlate_colourspace_visual.remove_parent(
+            self.__gamut_view.scene)
+
+    def __attach_RGB_scatter_visual(self, RGB):
+        self.__RGB_scatter_visual = RGB_scatter_visual(
+            RGB,
+            reference_colourspace=self.__reference_colourspace,
+            parent=self.__gamut_view)
+
+    def __detach_RGB_scatter_visual(self):
+        self.__RGB_scatter_visual.remove_parent(
+            self.__gamut_view.scene)
+
+    def __attach_spectral_locus_visual(self):
+        self.__spectral_locus_visual = spectral_locus_visual(
+            reference_colourspace=self.__reference_colourspace,
+            parent=self.__gamut_view.scene)
+
+    def __detach_spectral_locus_visual(self):
+        self.__spectral_locus_visual.remove_parent(self.__gamut_view.scene)
+
+    def __attach_axis_visual(self):
+        self.__axis_visual = axis_visual(parent=self.__gamut_view.scene)
+
+    def __detach_axis_visual(self):
+        self.__axis_visual.remove_parent(self.__gamut_view.scene)
+
+    def __attach_gamut_view_visuals(self):
+        self.__attach_RGB_scatter_visual(self.__create_RGB_scatter_image())
+
+        self.__attach_input_colourspace_visual(
+            self.__styles_settings['input_colourspace_visual'].current_style())
+
+        self.__attach_correlate_colourspace_visual(
+            self.__styles_settings[
+                'correlate_colourspace_visual'].current_style())
+
+        self.__attach_spectral_locus_visual()
+
+        self.__attach_axis_visual()
+
+    def __detach_gamut_view_visuals(self):
+        self.__detach_RGB_scatter_visual()
+
+        self.__detach_input_colourspace_visual()
+
+        self.__detach_correlate_colourspace_visual()
+
+        self.__detach_spectral_locus_visual()
+
+        self.__detach_axis_visual()
+
+    def __attach_image_view_visuals(self):
+        self.__image_visual = image_visual(
+            self.__create_image_view_image(),
+            parent=self.__image_view.scene)
+
+    def __detach_image_view_visuals(self):
+        self.__image_visual.remove_parent(self.__image_view.scene)
+
+    def __store_gamut_view_visuals_visibility(self):
+        visible = OrderedDict()
+        visible['RGB_scatter_visual'] = (
+            self.__RGB_scatter_visual.visible)
+        visible['input_colourspace_visual'] = (
+            self.__input_colourspace_visual.children[0].visible)
+        visible['correlate_colourspace_visual'] = (
+            self.__correlate_colourspace_visual.children[0].visible)
+        visible['spectral_locus_visual'] = (
+            self.__spectral_locus_visual.visible)
+        visible['axis_visual'] = (
+            self.__axis_visual.visible)
+
+        print(visible)
+        self.__gamut_view_visuals_visibility = visible
+
+    def __restore_gamut_view_visuals_visibility(self):
+        visible = self.__gamut_view_visuals_visibility
+
+        self.__RGB_scatter_visual.visible = visible['RGB_scatter_visual']
+        for visual in self.__input_colourspace_visual.children:
+            visual.visible = visible['input_colourspace_visual']
+        for visual in self.__correlate_colourspace_visual.children:
+            visual.visible = visible['correlate_colourspace_visual']
+        self.__spectral_locus_visual.visible = (
+            visible['spectral_locus_visual'])
+        self.__axis_visual.visible = visible['axis_visual']
 
     def initialise_image(self):
         image = read_image(self.__image_path)
@@ -495,32 +608,9 @@ class Analysis(SceneCanvas):
         return True
 
     def initialise_visuals(self):
-        # Gamut View.
-        self.__RGB_scatter_visual = RGB_scatter_visual(
-            self.__image,
-            reference_colourspace=self.__reference_colourspace,
-            parent=self.__gamut_view)
+        self.__attach_gamut_view_visuals()
 
-        self.__initialise_input_colourspace_visual(
-            self.__styles_settings['input_colourspace_visual'].current_style())
-
-        self.__initialise_correlate_colourspace_visual(
-            self.__styles_settings[
-                'correlate_colourspace_visual'].current_style())
-
-        self.__spectral_locus_visual = spectral_locus_visual(
-            reference_colourspace=self.__reference_colourspace,
-            parent=self.__gamut_view.scene)
-
-        self.__axis_visual = axis_visual(parent=self.__gamut_view.scene)
-
-        # Diagram View.
-
-        # Image View.
-        colourspace = RGB_COLOURSPACES[self.__input_oecf]
-        image = colourspace.transfer_function(self.__image)
-        self.__image_visual = image_visual(image,
-                                           parent=self.__image_view.scene)
+        self.__attach_image_view_visuals()
 
         return True
 
@@ -544,7 +634,6 @@ class Analysis(SceneCanvas):
 
         return True
 
-
     def toggle_input_colourspace_visual_visibility_action(self):
         for visual in self.__input_colourspace_visual.children:
             visual.visible = not visual.visible
@@ -552,12 +641,10 @@ class Analysis(SceneCanvas):
         return True
 
     def cycle_input_colourspace_visual_style_action(self):
-        self.__input_colourspace_visual.remove_parent(self.__gamut_view.scene)
+        self.__detach_input_colourspace_visual()
 
-        self.__initialise_input_colourspace_visual(
+        self.__attach_input_colourspace_visual(
             self.__styles_settings['input_colourspace_visual'].next_style())
-
-        self.update()
 
         return True
 
@@ -568,27 +655,21 @@ class Analysis(SceneCanvas):
         return True
 
     def cycle_correlate_colourspace_visual_style_action(self):
-        self.__correlate_colourspace_visual.remove_parent(
-            self.__gamut_view.scene)
+        self.__detach_correlate_colourspace_visual()
 
-        self.__initialise_correlate_colourspace_visual(
+        self.__attach_correlate_colourspace_visual(
             self.__styles_settings[
                 'correlate_colourspace_visual'].next_style())
-
-        self.update()
 
         return True
 
     def cycle_correlate_colourspace_visual_colourspace_action(self):
-        self.__correlate_colourspace_visual.remove_parent(
-            self.__gamut_view.scene)
+        self.__detach_correlate_colourspace_visual()
 
-        self.__initialise_correlate_colourspace_visual(
+        self.__attach_correlate_colourspace_visual(
             self.__styles_settings[
                 'correlate_colourspace_visual'].current_style(),
             next(self.__RGB_colourspaces_cycle))
-
-        self.update()
 
         return True
 
@@ -597,9 +678,10 @@ class Analysis(SceneCanvas):
             not self.__spectral_locus_visual.visible)
 
     def cycle_spectral_locus_visual_style_action(self):
-        self.__spectral_locus_visual.remove_parent(self.__gamut_view.scene)
+        # TODO: Implement definition.
+        self.__detach_spectral_locus_visual()
 
-        self.update()
+        self.__attach_spectral_locus_visual()
 
         return True
 
@@ -610,19 +692,25 @@ class Analysis(SceneCanvas):
         return True
 
     def cycle_RGB_scatter_visual_style_action(self):
-        self.__RGB_scatter_visual.remove_parent(self.__gamut_view.scene)
+        self.__detach_RGB_scatter_visual()
+
+        self.__attach_RGB_scatter_visual(self.__create_RGB_scatter_image())
 
         self.update()
 
         return True
 
     def toggle_pointer_gamut_visual_visibility_action(self):
+        # TODO: Implement definition.
+
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
 
         return True
 
     def cycle_pointer_gamut_visual_style_action(self):
+        # TODO: Implement definition.
+
         self.__pointer_gamut_visual.remove_parent(self.__gamut_view.scene)
 
         self.update()
@@ -636,7 +724,35 @@ class Analysis(SceneCanvas):
         return True
 
     def fit_image_visual_image_action(self):
+        # TODO: Implement definition.
+
         print('fit_image_visual_image')
+
+        return True
+
+    def toggle_blacks_clamp_action(self):
+        self.__clamp_blacks = not self.__clamp_blacks
+
+        self.__store_gamut_view_visuals_visibility()
+
+        self.__detach_gamut_view_visuals()
+
+        self.__attach_gamut_view_visuals()
+
+        self.__restore_gamut_view_visuals_visibility()
+
+        return True
+
+    def toggle_whites_clamp_action(self):
+        self.__clamp_whites = not self.__clamp_whites
+
+        self.__store_gamut_view_visuals_visibility()
+
+        self.__detach_gamut_view_visuals()
+
+        self.__attach_gamut_view_visuals()
+
+        self.__restore_gamut_view_visuals_visibility()
 
         return True
 
