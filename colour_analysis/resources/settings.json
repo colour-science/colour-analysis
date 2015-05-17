@@ -1,4 +1,16 @@
 {
+  "canvas": {
+    "background_colour": [
+      0.2,
+      0.2,
+      0.2
+    ],
+    "border_colour": [
+      0.3,
+      0.3,
+      0.3
+    ]
+  },
   "actions": {
     "toggle_input_colourspace_visual_visibility": {
       "name": "toggle_input_colourspace_visual_visibility",
@@ -105,6 +117,15 @@
         "key": "5"
       }
     },
+    "cycle_reference_colourspace": {
+      "name": "cycle_reference_colourspace",
+      "description": "Cycle Reference Colourspace.",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "0"
+      }
+    },
     "toggle_axis_visual_visibility": {
       "name": "toggle_axis_visual_visibility",
       "description": "Toggle Axis Visual visibility",
@@ -169,9 +190,9 @@
         "description": "Input Colourspace - Visual Style 3",
         "segments": 16,
         "uniform_colour": [
-          1.0,
-          1.0,
-          1.0
+          0.8,
+          0.8,
+          0.8
         ],
         "uniform_opacity": 1.0,
         "wireframe": true,
@@ -194,9 +215,9 @@
         "uniform_opacity": 0.0,
         "wireframe": true,
         "wireframe_colour": [
-          1.0,
-          1.0,
-          1.0
+          0.8,
+          0.8,
+          0.8
         ],
         "wireframe_opacity": 0.8
       }
@@ -214,9 +235,9 @@
         "uniform_opacity": 0.0,
         "wireframe": true,
         "wireframe_colour": [
-          1.0,
-          1.0,
-          1.0
+          0.8,
+          0.8,
+          0.8
         ],
         "wireframe_opacity": 0.8
       },
@@ -225,9 +246,9 @@
         "description": "Correlate Colourspace - Visual Style 2",
         "segments": 16,
         "uniform_colour": [
-          1.0,
-          1.0,
-          1.0
+          0.8,
+          0.8,
+          0.8
         ],
         "uniform_opacity": 1.0,
         "wireframe": true,

@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 import argparse
 import functools
 import json
-import os
-import sys
 import traceback
 import warnings
 from vispy.app import run
@@ -51,7 +54,7 @@ SYNOPSIS
              [--reference-colourspace REFERENCE_COLOURSPACE]
              [--correlate-colourspace CORRELATE_COLOURSPACE]
              [--settings-file SETTINGS_FILE]
-             [--suppress-warnings SUPPRESS_WARNINGS]
+             [--enable-warnings ENABLE_WARNINGS]
 
 DESCRIPTION
     This tool implements various image analysis tools based on 'Colour',
@@ -93,8 +96,8 @@ ARGUMENTS
         Correlate colourspace, see *input-colourspace* for possible values.
     -s, --settings-file
         Settings file.
-    -w, --suppress-warnings
-        Suppress warnings.
+    -w, --enable-warnings
+        Enable warnings.
 
 EXAMPLES
 """)
@@ -209,12 +212,12 @@ def command_line_arguments():
                         default=None,
                         help='Settings file.')
 
-    parser.add_argument('--suppress-warnings',
+    parser.add_argument('--enable-warnings',
                         '-w',
                         action='store_true',
-                        dest='suppress_warnings',
+                        dest='enable_warnings',
                         default=False,
-                        help='Settings file.')
+                        help='Enable warnings.')
 
     return parser.parse_args()
 
@@ -249,7 +252,7 @@ def main():
         else:
             input_linear = False
 
-    if arguments.suppress_warnings:
+    if not arguments.enable_warnings:
         warnings.filterwarnings("ignore")
 
     Analysis(arguments.input_image,

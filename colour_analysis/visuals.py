@@ -3,6 +3,7 @@
 from __future__ import division
 
 import numpy as np
+from scipy.ndimage.interpolation import zoom
 from vispy.color.color_array import ColorArray
 from vispy.gloo import set_state
 from vispy.scene import Node
@@ -241,14 +242,12 @@ def RGB_scatter_visual(RGB,
                        uniform_opacity=1.0,
                        uniform_edge_colour=None,
                        uniform_edge_opacity=1.0,
-                       maximum_points=10 ** 5,
+                       resampling=10,
                        parent=None):
     colourspace = get_RGB_colourspace(colourspace)
 
     RGB = np.asarray(RGB).reshape((-1, 3))
-
-    if RGB.shape[0] > maximum_points:
-        RGB = RGB[np.random.choice(RGB.shape[0], maximum_points)]
+    RGB = RGB[::resampling]
 
     XYZ = RGB_to_XYZ(
         RGB,

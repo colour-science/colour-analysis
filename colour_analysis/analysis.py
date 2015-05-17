@@ -5,7 +5,7 @@ from __future__ import division
 import json
 import numpy as np
 import os
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict, deque, namedtuple
 from itertools import cycle
 
 from vispy.scene import SceneCanvas
@@ -75,7 +75,10 @@ class Analysis(SceneCanvas):
                  settings=None):
         SceneCanvas.__init__(self,
                              keys='interactive',
-                             title="Colour - Analysis")
+                             title="Colour - Analysis - {0}".format(
+                                 image_path),
+                             bgcolor=settings.get('canvas').get(
+                                 'background_colour'))
 
         self.__image_path = None
         self.image_path = image_path
@@ -122,6 +125,12 @@ class Analysis(SceneCanvas):
         self.__RGB_colourspaces_cycle = cycle(
             [c for c in sorted(RGB_COLOURSPACES)
              if c not in ('aces', 'adobe1998', 'prophoto')])
+
+        reference_colourspaces_deque = deque(REFERENCE_COLOURSPACES)
+        reference_colourspaces_deque.rotate(-REFERENCE_COLOURSPACES.index(
+            self.__reference_colourspace) - 1)
+        self.__reference_colourspaces_cycle = cycle(
+            reference_colourspaces_deque)
 
         self.__initialise_actions_settings()
         self.__initialise_styles_settings()
@@ -547,6 +556,21 @@ class Analysis(SceneCanvas):
 
         self.__detach_axis_visual()
 
+    def __attach_gamut_view_camera(self):
+        camera_settings = self.__cameras_settings['gamut_view'][
+            self.__reference_colourspace]
+
+        self.__gamut_view.camera = TurntableCamera(
+            fov=camera_settings.fov,
+            elevation=camera_settings.elevation,
+            azimuth=camera_settings.azimuth,
+            distance=camera_settings.distance,
+            center=camera_settings.center,
+            up=camera_settings.up)
+
+    def __detach_gamut_view_camera(self):
+        pass
+
     def __attach_image_view_visuals(self):
         self.__image_visual = image_visual(
             self.__create_image_view_image(),
@@ -595,14 +619,16 @@ class Analysis(SceneCanvas):
     def initialise_views(self):
         self.__grid = self.central_widget.add_grid()
 
+        border_colour = self.__settings.get('canvas').get('border_colour')
+
         self.__gamut_view = self.__grid.add_view(row=0, col=0, col_span=2)
-        self.__gamut_view.border_color = (0.5, 0.5, 0.5, 1)
+        self.__gamut_view.border_color = border_colour
 
         self.__diagram_view = self.__grid.add_view(row=1, col=0)
-        self.__diagram_view.border_color = (0.5, 0.5, 0.5, 1)
+        self.__diagram_view.border_color = border_colour
 
         self.__image_view = self.__grid.add_view(row=1, col=1)
-        self.__image_view.border_color = (0.5, 0.5, 0.5, 1)
+        self.__image_view.border_color = border_colour
 
         return True
 
@@ -712,7 +738,19 @@ class Analysis(SceneCanvas):
 
         self.__pointer_gamut_visual.remove_parent(self.__gamut_view.scene)
 
-        self.update()
+        return True
+
+    def cycle_reference_colourspace_action(self):
+
+        self.__reference_colourspace = next(
+            self.__reference_colourspaces_cycle)
+
+        self.__detach_gamut_view_camera()
+        self.__store_gamut_view_visuals_visibility()
+        self.__detach_gamut_view_visuals()
+        self.__attach_gamut_view_visuals()
+        self.__restore_gamut_view_visuals_visibility()
+        self.__attach_gamut_view_camera()
 
         return True
 
@@ -733,11 +771,8 @@ class Analysis(SceneCanvas):
         self.__clamp_blacks = not self.__clamp_blacks
 
         self.__store_gamut_view_visuals_visibility()
-
         self.__detach_gamut_view_visuals()
-
         self.__attach_gamut_view_visuals()
-
         self.__restore_gamut_view_visuals_visibility()
 
         return True
@@ -746,11 +781,8 @@ class Analysis(SceneCanvas):
         self.__clamp_whites = not self.__clamp_whites
 
         self.__store_gamut_view_visuals_visibility()
-
         self.__detach_gamut_view_visuals()
-
         self.__attach_gamut_view_visuals()
-
         self.__restore_gamut_view_visuals_visibility()
 
         return True
