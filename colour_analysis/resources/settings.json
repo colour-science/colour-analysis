@@ -9,6 +9,10 @@
       0.3,
       0.3,
       0.3
+    ],
+    "size": [
+      1280,
+      720
     ]
   },
   "actions": {
@@ -18,7 +22,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "H"
+        "key": "h"
       }
     },
     "print_analysis_state": {
@@ -27,7 +31,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "S"
+        "key": "s"
       }
     },
     "toggle_input_colourspace_visual_visibility": {
@@ -152,22 +156,13 @@
         "key": "6"
       }
     },
-    "fit_image_visual_image": {
-      "name": "fit_image_visual_image",
-      "description": "Fit image",
-      "sequence": {
-        "modifiers": [
-        ],
-        "key": "F"
-      }
-    },
     "toggle_blacks_clamp": {
       "name": "toggle_blacks_clamp",
       "description": "Toggle image blacks clamping",
       "sequence": {
         "modifiers": [
         ],
-        "key": "B"
+        "key": "b"
       }
     },
     "toggle_whites_clamp": {
@@ -176,7 +171,43 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "W"
+        "key": "w"
+      }
+    },
+    "toggle_input_colourspace_out_of_gamut_colours_display": {
+      "name": "toggle_input_colourspace_out_of_gamut_colours_display",
+      "description": "Toggle Input Colourspace out of gamut colours display",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "b"
+      }
+    },
+    "toggle_correlate_colourspace_out_of_gamut_colours_display": {
+      "name": "toggle_correlate_colourspace_out_of_gamut_colours_display",
+      "description": "Toggle Correlate Colourspace out of gamut colours display",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "n"
+      }
+    },
+    "toggle_hdr_colours_display": {
+      "name": "toggle_hdr_colours_display",
+      "description": "Toggle HDR colours display",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "m"
+      }
+    },
+    "fit_image_visual_image": {
+      "name": "fit_image_visual_image",
+      "description": "Fit image",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "f"
       }
     }
   },
@@ -186,6 +217,7 @@
         {
           "name": "input_colourspace_visual_style_1",
           "description": "Input Colourspace - Visual Style 1",
+          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -196,6 +228,7 @@
         {
           "name": "input_colourspace_visual_style_2",
           "description": "Input Colourspace - Visual Style 2",
+          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -206,6 +239,7 @@
         {
           "name": "input_colourspace_visual_style_3",
           "description": "Input Colourspace - Visual Style 3",
+          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
             0.8,
@@ -224,6 +258,7 @@
         {
           "name": "input_colourspace_visual_style_4",
           "description": "Input Colourspace - Visual Style 4",
+          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
             0.0,
@@ -244,6 +279,7 @@
         {
           "name": "correlate_colourspace_visual_style_1",
           "description": "Correlate Colourspace - Visual Style 1",
+          "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
             0.0,
@@ -262,6 +298,7 @@
         {
           "name": "correlate_colourspace_visual_style_2",
           "description": "Correlate Colourspace - Visual Style 2",
+          "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
             0.8,
@@ -280,6 +317,7 @@
         {
           "name": "correlate_colourspace_visual_style_3",
           "description": "Correlate Colourspace - Visual Style 3",
+          "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -290,6 +328,7 @@
         {
           "name": "correlate_colourspace_visual_style_4",
           "description": "Correlate Colourspace - Visual Style 4",
+          "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -407,6 +446,50 @@
         ],
         "up": "+z"
       }
+    }
+  },
+  "axis": {
+    "CIE XYZ": {
+      "name": "axis_CIE_XYZ",
+      "description": "Axis - CIE XYZ",
+      "reference_colourspace": "CIE XYZ",
+      "scale": 1.0
+    },
+    "CIE xyY": {
+      "name": "axis_CIE_xyY",
+      "description": "Axis - CIE xyY",
+      "reference_colourspace": "CIE xyY",
+      "scale": 1.0
+    },
+    "CIE Lab": {
+      "name": "axis_CIE_Lab",
+      "description": "Axis - CIE Lab",
+      "reference_colourspace": "CIE Lab",
+      "scale": 100.0
+    },
+    "CIE Luv": {
+      "name": "axis_CIE_Luv",
+      "description": "Axis - CIE Luv",
+      "reference_colourspace": "CIE Luv",
+      "scale": 100.0
+    },
+    "CIE UCS": {
+      "name": "axis_CIE_UCS",
+      "description": "Axis - CIE UCS",
+      "reference_colourspace": "CIE UCS",
+      "scale": 1.0
+    },
+    "CIE UVW": {
+      "name": "axis_CIE_UVW",
+      "description": "Axis - CIE UVW",
+      "reference_colourspace": "CIE UVW",
+      "scale": 100.0
+    },
+    "IPT": {
+      "name": "axis_CIE_UVW",
+      "description": "Axis - IPT",
+      "reference_colourspace": "IPT",
+      "scale": 1.0
     }
   }
 }

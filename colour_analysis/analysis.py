@@ -5,7 +5,7 @@ from __future__ import division
 import json
 import numpy as np
 import os
-from collections import OrderedDict, deque, namedtuple
+from collections import deque, namedtuple
 from itertools import cycle
 
 from vispy.scene import SceneCanvas
@@ -33,12 +33,12 @@ class Analysis(SceneCanvas):
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
                  settings=None):
-        SceneCanvas.__init__(self,
-                             keys='interactive',
-                             title="Colour Analysis - {0}".format(
-                                 image_path),
-                             bgcolor=settings.get('canvas').get(
-                                 'background_colour'))
+        SceneCanvas.__init__(
+            self,
+            keys='interactive',
+            title="Colour Analysis - {0}".format(image_path),
+            size=settings.get('canvas').get('size'),
+            bgcolor=settings.get('canvas').get('background_colour'))
 
         self.__image_path = None
         self.image_path = image_path
@@ -336,8 +336,9 @@ class Analysis(SceneCanvas):
             '"{0}" attribute is read only!'.format('settings'))
 
     def on_key_press(self, event):
-        key = event.key.name
-        modifiers = sorted([modifier.name for modifier in event.modifiers])
+        key = event.key.name.lower()
+        modifiers = sorted([modifier.name.lower()
+                            for modifier in event.modifiers])
         for action in self.__actions.values():
             if (key == action.sequence.key and
                         modifiers == sorted(action.sequence.modifiers)):
@@ -391,6 +392,8 @@ class Analysis(SceneCanvas):
         self.__image_view = ImageView(
             image=self.__image,
             oecf=self.__input_oecf,
+            input_colourspace=self.__input_colourspace,
+            correlate_colourspace=self.__correlate_colourspace,
             border_color=border_colour)
         self.__grid.add_widget(self.__image_view, row=0, col=1)
 
@@ -420,7 +423,6 @@ class Analysis(SceneCanvas):
         return True
 
     def print_analysis_state_action(self):
-
         state = []
         state.append('- Input image: {0}'.format(
             self.__image_path))
@@ -446,7 +448,6 @@ class Analysis(SceneCanvas):
         return True
 
     def cycle_reference_colourspace_action(self):
-
         self.__reference_colourspace = next(
             self.__reference_colourspaces_cycle)
 

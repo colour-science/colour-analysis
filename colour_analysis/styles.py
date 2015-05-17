@@ -4,6 +4,7 @@ from __future__ import division
 
 import numpy as np
 
+
 class Styles(object):
     def __init__(self, styles):
         self.__styles = styles

@@ -3,7 +3,6 @@
 from __future__ import division
 
 import numpy as np
-from scipy.ndimage.interpolation import zoom
 from vispy.color.color_array import ColorArray
 from vispy.gloo import set_state
 from vispy.scene import Node
@@ -13,6 +12,7 @@ from vispy.scene.visuals import (
     Markers,
     XYZAxis,
     create_visual_node)
+from vispy.visuals.line import LineVisual
 from vispy.visuals.mesh import MeshVisual
 
 from colour_analysis.geometry import plane, box
@@ -147,6 +147,33 @@ class PointsVisual(Markers):
             parent.add(self)
 
 
+class AxisVisual(LineVisual):
+    def __init__(self, scale=1.0, **kwargs):
+        vertices = np.array([[0, 0, 0],
+                             [1, 0, 0],
+                             [0, 0, 0],
+                             [0, 1, 0],
+                             [0, 0, 0],
+                             [0, 0, 1]])
+        vertices *= scale
+        colour = np.array([[1, 0, 0, 1],
+                           [1, 0, 0, 1],
+                           [0, 1, 0, 1],
+                           [0, 1, 0, 1],
+                           [0, 0, 1, 1],
+                           [0, 0, 1, 1]])
+
+        LineVisual.__init__(self,
+                            pos=vertices,
+                            color=colour,
+                            connect='segments',
+                            method='gl',
+                            **kwargs)
+
+
+Axis = create_visual_node(AxisVisual)
+
+
 def RGB_identity_cube(width_segments=16,
                       height_segments=16,
                       depth_segments=16,
@@ -183,7 +210,7 @@ def RGB_identity_cube(width_segments=16,
     return RGB_box
 
 
-def RGB_colourspace_gamut_visual(colourspace='Rec. 709',
+def RGB_colourspace_visual(colourspace='Rec. 709',
                                  reference_colourspace='CIE xyY',
                                  segments=16,
                                  uniform_colour=None,
@@ -317,5 +344,5 @@ def image_visual(image,
     return Image(image, parent=parent)
 
 
-def axis_visual(parent=None):
-    return XYZAxis(parent=parent)
+def axis_visual(scale=1.0, parent=None):
+    return Axis(scale=scale, parent=parent)

@@ -7,20 +7,34 @@ import numpy as np
 from vispy.scene.cameras import PanZoomCamera
 from vispy.scene.widgets.viewbox import ViewBox
 
-from colour import RGB_COLOURSPACES
+from colour import RGB_COLOURSPACES, RGB_to_RGB
+
 from colour_analysis.visuals import image_visual
 
 
 class ImageView(ViewBox):
-    def __init__(self, image=None, oecf=None, **kwargs):
+    def __init__(self,
+                 image=None,
+                 oecf='Rec. 709',
+                 input_colourspace='Rec. 709',
+                 correlate_colourspace='ACEScg',
+                 **kwargs):
         ViewBox.__init__(self, **kwargs)
 
         self.__image = None
         self.image = image
         self.__oecf = None
         self.oecf = oecf
+        self.__input_colourspace = None
+        self.input_colourspace = input_colourspace
+        self.__correlate_colourspace = None
+        self.correlate_colourspace = correlate_colourspace
 
         self.__image_visual = None
+
+        self.__display_input_colourspace_out_of_gamut = False
+        self.__display_correlate_colourspace_out_of_gamut = False
+        self.__display_hdr_colours = False
 
         self.initialise_visuals()
         self.initialise_camera()
@@ -89,10 +103,96 @@ class ImageView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__oecf = value
 
+    @property
+    def input_colourspace(self):
+        """
+        Property for **self.__input_colourspace** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__input_colourspace.
+        """
+
+        return self.__input_colourspace
+
+    @input_colourspace.setter
+    def input_colourspace(self, value):
+        """
+        Setter for **self.__input_colourspace** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (str, unicode), (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"str" or "unicode"!').format('input_colourspace', value))
+            assert value in RGB_COLOURSPACES, (
+                '"{0}" colourspace not found in factory RGB colourspaces: '
+                '"{1}".').format(
+                value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+        self.__input_colourspace = value
+
+    @property
+    def correlate_colourspace(self):
+        """
+        Property for **self.__correlate_colourspace** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__correlate_colourspace.
+        """
+
+        return self.__correlate_colourspace
+
+    @correlate_colourspace.setter
+    def correlate_colourspace(self, value):
+        """
+        Setter for **self.__correlate_colourspace** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (str, unicode), (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"str" or "unicode"!').format('correlate_colourspace', value))
+            assert value in RGB_COLOURSPACES, (
+                '"{0}" colourspace not found in factory RGB colourspaces: '
+                '"{1}".').format(value, ', '.join(
+                sorted(RGB_COLOURSPACES.keys())))
+        self.__correlate_colourspace = value
+
     def __create_image(self):
         colourspace = RGB_COLOURSPACES[self.__oecf]
+        image = np.copy(self.__image)
 
-        return colourspace.transfer_function(self.__image)
+        if self.__display_correlate_colourspace_out_of_gamut:
+            image = RGB_to_RGB(image,
+                               RGB_COLOURSPACES[self.__input_colourspace],
+                               RGB_COLOURSPACES[self.__correlate_colourspace])
+
+            colourspace = RGB_COLOURSPACES[self.__oecf]
+
+        if (self.__display_input_colourspace_out_of_gamut or
+                self.__display_correlate_colourspace_out_of_gamut):
+            image[image > 0] = 0
+            image[image < 0] = 1
+
+        if self.__display_hdr_colours:
+            image[image <= 1] = 0
+
+        oecf = colourspace.transfer_function
+
+        return oecf(image)
 
     def __attach_visuals(self):
         self.__image_visual = image_visual(
@@ -116,6 +216,48 @@ class ImageView(ViewBox):
 
     def initialise_camera(self):
         self.__attach_camera()
+
+        return True
+
+    def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
+        self.__display_input_colourspace_out_of_gamut = (
+            not self.__display_input_colourspace_out_of_gamut)
+
+        if self.__display_input_colourspace_out_of_gamut:
+            self.__display_correlate_colourspace_out_of_gamut = False
+            self.__display_hdr_colours = False
+
+        self.__detach_visuals()
+
+        self.__attach_visuals()
+
+        return True
+
+    def toggle_correlate_colourspace_out_of_gamut_colours_display_action(self):
+        self.__display_correlate_colourspace_out_of_gamut = (
+            not self.__display_correlate_colourspace_out_of_gamut)
+
+        if self.__display_correlate_colourspace_out_of_gamut:
+            self.__display_input_colourspace_out_of_gamut = False
+            self.__display_hdr_colours = False
+
+        self.__detach_visuals()
+
+        self.__attach_visuals()
+
+        return True
+
+    def toggle_hdr_colours_display_action(self):
+        self.__display_hdr_colours = (
+            not self.__display_hdr_colours)
+
+        if self.__display_hdr_colours:
+            self.__display_input_colourspace_out_of_gamut = False
+            self.__display_correlate_colourspace_out_of_gamut = False
+
+        self.__detach_visuals()
+
+        self.__attach_visuals()
 
         return True
 

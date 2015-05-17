@@ -12,13 +12,13 @@ from colour import RGB_COLOURSPACES
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.styles import Styles
 from colour_analysis.visuals import (
-    RGB_colourspace_gamut_visual,
+    RGB_colourspace_visual,
     RGB_scatter_visual,
     axis_visual,
     spectral_locus_visual)
 
-GamutViewCamera = namedtuple(
-    'GamutViewCamera',
+CameraPreset = namedtuple(
+    'CameraPreset',
     ('name',
      'description',
      'reference_colourspace',
@@ -29,8 +29,8 @@ GamutViewCamera = namedtuple(
      'center',
      'up'))
 
-RGB_colourspace_gamut_visual_style = namedtuple(
-    'RGB_colourspace_gamut_visual_style',
+RGB_colourspaceVisualPreset = namedtuple(
+    'RGB_colourspaceVisualPreset',
     ('name',
      'description',
      'uniform_colour',
@@ -38,6 +38,13 @@ RGB_colourspace_gamut_visual_style = namedtuple(
      'wireframe',
      'wireframe_colour',
      'wireframe_opacity'))
+
+AxisPreset = namedtuple(
+    'AxisPreset',
+    ('name',
+     'description',
+     'reference_colourspace',
+     'scale'))
 
 
 class GamutView(ViewBox):
@@ -61,6 +68,10 @@ class GamutView(ViewBox):
 
         self.__settings = None
         self.settings = settings
+
+        self.__camera_presets = None
+        self.__visuals_style_presets = None
+        self.__axis_presets = None
 
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
@@ -244,44 +255,52 @@ class GamutView(ViewBox):
     def __initialise_camera_presets(self):
         self.__camera_presets = {}
 
-        for view, cameras in self.__settings.get('cameras', ()).items():
-            if view == 'gamut_view':
-                self.__camera_presets['gamut_view'] = {}
-
-                for camera in cameras.values():
-                    self.__camera_presets[view][camera.get(
-                        'reference_colourspace')] = GamutViewCamera(
-                        name=camera.get('name'),
-                        description=camera.get('description'),
-                        reference_colourspace=camera.get(
-                            'reference_colourspace'),
-                        fov=camera.get('fov'),
-                        elevation=camera.get('elevation'),
-                        azimuth=camera.get('azimuth'),
-                        distance=camera.get('distance'),
-                        center=camera.get('center'),
-                        up=camera.get('up'))
+        cameras = self.__settings['cameras']['gamut_view'].values()
+        for camera in cameras:
+            self.__camera_presets[camera['reference_colourspace']] = (
+                CameraPreset(
+                    name=camera['name'],
+                    description=camera['description'],
+                    reference_colourspace=camera['reference_colourspace'],
+                    fov=camera['fov'],
+                    elevation=camera['elevation'],
+                    azimuth=camera['azimuth'],
+                    distance=camera['distance'],
+                    center=camera['center'],
+                    up=camera['up']))
 
     def __initialise_visuals_style_presets(self):
         self.__visuals_style_presets = OrderedDict()
 
-        gamut_view_settings = self.__settings.get('styles').get('gamut_view')
-        for visual, styles in gamut_view_settings.items():
+        visuals_style_settings = self.__settings['styles']['gamut_view']
+        for visual, styles in visuals_style_settings.items():
             self.__visuals_style_presets[visual] = []
 
             for style in styles:
-                self.__visuals_style_presets[visual].append(
-                    RGB_colourspace_gamut_visual_style(
-                        name=style.get('name'),
-                        description=style.get('description'),
-                        uniform_colour=style.get('uniform_colour'),
-                        uniform_opacity=style.get('uniform_opacity'),
-                        wireframe=style.get('wireframe'),
-                        wireframe_colour=style.get('wireframe_colour'),
-                        wireframe_opacity=style.get('wireframe_opacity')))
+                self.__visuals_style_presets[style['visual']].append(
+                    RGB_colourspaceVisualPreset(
+                        name=style['name'],
+                        description=style['description'],
+                        uniform_colour=style['uniform_colour'],
+                        uniform_opacity=style['uniform_opacity'],
+                        wireframe=style['wireframe'],
+                        wireframe_colour=style['wireframe_colour'],
+                        wireframe_opacity=style['wireframe_opacity']))
 
             self.__visuals_style_presets[visual] = Styles(
                 self.__visuals_style_presets[visual])
+
+    def __initialise_axis_presets(self):
+        self.__axis_presets = {}
+
+        axis_presets = self.__settings['axis'].values()
+        for axis in axis_presets:
+            self.__axis_presets[axis['reference_colourspace']] = (
+                AxisPreset(
+                    name=axis['name'],
+                    description=axis['description'],
+                    reference_colourspace=axis['reference_colourspace'],
+                    scale=axis['scale']))
 
     def __create_RGB_scatter_image(self):
         image = self.__image
@@ -295,7 +314,7 @@ class GamutView(ViewBox):
         return image
 
     def __create_colourspace_visual(self, style, colourspace=None):
-        return RGB_colourspace_gamut_visual(
+        return RGB_colourspace_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
             uniform_colour=style.uniform_colour,
@@ -342,7 +361,10 @@ class GamutView(ViewBox):
         self.__spectral_locus_visual.remove_parent(self.scene)
 
     def __attach_axis_visual(self):
-        self.__axis_visual = axis_visual(parent=self.scene)
+        self.__axis_visual = axis_visual(
+            scale=self.__axis_presets[
+                self.__reference_colourspace].scale,
+            parent=self.scene)
 
     def __detach_axis_visual(self):
         self.__axis_visual.remove_parent(self.scene)
@@ -374,8 +396,7 @@ class GamutView(ViewBox):
         self.__detach_axis_visual()
 
     def __attach_camera(self):
-        camera_settings = self.__camera_presets['gamut_view'][
-            self.__reference_colourspace]
+        camera_settings = self.__camera_presets[self.__reference_colourspace]
 
         self.camera = TurntableCamera(
             fov=camera_settings.fov,
@@ -418,6 +439,7 @@ class GamutView(ViewBox):
     def initialise_presets(self):
         self.__initialise_camera_presets()
         self.__initialise_visuals_style_presets()
+        self.__initialise_axis_presets()
 
         return True
 
