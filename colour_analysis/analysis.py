@@ -11,7 +11,7 @@ from itertools import cycle
 from vispy.scene import SceneCanvas
 from vispy.scene.cameras import PanZoomCamera, TurntableCamera
 
-from colour import RGB_COLOURSPACES, read_image
+from colour import RGB_COLOURSPACES, message_box, read_image
 
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
@@ -75,7 +75,7 @@ class Analysis(SceneCanvas):
                  settings=None):
         SceneCanvas.__init__(self,
                              keys='interactive',
-                             title="Colour - Analysis - {0}".format(
+                             title="Colour Analysis - {0}".format(
                                  image_path),
                              bgcolor=settings.get('canvas').get(
                                  'background_colour'))
@@ -108,8 +108,8 @@ class Analysis(SceneCanvas):
 
         self.__grid = None
         self.__gamut_view = None
-        self.__diagram_view = None
         self.__image_view = None
+        self.__diagram_view = None
 
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
@@ -621,14 +621,14 @@ class Analysis(SceneCanvas):
 
         border_colour = self.__settings.get('canvas').get('border_colour')
 
-        self.__gamut_view = self.__grid.add_view(row=0, col=0, col_span=2)
+        self.__gamut_view = self.__grid.add_view(row=0, col=0, row_span=2)
         self.__gamut_view.border_color = border_colour
 
-        self.__diagram_view = self.__grid.add_view(row=1, col=0)
-        self.__diagram_view.border_color = border_colour
-
-        self.__image_view = self.__grid.add_view(row=1, col=1)
+        self.__image_view = self.__grid.add_view(row=0, col=1)
         self.__image_view.border_color = border_colour
+
+        self.__diagram_view = self.__grid.add_view(row=1, col=1)
+        self.__diagram_view.border_color = border_colour
 
         return True
 
@@ -658,6 +658,43 @@ class Analysis(SceneCanvas):
         self.__image_view.camera.flip = (False, True, False)
 
         return True
+
+    def print_actions_action(self):
+        actions = []
+        for _name, action in sorted(self.__actions_settings.items()):
+            if action.sequence.modifiers:
+                sequence = '{0} + {1}'.format(
+                    ' + '.join(action.sequence.modifiers),
+                    action.sequence.key)
+            else:
+                sequence = '{0}'.format(action.sequence.key)
+            actions.append('- {0}: {1}'.format(action.description, sequence))
+
+        message_box('Actions & Shortcuts\n\n{0}'.format(
+            '\n'.join(actions)))
+
+        return True
+
+    def print_analysis_state_action(self):
+
+        state = []
+        state.append('- Input image: {0}'.format(
+            self.__image_path))
+        state.append('- Input RGB colourspace: {0}'.format(
+            self.__input_colourspace))
+        state.append('- Input OECF: {0}'.format(
+            self.__input_oecf))
+        state.append('- Input linearity: {0}'.format(
+            self.__input_linear))
+        state.append('- Reference colourspace: {0}'.format(
+            self.__reference_colourspace))
+        state.append('- Correlate RGB colourspace: {0}'.format(
+            self.__correlate_colourspace))
+        message_box('Analysis State\n\n{0}'.format(
+            '\n'.join(state)))
+
+        return True
+
 
     def toggle_input_colourspace_visual_visibility_action(self):
         for visual in self.__input_colourspace_visual.children:

@@ -12,6 +12,24 @@
     ]
   },
   "actions": {
+    "print_actions": {
+      "name": "print_actions",
+      "description": "Print actions",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "H"
+      }
+    },
+    "print_analysis_state": {
+      "name": "print_analysis_state",
+      "description": "Print analysis state",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "S"
+      }
+    },
     "toggle_input_colourspace_visual_visibility": {
       "name": "toggle_input_colourspace_visual_visibility",
       "description": "Toggle Input Colourspace Visual visibility",
@@ -307,8 +325,8 @@
         "azimuth": 30,
         "distance": 2.0,
         "center": [
-          0.5,
-          0.5,
+          0.3,
+          0.3,
           0.5
         ],
         "up": "+z"
