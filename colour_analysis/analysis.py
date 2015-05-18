@@ -15,8 +15,8 @@ from colour import RGB_COLOURSPACES, message_box, read_image
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
 
-from colour_analysis.views.gamut_view import GamutView
-from colour_analysis.views.image_view import ImageView
+from colour_analysis.views import GamutView
+from colour_analysis.views import ImageView
 
 
 Sequence = namedtuple(

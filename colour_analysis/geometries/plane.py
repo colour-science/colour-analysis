@@ -5,11 +5,11 @@ from __future__ import division
 import numpy as np
 
 
-def plane(width=1,
-          height=1,
-          width_segments=1,
-          height_segments=1,
-          direction='+z'):
+def plane_geometry(width=1,
+                   height=1,
+                   width_segments=1,
+                   height_segments=1,
+                   direction='+z'):
     x_grid = width_segments
     y_grid = height_segments
 
