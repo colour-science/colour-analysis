@@ -15,7 +15,8 @@ from colour_analysis.visuals import (
     RGB_colourspace_visual,
     RGB_scatter_visual,
     axis_visual,
-    spectral_locus_visual)
+    spectral_locus_visual,
+    pointer_gamut_visual)
 
 CameraPreset = namedtuple(
     'CameraPreset',
@@ -86,9 +87,9 @@ class GamutView(ViewBox):
 
         self.__visuals_visibility = None
 
-        self.initialise_presets()
-        self.initialise_visuals()
-        self.initialise_camera()
+        self.__initialise_presets()
+        self.__initialise_visuals()
+        self.__initialise_camera()
 
     @property
     def image(self):
@@ -356,6 +357,14 @@ class GamutView(ViewBox):
     def __detach_spectral_locus_visual(self):
         self.__spectral_locus_visual.remove_parent(self.scene)
 
+    def __attach_pointer_gamut_visual(self):
+        self.__pointer_gamut_visual = pointer_gamut_visual(
+            reference_colourspace=self.__reference_colourspace,
+            parent=self)
+
+    def __detach_pointer_gamut_visual(self):
+        self.__pointer_gamut_visual.remove_parent(self.scene)
+
     def __attach_axis_visual(self):
         self.__axis_visual = axis_visual(
             scale=self.__axis_presets[
@@ -367,6 +376,8 @@ class GamutView(ViewBox):
 
     def __attach_visuals(self):
         self.__attach_RGB_scatter_visual(self.__create_RGB_scatter_image())
+
+        self.__attach_pointer_gamut_visual()
 
         self.__attach_input_colourspace_visual(
             self.__visuals_style_presets[
@@ -382,6 +393,8 @@ class GamutView(ViewBox):
 
     def __detach_visuals(self):
         self.__detach_RGB_scatter_visual()
+
+        self.__detach_pointer_gamut_visual()
 
         self.__detach_input_colourspace_visual()
 
@@ -410,6 +423,8 @@ class GamutView(ViewBox):
         visible = OrderedDict()
         visible['RGB_scatter_visual'] = (
             self.__RGB_scatter_visual.visible)
+        visible['pointer_gamut_visual'] = (
+            self.__pointer_gamut_visual.visible)
         visible['input_colourspace_visual'] = (
             self.__input_colourspace_visual.children[0].visible)
         visible['correlate_colourspace_visual'] = (
@@ -425,6 +440,7 @@ class GamutView(ViewBox):
         visible = self.__visuals_visibility
 
         self.__RGB_scatter_visual.visible = visible['RGB_scatter_visual']
+        self.__pointer_gamut_visual.visible = visible['pointer_gamut_visual']
         for visual in self.__input_colourspace_visual.children:
             visual.visible = visible['input_colourspace_visual']
         for visual in self.__correlate_colourspace_visual.children:
@@ -433,19 +449,27 @@ class GamutView(ViewBox):
             visible['spectral_locus_visual'])
         self.__axis_visual.visible = visible['axis_visual']
 
-    def initialise_presets(self):
+    def __update_visuals(self):
+        self.__store_visuals_visibility()
+        self.__detach_visuals()
+        self.__attach_visuals()
+        self.__restore_visuals_visibility()
+
+        return True
+
+    def __initialise_presets(self):
         self.__initialise_camera_presets()
         self.__initialise_visuals_style_presets()
         self.__initialise_axis_presets()
 
         return True
 
-    def initialise_camera(self):
+    def __initialise_camera(self):
         self.__attach_camera()
 
         return True
 
-    def initialise_visuals(self):
+    def __initialise_visuals(self):
         self.__attach_visuals()
 
         return True
@@ -463,6 +487,9 @@ class GamutView(ViewBox):
             self.__visuals_style_presets[
                 'input_colourspace_visual'].next_style())
 
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
+
         return True
 
     def toggle_correlate_colourspace_visual_visibility_action(self):
@@ -478,6 +505,9 @@ class GamutView(ViewBox):
             self.__visuals_style_presets[
                 'correlate_colourspace_visual'].next_style())
 
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
+
         return True
 
     def toggle_spectral_locus_visual_visibility_action(self):
@@ -489,6 +519,9 @@ class GamutView(ViewBox):
         self.__detach_spectral_locus_visual()
 
         self.__attach_spectral_locus_visual()
+
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
 
         return True
 
@@ -503,22 +536,24 @@ class GamutView(ViewBox):
 
         self.__attach_RGB_scatter_visual(self.__create_RGB_scatter_image())
 
-        self.update()
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
 
         return True
 
     def toggle_pointer_gamut_visual_visibility_action(self):
-        # TODO: Implement definition.
-
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
 
         return True
 
     def cycle_pointer_gamut_visual_style_action(self):
-        # TODO: Implement definition.
+        self.__detach_pointer_gamut_visual()
 
-        self.__pointer_gamut_visual.remove_parent(self.scene)
+        self.__attach_pointer_gamut_visual()
+
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
 
         return True
 
@@ -529,14 +564,14 @@ class GamutView(ViewBox):
             self.__visuals_style_presets[
                 'correlate_colourspace_visual'].current_style())
 
+        # TODO: Remove statement when redraw issues are fixed.
+        self.__update_visuals()
+
         return True
 
     def cycle_reference_colourspace_action(self):
         self.__detach_camera()
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
+        self.__update_visuals()
         self.__attach_camera()
 
         return True
@@ -550,19 +585,13 @@ class GamutView(ViewBox):
     def toggle_blacks_clamp_action(self):
         self.__clamp_blacks = not self.__clamp_blacks
 
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
+        self.__update_visuals()
 
         return True
 
     def toggle_whites_clamp_action(self):
         self.__clamp_whites = not self.__clamp_whites
 
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
+        self.__update_visuals()
 
         return True

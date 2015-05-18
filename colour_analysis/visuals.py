@@ -17,13 +17,23 @@ from vispy.visuals.mesh import MeshVisual
 
 from colour_analysis.geometry import plane, box
 
-from colour import RGB_to_XYZ, XYZ_to_sRGB
+from colour import (
+    Lab_to_XYZ,
+    LCHab_to_Lab,
+    POINTER_GAMUT_BOUNDARIES,
+    POINTER_GAMUT_DATA,
+    POINTER_GAMUT_ILLUMINANT,
+    RGB_to_XYZ,
+    XYZ_to_sRGB)
 
 from colour_analysis.common import (
     XYZ_to_reference_colourspace,
     get_cmfs,
     get_RGB_colourspace)
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
+
+POINTER_GAMUT_DATA = Lab_to_XYZ(LCHab_to_Lab(POINTER_GAMUT_DATA),
+                                POINTER_GAMUT_ILLUMINANT)
 
 
 class PrimitiveVisual(MeshVisual):
@@ -126,8 +136,9 @@ class BoxVisual(PrimitiveVisual):
 Box = create_visual_node(BoxVisual)
 
 
-class PointsVisual(Markers):
+class Symbol(Markers):
     def __init__(self,
+                 symbol='disc',
                  points=None,
                  size=4.0,
                  edge_size=0.5,
@@ -141,7 +152,7 @@ class PointsVisual(Markers):
                       edge_width=edge_size,
                       face_color=face_color,
                       edge_color=edge_color)
-        self.set_symbol('disc')
+        self.set_symbol(symbol)
 
         if parent is not None:
             parent.add(self)
@@ -211,14 +222,14 @@ def RGB_identity_cube(width_segments=16,
 
 
 def RGB_colourspace_visual(colourspace='Rec. 709',
-                                 reference_colourspace='CIE xyY',
-                                 segments=16,
-                                 uniform_colour=None,
-                                 uniform_opacity=0.5,
-                                 wireframe=True,
-                                 wireframe_colour=None,
-                                 wireframe_opacity=1.0,
-                                 parent=None):
+                           reference_colourspace='CIE xyY',
+                           segments=16,
+                           uniform_colour=None,
+                           uniform_opacity=0.5,
+                           wireframe=True,
+                           wireframe_colour=None,
+                           wireframe_opacity=1.0,
+                           parent=None):
     node = Node(parent)
 
     colourspace = get_RGB_colourspace(colourspace)
@@ -299,12 +310,13 @@ def RGB_scatter_visual(RGB,
         RGB_e = ColorArray(uniform_edge_colour,
                            alpha=uniform_edge_opacity).rgba
 
-    markers = PointsVisual(points=points,
-                           size=size,
-                           edge_size=edge_size,
-                           face_color=RGB,
-                           edge_color=RGB_e,
-                           parent=parent)
+    markers = Symbol(symbol='disc',
+                     points=points,
+                     size=size,
+                     edge_size=edge_size,
+                     face_color=RGB,
+                     edge_color=RGB_e,
+                     parent=parent)
 
     return markers
 
@@ -335,6 +347,32 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     line = Line(points, np.clip(RGB, 0, 1), width=width, parent=parent)
 
     return line
+
+
+def pointer_gamut_visual(reference_colourspace='CIE xyY',
+                         size=8.0,
+                         edge_size=0.5,
+                         uniform_colour=(0.8, 0.8, 0.8),
+                         uniform_opacity=1.0,
+                         uniform_edge_colour=(0.8, 0.8, 0.8),
+                         uniform_edge_opacity=1.0,
+                         parent=None):
+    points = XYZ_to_reference_colourspace(POINTER_GAMUT_DATA,
+                                          POINTER_GAMUT_ILLUMINANT,
+                                          reference_colourspace)
+
+    RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+    RGB_e = ColorArray(uniform_edge_colour, alpha=uniform_edge_opacity).rgba
+
+    markers = Symbol(symbol='cross',
+                     points=points,
+                     size=size,
+                     edge_size=edge_size,
+                     face_color=RGB,
+                     edge_color=RGB_e,
+                     parent=parent)
+
+    return markers
 
 
 def image_visual(image,

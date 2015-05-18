@@ -36,8 +36,8 @@ class ImageView(ViewBox):
         self.__display_correlate_colourspace_out_of_gamut = False
         self.__display_hdr_colours = False
 
-        self.initialise_visuals()
-        self.initialise_camera()
+        self.__initialise_visuals()
+        self.__initialise_camera()
 
     @property
     def image(self):
@@ -209,12 +209,12 @@ class ImageView(ViewBox):
     def __detach_camera(self):
         pass
 
-    def initialise_visuals(self):
+    def __initialise_visuals(self):
         self.__attach_visuals()
 
         return True
 
-    def initialise_camera(self):
+    def __initialise_camera(self):
         self.__attach_camera()
 
         return True
