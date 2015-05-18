@@ -5,7 +5,7 @@ from __future__ import division
 import json
 import numpy as np
 import os
-from collections import deque, namedtuple
+from collections import OrderedDict, deque, namedtuple
 from itertools import cycle
 
 from vispy.scene import SceneCanvas
@@ -15,13 +15,36 @@ from colour import RGB_COLOURSPACES, message_box, read_image
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
 
-from colour_analysis.gamut_view import GamutView
-from colour_analysis.image_view import ImageView
+from colour_analysis.views.gamut_view import GamutView
+from colour_analysis.views.image_view import ImageView
 
 
-Sequence = namedtuple('Sequence', ('modifiers', 'key'))
+Sequence = namedtuple(
+    'Sequence',
+    ('modifiers',
+     'key'))
 
-Action = namedtuple('Action', ('name', 'description', 'sequence'))
+Action = namedtuple(
+    'Action',
+    ('name',
+     'description',
+     'sequence'))
+
+ViewPreset = namedtuple(
+    'ViewPreset',
+    ('name',
+     'description',
+     'view',
+     'row',
+     'column',
+     'row_span',
+     'column_span'))
+
+LayoutPreset = namedtuple(
+    'LayoutPreset',
+    ('name',
+     'description',
+     'views'))
 
 
 class Analysis(SceneCanvas):
@@ -58,13 +81,14 @@ class Analysis(SceneCanvas):
                            if settings is None else
                            settings)
 
+        self.__layout_presets = []
         self.__actions = {}
 
-        self.__grid = None
         self.__gamut_view = None
         self.__image_view = None
-        self.__diagram_view = None
         self.__views = None
+
+        self.__grid = None
 
         self.__RGB_colourspaces_cycle = cycle(
             [c for c in sorted(RGB_COLOURSPACES)
@@ -76,9 +100,11 @@ class Analysis(SceneCanvas):
         self.__reference_colourspaces_cycle = cycle(
             reference_colourspaces_deque)
 
-        self.initialise_actions()
-        self.initialise_image()
-        self.initialise_views()
+        self.__create_layout_presets()
+        self.__create_actions()
+        self.__create_image()
+        self.__create_views()
+        self.__layout_views()
 
         self.show()
 
@@ -107,6 +133,9 @@ class Analysis(SceneCanvas):
         """
 
         if value is not None:
+            assert type(value) in (str, unicode), (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"str" or "unicode"!').format('image_path', value))
             assert os.path.exists(value), (
                 '"{0}" input image doesn\'t exists!'.format(value))
         self.__image_path = value
@@ -335,6 +364,58 @@ class Analysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('settings'))
 
+    @property
+    def gamut_view(self):
+        """
+        Property for **self.gamut_view** attribute.
+
+        Returns
+        -------
+        ViewBox
+        """
+
+        return self.__gamut_view
+
+    @gamut_view.setter
+    def gamut_view(self, value):
+        """
+        Setter for **self.gamut_view** attribute.
+
+        Parameters
+        ----------
+        value : ViewBox
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('gamut_view'))
+
+    @property
+    def image_view(self):
+        """
+        Property for **self.image_view** attribute.
+
+        Returns
+        -------
+        ViewBox
+        """
+
+        return self.__image_view
+
+    @image_view.setter
+    def image_view(self, value):
+        """
+        Setter for **self.image_view** attribute.
+
+        Parameters
+        ----------
+        value : ViewBox
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('image_view'))
+
     def on_key_press(self, event):
         key = event.key.name.lower()
         modifiers = sorted([modifier.name.lower()
@@ -349,7 +430,28 @@ class Analysis(SceneCanvas):
                 for view in self.__views:
                     hasattr(view, method) and getattr(view, method)()
 
-    def initialise_image(self):
+    def __create_layout_presets(self):
+        layouts = self.__settings['layouts']
+        for layout in layouts:
+            views = {}
+            for name, view in layout['views'].items():
+                views[name] = ViewPreset(
+                    name=view['name'],
+                    description=view['description'],
+                    view=view['view'],
+                    row=view['row'],
+                    column=view['column'],
+                    row_span=view['row_span'],
+                    column_span=view['column_span'])
+
+            self.__layout_presets.append(LayoutPreset(
+                name=layout['name'],
+                description=layout['description'],
+                views=views))
+
+        self.__layout_presets = cycle(self.__layout_presets)
+
+    def __create_image(self):
         image = read_image(self.__image_path)
         if not self.__input_linear:
             colourspace = RGB_COLOURSPACES[self.__input_oecf]
@@ -357,9 +459,7 @@ class Analysis(SceneCanvas):
 
         self.__image = image
 
-        return True
-
-    def initialise_actions(self):
+    def __create_actions(self):
         self.__actions = {}
 
         for name, action in self.__settings.get('actions', ()).items():
@@ -375,9 +475,7 @@ class Analysis(SceneCanvas):
                 description=action.get('description'),
                 sequence=sequence)
 
-    def initialise_views(self):
-        self.__grid = self.central_widget.add_grid()
-
+    def __create_views(self):
         border_colour = self.__settings.get('canvas').get('border_colour')
 
         self.__gamut_view = GamutView(
@@ -387,7 +485,6 @@ class Analysis(SceneCanvas):
             correlate_colourspace=self.__correlate_colourspace,
             settings=self.__settings,
             border_color=border_colour)
-        self.__grid.add_widget(self.__gamut_view, row=0, col=0, row_span=2)
 
         self.__image_view = ImageView(
             image=self.__image,
@@ -395,16 +492,21 @@ class Analysis(SceneCanvas):
             input_colourspace=self.__input_colourspace,
             correlate_colourspace=self.__correlate_colourspace,
             border_color=border_colour)
-        self.__grid.add_widget(self.__image_view, row=0, col=1)
-
-        self.__diagram_view = self.__grid.add_view(row=1, col=1)
-        self.__diagram_view.border_color = border_colour
 
         self.__views = (self.__gamut_view,
-                        self.__image_view,
-                        self.__diagram_view)
+                        self.__image_view)
 
-        return True
+    def __layout_views(self):
+        self.__grid = self.central_widget.add_grid()
+        layout = next(self.__layout_presets)
+
+        for view in layout.views.values():
+            self.__grid.add_widget(
+                getattr(self, '{0}'.format(view.view)),
+                row=view.row,
+                col=view.column,
+                row_span=view.row_span,
+                col_span=view.column_span)
 
     def print_actions_action(self):
         actions = []

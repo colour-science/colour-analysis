@@ -20,7 +20,6 @@ from colour_analysis.geometry import plane, box
 from colour import (
     Lab_to_XYZ,
     LCHab_to_Lab,
-    POINTER_GAMUT_BOUNDARIES,
     POINTER_GAMUT_DATA,
     POINTER_GAMUT_ILLUMINANT,
     RGB_to_XYZ,
@@ -321,6 +320,32 @@ def RGB_scatter_visual(RGB,
     return markers
 
 
+def pointer_gamut_visual(reference_colourspace='CIE xyY',
+                         size=6.0,
+                         edge_size=0.5,
+                         uniform_colour=(0.8, 0.8, 0.8),
+                         uniform_opacity=1.0,
+                         uniform_edge_colour=(0.8, 0.8, 0.8),
+                         uniform_edge_opacity=1.0,
+                         parent=None):
+    points = XYZ_to_reference_colourspace(POINTER_GAMUT_DATA,
+                                          POINTER_GAMUT_ILLUMINANT,
+                                          reference_colourspace)
+
+    RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+    RGB_e = ColorArray(uniform_edge_colour, alpha=uniform_edge_opacity).rgba
+
+    markers = Symbol(symbol='cross',
+                     points=points,
+                     size=size,
+                     edge_size=edge_size,
+                     face_color=RGB,
+                     edge_color=RGB_e,
+                     parent=parent)
+
+    return markers
+
+
 def spectral_locus_visual(reference_colourspace='CIE xyY',
                           cmfs='CIE 1931 2 Degree Standard Observer',
                           uniform_colour=None,
@@ -347,32 +372,6 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     line = Line(points, np.clip(RGB, 0, 1), width=width, parent=parent)
 
     return line
-
-
-def pointer_gamut_visual(reference_colourspace='CIE xyY',
-                         size=8.0,
-                         edge_size=0.5,
-                         uniform_colour=(0.8, 0.8, 0.8),
-                         uniform_opacity=1.0,
-                         uniform_edge_colour=(0.8, 0.8, 0.8),
-                         uniform_edge_opacity=1.0,
-                         parent=None):
-    points = XYZ_to_reference_colourspace(POINTER_GAMUT_DATA,
-                                          POINTER_GAMUT_ILLUMINANT,
-                                          reference_colourspace)
-
-    RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
-    RGB_e = ColorArray(uniform_edge_colour, alpha=uniform_edge_opacity).rgba
-
-    markers = Symbol(symbol='cross',
-                     points=points,
-                     size=size,
-                     edge_size=edge_size,
-                     face_color=RGB,
-                     edge_color=RGB_e,
-                     parent=parent)
-
-    return markers
 
 
 def image_visual(image,

@@ -15,6 +15,32 @@
       720
     ]
   },
+  "layouts": [
+    {
+      "name": "layout_1",
+      "description": "Layout 1",
+      "views": {
+        "layout_1_gamut_view": {
+          "name": "layout_1_gamut_view",
+          "description": "Layout 1 - Gamut View",
+          "view": "gamut_view",
+          "row": 0,
+          "column": 0,
+          "row_span": 2,
+          "column_span": 1
+        },
+        "layout_1_image_view1": {
+          "name": "layout_1_image_view1",
+          "description": "Layout 1 - Image View 1",
+          "view": "image_view",
+          "row": 0,
+          "column": 1,
+          "row_span": 1,
+          "column_span": 1
+        }
+      }
+    }
+  ],
   "actions": {
     "print_actions": {
       "name": "print_actions",
@@ -229,6 +255,17 @@
           "name": "input_colourspace_visual_style_2",
           "description": "Input Colourspace - Visual Style 2",
           "visual": "input_colourspace_visual",
+          "segments": 48,
+          "uniform_colour": null,
+          "uniform_opacity": 0.5,
+          "wireframe": true,
+          "wireframe_colour": null,
+          "wireframe_opacity": 1.0
+        },
+        {
+          "name": "input_colourspace_visual_style_3",
+          "description": "Input Colourspace - Visual Style 3",
+          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -237,8 +274,8 @@
           "wireframe_opacity": 1.0
         },
         {
-          "name": "input_colourspace_visual_style_3",
-          "description": "Input Colourspace - Visual Style 3",
+          "name": "input_colourspace_visual_style_4",
+          "description": "Input Colourspace - Visual Style 4",
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
@@ -256,8 +293,8 @@
           "wireframe_opacity": 1.0
         },
         {
-          "name": "input_colourspace_visual_style_4",
-          "description": "Input Colourspace - Visual Style 4",
+          "name": "input_colourspace_visual_style_5",
+          "description": "Input Colourspace - Visual Style 5",
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
@@ -328,6 +365,17 @@
         {
           "name": "correlate_colourspace_visual_style_4",
           "description": "Correlate Colourspace - Visual Style 4",
+          "visual": "correlate_colourspace_visual",
+          "segments": 48,
+          "uniform_colour": null,
+          "uniform_opacity": 0.5,
+          "wireframe": true,
+          "wireframe_colour": null,
+          "wireframe_opacity": 1.0
+        },
+        {
+          "name": "correlate_colourspace_visual_style_5",
+          "description": "Correlate Colourspace - Visual Style 5",
           "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,

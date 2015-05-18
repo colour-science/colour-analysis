@@ -35,6 +35,7 @@ RGB_colourspaceVisualPreset = namedtuple(
     'RGB_colourspaceVisualPreset',
     ('name',
      'description',
+     'segments',
      'uniform_colour',
      'uniform_opacity',
      'wireframe',
@@ -256,8 +257,7 @@ class GamutView(ViewBox):
         self.__settings = value
 
     def __create_camera_presets(self):
-        cameras = self.__settings['cameras']['gamut_view'].values()
-        for camera in cameras:
+        for camera in self.__settings['cameras']['gamut_view'].values():
             self.__camera_presets[camera['reference_colourspace']] = (
                 CameraPreset(
                     name=camera['name'],
@@ -272,8 +272,7 @@ class GamutView(ViewBox):
                     up=camera['up']))
 
     def __create_visuals_style_presets(self):
-        visuals_style_settings = self.__settings['styles']['gamut_view']
-        for visual, styles in visuals_style_settings.items():
+        for visual, styles in self.__settings['styles']['gamut_view'].items():
             self.__visuals_style_presets[visual] = []
 
             for style in styles:
@@ -281,6 +280,7 @@ class GamutView(ViewBox):
                     RGB_colourspaceVisualPreset(
                         name=style['name'],
                         description=style['description'],
+                        segments=style['segments'],
                         uniform_colour=style['uniform_colour'],
                         uniform_opacity=style['uniform_opacity'],
                         wireframe=style['wireframe'],
@@ -291,8 +291,7 @@ class GamutView(ViewBox):
                 self.__visuals_style_presets[visual])
 
     def __create_axis_presets(self):
-        axis_presets = self.__settings['axis'].values()
-        for axis in axis_presets:
+        for axis in self.__settings['axis'].values():
             self.__axis_presets[axis['reference_colourspace']] = (
                 AxisPreset(
                     name=axis['name'],
@@ -320,6 +319,7 @@ class GamutView(ViewBox):
         return RGB_colourspace_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
+            segments=style.segments,
             uniform_colour=style.uniform_colour,
             uniform_opacity=style.uniform_opacity,
             wireframe=style.wireframe,
@@ -515,6 +515,7 @@ class GamutView(ViewBox):
         self.__store_visuals_visibility()
         self.__detach_visuals()
         self.__create_visuals()
+        self.__attach_visuals()
         self.__restore_visuals_visibility()
 
         self.__create_camera()

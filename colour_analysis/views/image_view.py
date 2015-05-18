@@ -36,8 +36,9 @@ class ImageView(ViewBox):
         self.__display_correlate_colourspace_out_of_gamut = False
         self.__display_hdr_colours = False
 
-        self.__initialise_visuals()
-        self.__initialise_camera()
+        self.__create_visuals()
+        self.__attach_visuals()
+        self.__create_camera()
 
     @property
     def image(self):
@@ -194,32 +195,22 @@ class ImageView(ViewBox):
 
         return oecf(image)
 
+    def __create_visuals(self):
+        self.__image_visual = image_visual(self.__create_image())
+
+    def __create_camera(self):
+        self.camera = PanZoomCamera(aspect=1)
+        self.camera.flip = (False, True, False)
+
     def __attach_visuals(self):
-        self.__image_visual = image_visual(
-            self.__create_image(),
-            parent=self.scene)
+        self.__image_visual.add_parent(self.scene)
 
     def __detach_visuals(self):
         self.__image_visual.remove_parent(self.scene)
 
-    def __attach_camera(self):
-        self.camera = PanZoomCamera(aspect=1)
-        self.camera.flip = (False, True, False)
-
-    def __detach_camera(self):
-        pass
-
-    def __initialise_visuals(self):
-        self.__attach_visuals()
-
-        return True
-
-    def __initialise_camera(self):
-        self.__attach_camera()
-
-        return True
-
     def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
+        self.__detach_visuals()
+
         self.__display_input_colourspace_out_of_gamut = (
             not self.__display_input_colourspace_out_of_gamut)
 
@@ -227,13 +218,15 @@ class ImageView(ViewBox):
             self.__display_correlate_colourspace_out_of_gamut = False
             self.__display_hdr_colours = False
 
-        self.__detach_visuals()
+        self.__create_visuals()
 
         self.__attach_visuals()
 
         return True
 
     def toggle_correlate_colourspace_out_of_gamut_colours_display_action(self):
+        self.__detach_visuals()
+
         self.__display_correlate_colourspace_out_of_gamut = (
             not self.__display_correlate_colourspace_out_of_gamut)
 
@@ -241,13 +234,15 @@ class ImageView(ViewBox):
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_hdr_colours = False
 
-        self.__detach_visuals()
+        self.__create_visuals()
 
         self.__attach_visuals()
 
         return True
 
     def toggle_hdr_colours_display_action(self):
+        self.__detach_visuals()
+
         self.__display_hdr_colours = (
             not self.__display_hdr_colours)
 
@@ -255,7 +250,7 @@ class ImageView(ViewBox):
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_correlate_colourspace_out_of_gamut = False
 
-        self.__detach_visuals()
+        self.__create_visuals()
 
         self.__attach_visuals()
 
