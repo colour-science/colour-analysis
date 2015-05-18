@@ -4,11 +4,11 @@ from __future__ import division
 
 import numpy as np
 from collections import OrderedDict, namedtuple
-from vispy.scene.cameras import TurntableCamera
 from vispy.scene.widgets.viewbox import ViewBox
 
 from colour import RGB_COLOURSPACES
 
+from colour_analysis.cameras import OrbitCamera
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.styles import Styles
 from colour_analysis.visuals import (
@@ -26,6 +26,7 @@ CameraPreset = namedtuple(
      'elevation',
      'azimuth',
      'distance',
+     'translate_speed',
      'center',
      'up'))
 
@@ -69,9 +70,9 @@ class GamutView(ViewBox):
         self.__settings = None
         self.settings = settings
 
-        self.__camera_presets = None
-        self.__visuals_style_presets = None
-        self.__axis_presets = None
+        self.__camera_presets = {}
+        self.__visuals_style_presets = OrderedDict()
+        self.__axis_presets = {}
 
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
@@ -81,7 +82,7 @@ class GamutView(ViewBox):
         self.__axis_visual = None
 
         self.__clamp_blacks = False
-        self.__clamp_whites = True
+        self.__clamp_whites = False
 
         self.__visuals_visibility = None
 
@@ -253,8 +254,6 @@ class GamutView(ViewBox):
         self.__settings = value
 
     def __initialise_camera_presets(self):
-        self.__camera_presets = {}
-
         cameras = self.__settings['cameras']['gamut_view'].values()
         for camera in cameras:
             self.__camera_presets[camera['reference_colourspace']] = (
@@ -266,12 +265,11 @@ class GamutView(ViewBox):
                     elevation=camera['elevation'],
                     azimuth=camera['azimuth'],
                     distance=camera['distance'],
+                    translate_speed=camera['translate_speed'],
                     center=camera['center'],
                     up=camera['up']))
 
     def __initialise_visuals_style_presets(self):
-        self.__visuals_style_presets = OrderedDict()
-
         visuals_style_settings = self.__settings['styles']['gamut_view']
         for visual, styles in visuals_style_settings.items():
             self.__visuals_style_presets[visual] = []
@@ -291,8 +289,6 @@ class GamutView(ViewBox):
                 self.__visuals_style_presets[visual])
 
     def __initialise_axis_presets(self):
-        self.__axis_presets = {}
-
         axis_presets = self.__settings['axis'].values()
         for axis in axis_presets:
             self.__axis_presets[axis['reference_colourspace']] = (
@@ -398,11 +394,12 @@ class GamutView(ViewBox):
     def __attach_camera(self):
         camera_settings = self.__camera_presets[self.__reference_colourspace]
 
-        self.camera = TurntableCamera(
+        self.camera = OrbitCamera(
             fov=camera_settings.fov,
             elevation=camera_settings.elevation,
             azimuth=camera_settings.azimuth,
             distance=camera_settings.distance,
+            translate_speed=camera_settings.translate_speed,
             center=camera_settings.center,
             up=camera_settings.up)
 

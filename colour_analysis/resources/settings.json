@@ -180,7 +180,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "b"
+        "key": "i"
       }
     },
     "toggle_correlate_colourspace_out_of_gamut_colours_display": {
@@ -189,7 +189,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "n"
+        "key": "o"
       }
     },
     "toggle_hdr_colours_display": {
@@ -198,7 +198,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "m"
+        "key": "p"
       }
     },
     "fit_image_visual_image": {
@@ -348,7 +348,8 @@
         "fov": 45,
         "elevation": 30,
         "azimuth": 30,
-        "distance": 2.0,
+        "distance": 3.0,
+        "translate_speed": 0.25,
         "center": [
           0.5,
           0.5,
@@ -364,6 +365,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 2.0,
+        "translate_speed": 0.1,
         "center": [
           0.3,
           0.3,
@@ -379,6 +381,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 500.0,
+        "translate_speed": 1.0,
         "center": [
           0.0,
           0.0,
@@ -394,6 +397,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 500.0,
+        "translate_speed": 1.0,
         "center": [
           0.0,
           0.0,
@@ -409,6 +413,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 3.0,
+        "translate_speed": 0.25,
         "center": [
           0.5,
           0.5,
@@ -424,6 +429,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 400.0,
+        "translate_speed": 1.0,
         "center": [
           0.0,
           0.0,
@@ -439,6 +445,7 @@
         "elevation": 30,
         "azimuth": 30,
         "distance": 3.0,
+        "translate_speed": 0.25,
         "center": [
           0.0,
           0.0,
