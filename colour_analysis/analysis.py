@@ -545,7 +545,9 @@ class Analysis(SceneCanvas):
 
     def cycle_correlate_colourspace_action(self):
         self.__correlate_colourspace = next(self.__RGB_colourspaces_cycle)
+
         self.__gamut_view.correlate_colourspace = self.__correlate_colourspace
+        self.__image_view.correlate_colourspace = self.__correlate_colourspace
 
         return True
 
