@@ -25,8 +25,8 @@ REFERENCE_COLOURSPACES = (
     'CIE UCS',
     'CIE UVW',
     'IPT')
-    # 'CIE LCHab',
-    # 'CIE LCHuv',)
+# 'CIE LCHab',
+# 'CIE LCHuv',)
 
 REFERENCE_COLOURSPACES_TO_LABELS = {
     'CIE XYZ': ('X', 'Y', 'Z'),

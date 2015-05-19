@@ -507,11 +507,13 @@ class Analysis(SceneCanvas):
         border_colour = self.__settings.get('canvas').get('border_colour')
 
         self.__console_view = ConsoleView(
+            canvas=self,
             text_color=(0.8, 0.8, 0.8),
             font_size=10.0,
             border_color=border_colour)
 
         self.__gamut_view = GamutView(
+            canvas=self,
             image=self.__image,
             input_colourspace=self.__input_colourspace,
             reference_colourspace=self.__reference_colourspace,
@@ -520,6 +522,7 @@ class Analysis(SceneCanvas):
             border_color=border_colour)
 
         self.__image_view = ImageView(
+            canvas=self,
             image=self.__image,
             oecf=self.__input_oecf,
             input_colourspace=self.__input_colourspace,

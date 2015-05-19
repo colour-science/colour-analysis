@@ -5,6 +5,7 @@ from __future__ import division
 import numpy as np
 
 from vispy.scene.cameras import PanZoomCamera
+from vispy.scene.visuals import Text
 from vispy.scene.widgets.viewbox import ViewBox
 
 from colour import RGB_COLOURSPACES, RGB_to_RGB
@@ -14,12 +15,15 @@ from colour_analysis.visuals import image_visual
 
 class ImageView(ViewBox):
     def __init__(self,
+                 canvas=None,
                  image=None,
                  oecf='Rec. 709',
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
                  **kwargs):
         ViewBox.__init__(self, **kwargs)
+
+        self.__canvas = canvas
 
         self.__image = None
         self.image = image
@@ -30,6 +34,8 @@ class ImageView(ViewBox):
         self.__correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
 
+        self.__title_overlay_visual = None
+
         self.__image_visual = None
 
         self.__display_input_colourspace_out_of_gamut = False
@@ -39,6 +45,34 @@ class ImageView(ViewBox):
         self.__create_visuals()
         self.__attach_visuals()
         self.__create_camera()
+
+        self.__create_title_overlay_visual()
+        self.__canvas.events.resize.connect(self.__canvas_resize_event)
+
+    @property
+    def canvas(self):
+        """
+        Property for **self.canvas** attribute.
+
+        Returns
+        -------
+        SceneCanvas
+        """
+
+        return self.__canvas
+
+    @canvas.setter
+    def canvas(self, value):
+        """
+        Setter for **self.canvas** attribute.
+
+        Parameters
+        ----------
+        value : SceneCanvas
+            Attribute value.
+        """
+
+        raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
 
     @property
     def image(self):
@@ -172,6 +206,7 @@ class ImageView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__correlate_colourspace = value
 
+
     def __create_image(self):
         colourspace = RGB_COLOURSPACES[self.__oecf]
         image = np.copy(self.__image)
@@ -208,6 +243,41 @@ class ImageView(ViewBox):
     def __detach_visuals(self):
         self.__image_visual.remove_parent(self.scene)
 
+    def __create_title_overlay_visual(self):
+        self.__title_overlay_visual = Text('Colour - Analysis',
+                                           anchor_x='center',
+                                           anchor_y='bottom',
+                                           font_size=12,
+                                           color=(0.8, 0.8, 0.8),
+                                           parent=self.__canvas.scene)
+
+        self.__title_overlay_visual_position()
+        self.__title_overlay_visual_text()
+
+    def __title_overlay_visual_position(self):
+        self.__title_overlay_visual.pos = (
+            self.pos[0] + self.size[0] / 2,
+            self.pos[1] + 32)
+
+    def __title_overlay_visual_text(self):
+        self.__title_overlay_visual.text = ''
+
+        if self.__display_input_colourspace_out_of_gamut:
+            self.__title_overlay_visual.text = (
+                '{0} - Out of Gamut Colours Display'.format(
+                    self.__input_colourspace))
+
+        if self.__display_correlate_colourspace_out_of_gamut:
+            self.__title_overlay_visual.text = (
+                '{0} - Out of Gamut Colours Display'.format(
+                    self.__correlate_colourspace))
+
+        if self.__display_hdr_colours:
+            self.__title_overlay_visual.text = 'HDR Colours Display'
+
+    def __canvas_resize_event(self, event=None):
+        self.__title_overlay_visual_position()
+
     def cycle_correlate_colourspace_action(self):
         self.__detach_visuals()
         self.__create_visuals()
@@ -227,6 +297,8 @@ class ImageView(ViewBox):
         self.__create_visuals()
         self.__attach_visuals()
 
+        self.__title_overlay_visual_text()
+
         return True
 
     def toggle_correlate_colourspace_out_of_gamut_colours_display_action(self):
@@ -241,6 +313,8 @@ class ImageView(ViewBox):
         self.__create_visuals()
         self.__attach_visuals()
 
+        self.__title_overlay_visual_text()
+
         return True
 
     def toggle_hdr_colours_display_action(self):
@@ -254,6 +328,8 @@ class ImageView(ViewBox):
 
         self.__create_visuals()
         self.__attach_visuals()
+
+        self.__title_overlay_visual_text()
 
         return True
 
