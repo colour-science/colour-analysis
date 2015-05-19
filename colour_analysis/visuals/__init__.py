@@ -3,7 +3,7 @@
 
 from primitive import Primitive, PrimitiveVisual
 from symbol import Symbol
-from axis import Axis, AxisVisual, axis_visual
+from axis import axis_visual
 from box import Box, BoxVisual
 from image import image_visual
 from plane import Plane, PlaneVisual

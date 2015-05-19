@@ -5,7 +5,7 @@ from __future__ import division
 import json
 import numpy as np
 import os
-from collections import OrderedDict, deque, namedtuple
+from collections import deque, namedtuple
 from itertools import cycle
 
 from vispy.scene import SceneCanvas
@@ -15,8 +15,7 @@ from colour import RGB_COLOURSPACES, message_box, read_image
 from colour_analysis.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
 
-from colour_analysis.views import GamutView
-from colour_analysis.views import ImageView
+from colour_analysis.views import ConsoleView, GamutView, ImageView
 
 
 Sequence = namedtuple(
@@ -84,6 +83,7 @@ class Analysis(SceneCanvas):
         self.__layout_presets = []
         self.__actions = {}
 
+        self.__console_view = None
         self.__gamut_view = None
         self.__image_view = None
         self.__views = None
@@ -105,6 +105,9 @@ class Analysis(SceneCanvas):
         self.__create_image()
         self.__create_views()
         self.__layout_views()
+
+        self.__console_view.write('This is a test!')
+        self.__console_view.write('This another a test!')
 
         self.show()
 
@@ -365,6 +368,32 @@ class Analysis(SceneCanvas):
             '"{0}" attribute is read only!'.format('settings'))
 
     @property
+    def console_view(self):
+        """
+        Property for **self.console_view** attribute.
+
+        Returns
+        -------
+        ViewBox
+        """
+
+        return self.__console_view
+
+    @console_view.setter
+    def console_view(self, value):
+        """
+        Setter for **self.console_view** attribute.
+
+        Parameters
+        ----------
+        value : ViewBox
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('console_view'))
+
+    @property
     def gamut_view(self):
         """
         Property for **self.gamut_view** attribute.
@@ -415,6 +444,7 @@ class Analysis(SceneCanvas):
 
         raise AttributeError(
             '"{0}" attribute is read only!'.format('image_view'))
+
 
     def on_key_press(self, event):
         key = event.key.name.lower()
@@ -478,6 +508,11 @@ class Analysis(SceneCanvas):
     def __create_views(self):
         border_colour = self.__settings.get('canvas').get('border_colour')
 
+        self.__console_view = ConsoleView(
+            text_color=(0.8, 0.8, 0.8),
+            font_size=10.0,
+            border_color=border_colour)
+
         self.__gamut_view = GamutView(
             image=self.__image,
             input_colourspace=self.__input_colourspace,
@@ -493,7 +528,8 @@ class Analysis(SceneCanvas):
             correlate_colourspace=self.__correlate_colourspace,
             border_color=border_colour)
 
-        self.__views = (self.__gamut_view,
+        self.__views = (self.__console_view,
+                        self.__gamut_view,
                         self.__image_view)
 
     def __layout_views(self):

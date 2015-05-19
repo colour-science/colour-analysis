@@ -29,11 +29,20 @@
           "row_span": 2,
           "column_span": 1
         },
-        "layout_1_image_view1": {
-          "name": "layout_1_image_view1",
-          "description": "Layout 1 - Image View 1",
+        "layout_1_image_view": {
+          "name": "layout_1_image_view",
+          "description": "Layout 1 - Image View ",
           "view": "image_view",
           "row": 0,
+          "column": 1,
+          "row_span": 1,
+          "column_span": 1
+        },
+        "layout_1_console_view": {
+          "name": "layout_1_console_view",
+          "description": "Layout 1 - Console View ",
+          "view": "console_view",
+          "row": 1,
           "column": 1,
           "row_span": 1,
           "column_span": 1
