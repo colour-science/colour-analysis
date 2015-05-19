@@ -261,7 +261,6 @@ class GamutView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__correlate_colourspace = value
 
-
     @property
     def settings(self):
         """
@@ -291,7 +290,6 @@ class GamutView(ViewBox):
                 '"{0}" attribute: "{1}" type is not "dict:!'.format(
                     'settings', value))
         self.__settings = value
-
 
     def __create_camera_presets(self):
         for camera in self.__settings['cameras']['gamut_view'].values():

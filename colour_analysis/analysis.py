@@ -267,7 +267,6 @@ class Analysis(SceneCanvas):
             assert type(value) is bool, (
                 '"{0}" attribute: "{1}" type is not "bool"!'.format(
                     'input_linear', value))
-
         self.__input_linear = value
 
     @property

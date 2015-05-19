@@ -55,9 +55,7 @@ class OrbitCamera(TurntableCamera):
         if value is not None:
             assert is_numeric(value), (
                 '"{0}" type is not numeric!'.format('translate_speed', value))
-            self.__translate_speed = value
-
-        return self.__translate_speed
+        self.__translate_speed = value
 
     def _dist_to_trans(self, distance):
         translate = np.asarray(TurntableCamera._dist_to_trans(self, distance))

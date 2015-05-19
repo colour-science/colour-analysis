@@ -206,7 +206,6 @@ class ImageView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__correlate_colourspace = value
 
-
     def __create_image(self):
         colourspace = RGB_COLOURSPACES[self.__oecf]
         image = np.copy(self.__image)
