@@ -58,7 +58,7 @@ class Analysis(SceneCanvas):
             keys='interactive',
             title="Colour Analysis - {0}".format(image_path),
             size=settings.get('canvas').get('size'),
-            bgcolor=settings.get('canvas').get('background_colour'))
+            bgcolor=settings.get('canvas').get('canvas_background_colour'))
 
         self.__image_path = None
         self.image_path = image_path
@@ -503,12 +503,15 @@ class Analysis(SceneCanvas):
                 sequence=sequence)
 
     def __create_views(self):
-        border_colour = self.__settings.get('canvas').get('border_colour')
+        background_colour = (
+            self.__settings['canvas']['views_background_colour'])
+        border_colour = self.__settings['canvas']['views_border_colour']
 
         self.__console_view = ConsoleView(
             canvas=self,
             text_color=(0.8, 0.8, 0.8),
             font_size=10.0,
+            bgcolor=background_colour,
             border_color=border_colour)
 
         self.__gamut_view = GamutView(
@@ -518,6 +521,7 @@ class Analysis(SceneCanvas):
             reference_colourspace=self.__reference_colourspace,
             correlate_colourspace=self.__correlate_colourspace,
             settings=self.__settings,
+            bgcolor=background_colour,
             border_color=border_colour)
 
         self.__image_view = ImageView(
@@ -526,6 +530,7 @@ class Analysis(SceneCanvas):
             oecf=self.__input_oecf,
             input_colourspace=self.__input_colourspace,
             correlate_colourspace=self.__correlate_colourspace,
+            bgcolor=background_colour,
             border_color=border_colour)
 
         self.__views = (self.__console_view,

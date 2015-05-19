@@ -243,23 +243,21 @@ class ImageView(ViewBox):
         self.__image_visual.remove_parent(self.scene)
 
     def __create_title_overlay_visual(self):
-        self.__title_overlay_visual = Text('Colour - Analysis',
+        self.__title_overlay_visual = Text(str(),
                                            anchor_x='center',
                                            anchor_y='bottom',
                                            font_size=12,
                                            color=(0.8, 0.8, 0.8),
-                                           parent=self.__canvas.scene)
+                                           parent=self)
 
         self.__title_overlay_visual_position()
         self.__title_overlay_visual_text()
 
     def __title_overlay_visual_position(self):
-        self.__title_overlay_visual.pos = (
-            self.pos[0] + self.size[0] / 2,
-            self.pos[1] + 32)
+        self.__title_overlay_visual.pos = self.size[0] / 2, 32
 
     def __title_overlay_visual_text(self):
-        self.__title_overlay_visual.text = ''
+        self.__title_overlay_visual.text = str()
 
         if self.__display_input_colourspace_out_of_gamut:
             self.__title_overlay_visual.text = (

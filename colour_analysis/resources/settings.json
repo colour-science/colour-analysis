@@ -1,18 +1,23 @@
 {
   "canvas": {
-    "background_colour": [
-      0.2,
-      0.2,
-      0.2
-    ],
-    "border_colour": [
-      0.3,
-      0.3,
-      0.3
+    "canvas_background_colour": [
+      0.1,
+      0.1,
+      0.1
     ],
     "size": [
       1280,
       720
+    ],
+    "views_background_colour": [
+      0.2,
+      0.2,
+      0.2
+    ],
+    "views_border_colour": [
+      0.3,
+      0.3,
+      0.3
     ]
   },
   "layouts": [
