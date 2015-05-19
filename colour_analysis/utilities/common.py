@@ -5,6 +5,8 @@ from __future__ import division
 from colour import (
     CMFS,
     RGB_COLOURSPACES,
+    Lab_to_LCHab,
+    Luv_to_LCHuv,
     XYZ_to_IPT,
     XYZ_to_Lab,
     XYZ_to_Luv,
@@ -110,9 +112,15 @@ def XYZ_to_reference_colourspace(XYZ,
     if reference_colourspace == 'CIE Lab':
         L, a, b = tsplit(XYZ_to_Lab(XYZ, illuminant))
         value = tstack((a, b, L))
+    if reference_colourspace == 'CIE LCHab':
+        L, CH, ab = tsplit(Lab_to_LCHab(XYZ_to_Lab(XYZ, illuminant)))
+        value = tstack((CH, ab, L))
     if reference_colourspace == 'CIE Luv':
         L, u, v = tsplit(XYZ_to_Luv(XYZ, illuminant))
         value = tstack((u, v, L))
+    if reference_colourspace == 'CIE LCHuv':
+        L, CH, uv = tsplit(Luv_to_LCHuv(XYZ_to_Luv(XYZ, illuminant)))
+        value = tstack((CH, uv, L))
     if reference_colourspace == 'CIE UCS':
         value = XYZ_to_UCS(XYZ)
     if reference_colourspace == 'CIE UVW':

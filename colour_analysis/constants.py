@@ -25,6 +25,8 @@ REFERENCE_COLOURSPACES = (
     'CIE UCS',
     'CIE UVW',
     'IPT')
+    # 'CIE LCHab',
+    # 'CIE LCHuv',)
 
 REFERENCE_COLOURSPACES_TO_LABELS = {
     'CIE XYZ': ('X', 'Y', 'Z'),
@@ -33,13 +35,15 @@ REFERENCE_COLOURSPACES_TO_LABELS = {
     'CIE Luv': ('$u^\prime$', '$v^\prime$', '$L^*$'),
     'CIE UCS': ('U', 'V', 'W'),
     'CIE UVW': ('U', 'V', 'W'),
-    'IPT': ('P', 'T', 'I')}
+    'IPT': ('P', 'T', 'I'),
+    'CIE LCHab': ('CH', 'ab', '$L^*$'),
+    'CIE LCHuv': ('CH', 'uv', '$L^*$')}
 """
 Reference colourspaces to labels mapping.
 
 REFERENCE_COLOURSPACES_TO_LABELS : dict
-    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-    'IPT'}**
+    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', , 'CIE Luv', 'CIE UCS', 'CIE UVW',
+    'IPT', 'CIE LCHab', 'CIE LCHuv'}**
 """
 
 LINEAR_IMAGE_FORMATS = ('.exr', '.hdr')

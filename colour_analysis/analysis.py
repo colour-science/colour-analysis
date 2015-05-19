@@ -3,18 +3,16 @@
 from __future__ import division
 
 import json
-import numpy as np
 import os
 from collections import deque, namedtuple
 from itertools import cycle
 
+import numpy as np
 from vispy.scene import SceneCanvas
-
 from colour import RGB_COLOURSPACES, message_box, read_image
 
-from colour_analysis.common import REFERENCE_COLOURSPACES
+from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
-
 from colour_analysis.views import ConsoleView, GamutView, ImageView
 
 

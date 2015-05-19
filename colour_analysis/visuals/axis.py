@@ -10,7 +10,7 @@ def axis_visual(scale=1.0, parent=None):
     axis = XYZAxis(parent=parent)
 
     transform = AffineTransform()
-    transform.scale(scale)
+    transform.scale((scale, scale, scale))
     axis.transform = transform
 
     return axis

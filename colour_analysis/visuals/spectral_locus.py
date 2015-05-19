@@ -5,10 +5,9 @@ from __future__ import division
 import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line
-
 from colour import XYZ_to_sRGB
 
-from colour_analysis.common import (
+from colour_analysis.utilities.common import (
     XYZ_to_reference_colourspace,
     get_cmfs)
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT

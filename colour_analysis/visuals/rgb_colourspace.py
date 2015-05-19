@@ -4,13 +4,11 @@ from __future__ import division
 
 import numpy as np
 from vispy.scene import Node
+from colour import RGB_to_XYZ
 
 from colour_analysis.geometries import box_geometry
 from colour_analysis.visuals import Box
-
-from colour import RGB_to_XYZ
-
-from colour_analysis.common import (
+from colour_analysis.utilities.common import (
     XYZ_to_reference_colourspace,
     get_RGB_colourspace)
 

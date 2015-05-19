@@ -509,6 +509,38 @@
           0.5
         ],
         "up": "+z"
+      },
+      "CIE LCHab": {
+        "name": "gamut_view_camera_CIE_LCHab",
+        "description": "Gamut View Camera - CIE LCHab",
+        "reference_colourspace": "CIE LCHab",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 500.0,
+        "translate_speed": 1.0,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
+      },
+      "CIE LCHuv": {
+        "name": "gamut_view_camera_CIE_LCHuv",
+        "description": "Gamut View Camera - CIE LCHuv",
+        "reference_colourspace": "CIE LCHuv",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 500.0,
+        "translate_speed": 1.0,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
       }
     }
   },
@@ -554,6 +586,18 @@
       "description": "Axis - IPT",
       "reference_colourspace": "IPT",
       "scale": 1.0
+    },
+    "CIE LCHab": {
+      "name": "axis_CIE_LCHab",
+      "description": "Axis - CIE LCHab",
+      "reference_colourspace": "CIE LCHab",
+      "scale": 100.0
+    },
+    "CIE LCHuv": {
+      "name": "axis_CIE_LCHuv",
+      "description": "Axis - CIE LCHuv",
+      "reference_colourspace": "CIE LCHuv",
+      "scale": 100.0
     }
   }
 }

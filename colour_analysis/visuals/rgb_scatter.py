@@ -4,12 +4,10 @@ from __future__ import division
 
 import numpy as np
 from vispy.color.color_array import ColorArray
-
-from colour_analysis.visuals import Symbol
-
 from colour import RGB_to_XYZ
 
-from colour_analysis.common import (
+from colour_analysis.visuals import Symbol
+from colour_analysis.utilities.common import (
     XYZ_to_reference_colourspace,
     get_RGB_colourspace)
 

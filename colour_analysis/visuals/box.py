@@ -40,4 +40,3 @@ class BoxVisual(PrimitiveVisual):
 
 
 Box = create_visual_node(BoxVisual)
-

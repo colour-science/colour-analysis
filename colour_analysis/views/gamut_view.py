@@ -2,21 +2,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
-import numpy as np
 from collections import OrderedDict, namedtuple
-from vispy.scene.widgets.viewbox import ViewBox
 
+import numpy as np
+from vispy.scene.widgets.viewbox import ViewBox
 from colour import RGB_COLOURSPACES
 
 from colour_analysis.cameras import OrbitCamera
-from colour_analysis.common import REFERENCE_COLOURSPACES
-from colour_analysis.styles import Styles
+from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
+from colour_analysis.utilities.styles import Styles
 from colour_analysis.visuals import (
     RGB_colourspace_visual,
     RGB_scatter_visual,
     axis_visual,
     spectral_locus_visual,
     pointer_gamut_visual)
+
 
 CameraPreset = namedtuple(
     'CameraPreset',
