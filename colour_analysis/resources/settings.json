@@ -15,9 +15,9 @@
       0.2
     ],
     "views_border_colour": [
-      0.3,
-      0.3,
-      0.3
+      0.25,
+      0.25,
+      0.25
     ]
   },
   "layouts": [
@@ -112,32 +112,13 @@
         "key": "2"
       }
     },
-    "toggle_spectral_locus_visual_visibility": {
-      "name": "toggle_spectral_locus_visual_visibility",
-      "description": "Toggle Spectral Locus Visual visibility",
-      "sequence": {
-        "modifiers": [
-        ],
-        "key": "3"
-      }
-    },
-    "cycle_spectral_locus_visual_style": {
-      "name": "cycle_spectral_locus_visual_style",
-      "description": "Cycle Spectral Locus Visual style",
-      "sequence": {
-        "modifiers": [
-          "alt"
-        ],
-        "key": "3"
-      }
-    },
     "toggle_RGB_scatter_visual_visibility": {
       "name": "toggle_RGB_scatter_visual_visibility",
       "description": "Toggle RGB Scatter Visual visibility",
       "sequence": {
         "modifiers": [
         ],
-        "key": "4"
+        "key": "3"
       }
     },
     "cycle_RGB_scatter_visual_style": {
@@ -147,7 +128,7 @@
         "modifiers": [
           "alt"
         ],
-        "key": "4"
+        "key": "3"
       }
     },
     "toggle_pointer_gamut_visual_visibility": {
@@ -156,12 +137,31 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "5"
+        "key": "4"
       }
     },
     "cycle_pointer_gamut_visual_style": {
       "name": "cycle_pointer_gamut_visual_style",
       "description": "Cycle Pointer's Gamut Visual style",
+      "sequence": {
+        "modifiers": [
+          "alt"
+        ],
+        "key": "4"
+      }
+    },
+    "toggle_spectral_locus_visual_visibility": {
+      "name": "toggle_spectral_locus_visual_visibility",
+      "description": "Toggle Spectral Locus Visual visibility",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "5"
+      }
+    },
+    "cycle_spectral_locus_visual_style": {
+      "name": "cycle_spectral_locus_visual_style",
+      "description": "Cycle Spectral Locus Visual style",
       "sequence": {
         "modifiers": [
           "alt"

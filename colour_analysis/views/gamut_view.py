@@ -85,9 +85,9 @@ class GamutView(ViewBox):
 
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
-        self.__spectral_locus_visual = None
         self.__RGB_scatter_visual = None
         self.__pointer_gamut_visual = None
+        self.__spectral_locus_visual = None
         self.__axis_visual = None
 
         self.__clamp_blacks = False
@@ -376,6 +376,10 @@ class GamutView(ViewBox):
         self.__RGB_scatter_visual = RGB_scatter_visual(
             RGB, reference_colourspace=self.__reference_colourspace)
 
+    def __create_pointer_gamut_visual(self):
+        self.__pointer_gamut_visual = pointer_gamut_visual(
+            reference_colourspace=self.__reference_colourspace)
+
     def __create_spectral_locus_visual(self):
         self.__spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=self.__reference_colourspace)
@@ -383,10 +387,6 @@ class GamutView(ViewBox):
     def __create_axis_visual(self):
         self.__axis_visual = axis_visual(
             scale=self.__axis_presets[self.__reference_colourspace].scale)
-
-    def __create_pointer_gamut_visual(self):
-        self.__pointer_gamut_visual = pointer_gamut_visual(
-            reference_colourspace=self.__reference_colourspace)
 
     def __create_visuals(self):
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
@@ -414,17 +414,17 @@ class GamutView(ViewBox):
 
     def __attach_visuals(self):
         self.__RGB_scatter_visual.add_parent(self.scene)
-        self.__pointer_gamut_visual.add_parent(self.scene)
         self.__input_colourspace_visual.add_parent(self.scene)
         self.__correlate_colourspace_visual.add_parent(self.scene)
+        self.__pointer_gamut_visual.add_parent(self.scene)
         self.__spectral_locus_visual.add_parent(self.scene)
         self.__axis_visual.add_parent(self.scene)
 
     def __detach_visuals(self):
         self.__RGB_scatter_visual.remove_parent(self.scene)
-        self.__pointer_gamut_visual.remove_parent(self.scene)
         self.__input_colourspace_visual.remove_parent(self.scene)
         self.__correlate_colourspace_visual.remove_parent(self.scene)
+        self.__pointer_gamut_visual.remove_parent(self.scene)
         self.__spectral_locus_visual.remove_parent(self.scene)
         self.__axis_visual.remove_parent(self.scene)
 
@@ -432,12 +432,12 @@ class GamutView(ViewBox):
         visible = OrderedDict()
         visible['RGB_scatter_visual'] = (
             self.__RGB_scatter_visual.visible)
-        visible['pointer_gamut_visual'] = (
-            self.__pointer_gamut_visual.visible)
         visible['input_colourspace_visual'] = (
             self.__input_colourspace_visual.children[0].visible)
         visible['correlate_colourspace_visual'] = (
             self.__correlate_colourspace_visual.children[0].visible)
+        visible['pointer_gamut_visual'] = (
+            self.__pointer_gamut_visual.visible)
         visible['spectral_locus_visual'] = (
             self.__spectral_locus_visual.visible)
         visible['axis_visual'] = (
@@ -449,11 +449,11 @@ class GamutView(ViewBox):
         visible = self.__visuals_visibility
 
         self.__RGB_scatter_visual.visible = visible['RGB_scatter_visual']
-        self.__pointer_gamut_visual.visible = visible['pointer_gamut_visual']
         for visual in self.__input_colourspace_visual.children:
             visual.visible = visible['input_colourspace_visual']
         for visual in self.__correlate_colourspace_visual.children:
             visual.visible = visible['correlate_colourspace_visual']
+        self.__pointer_gamut_visual.visible = visible['pointer_gamut_visual']
         self.__spectral_locus_visual.visible = (
             visible['spectral_locus_visual'])
         self.__axis_visual.visible = visible['axis_visual']
@@ -473,10 +473,17 @@ class GamutView(ViewBox):
         self.__title_overlay_visual.pos = self.size[0] / 2, 32
 
     def __title_overlay_visual_text(self):
-        self.__title_overlay_visual.text = '{0} - {1} - {2}'.format(
-            self.__input_colourspace,
-            self.__correlate_colourspace,
-            self.__reference_colourspace)
+        title = ''
+
+        if self.__input_colourspace_visual.children[0].visible:
+            title += self.__input_colourspace
+            title += ' - '
+        if self.__correlate_colourspace_visual.children[0].visible:
+            title += self.__correlate_colourspace
+            title += ' - '
+
+        title += self.__reference_colourspace
+        self.__title_overlay_visual.text = title
 
     def __canvas_resize_event(self, event=None):
         self.__title_overlay_visual_position()
@@ -484,6 +491,8 @@ class GamutView(ViewBox):
     def toggle_input_colourspace_visual_visibility_action(self):
         for visual in self.__input_colourspace_visual.children:
             visual.visible = not visual.visible
+
+        self.__title_overlay_visual_text()
 
         return True
 
@@ -502,6 +511,8 @@ class GamutView(ViewBox):
         for visual in self.__correlate_colourspace_visual.children:
             visual.visible = not visual.visible
 
+        self.__title_overlay_visual_text()
+
         return True
 
     def cycle_correlate_colourspace_visual_style_action(self):
@@ -510,19 +521,6 @@ class GamutView(ViewBox):
         self.__create_correlate_colourspace_visual(
             self.__visuals_style_presets[
                 'correlate_colourspace_visual'].next_style())
-
-        self.__attach_visuals()
-
-        return True
-
-    def toggle_spectral_locus_visual_visibility_action(self):
-        self.__spectral_locus_visual.visible = (
-            not self.__spectral_locus_visual.visible)
-
-    def cycle_spectral_locus_visual_style_action(self):
-        self.__detach_visuals()
-
-        self.__create_spectral_locus_visual()
 
         self.__attach_visuals()
 
@@ -553,6 +551,19 @@ class GamutView(ViewBox):
         self.__detach_visuals()
 
         self.__create_pointer_gamut_visual()
+
+        self.__attach_visuals()
+
+        return True
+
+    def toggle_spectral_locus_visual_visibility_action(self):
+        self.__spectral_locus_visual.visible = (
+            not self.__spectral_locus_visual.visible)
+
+    def cycle_spectral_locus_visual_style_action(self):
+        self.__detach_visuals()
+
+        self.__create_spectral_locus_visual()
 
         self.__attach_visuals()
 

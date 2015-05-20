@@ -280,6 +280,8 @@ class ImageView(ViewBox):
         self.__create_visuals()
         self.__attach_visuals()
 
+        self.__title_overlay_visual_text()
+
         return True
 
     def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
