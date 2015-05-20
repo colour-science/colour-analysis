@@ -196,6 +196,24 @@
         "key": "6"
       }
     },
+    "decrease_colourspace_visual_resolution": {
+      "name": "decrease_colourspace_visual_resolution",
+      "description": "Decrease Colourspace Visual resolution",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "["
+      }
+    },
+    "increase_colourspace_visual_resolution": {
+      "name": "increase_colourspace_visual_resolution",
+      "description": "Increase Colourspace Visual resolution",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "]"
+      }
+    },
     "toggle_blacks_clamp": {
       "name": "toggle_blacks_clamp",
       "description": "Toggle image blacks clamping",

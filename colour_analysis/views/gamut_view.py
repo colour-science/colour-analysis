@@ -83,6 +83,9 @@ class GamutView(ViewBox):
 
         self.__title_overlay_visual = None
 
+        self.__colourspace_visual_resolution = 16
+        self.__colourspace_visual_resolution_limits = (1, 64)
+
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
         self.__RGB_scatter_visual = None
@@ -354,19 +357,28 @@ class GamutView(ViewBox):
         return RGB_colourspace_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
-            segments=style.segments,
+            segments=self.__colourspace_visual_resolution,
             uniform_colour=style.uniform_colour,
             uniform_opacity=style.uniform_opacity,
             wireframe=style.wireframe,
             wireframe_colour=style.wireframe_colour,
             wireframe_opacity=style.wireframe_opacity)
 
-    def __create_input_colourspace_visual(self, style):
+    def __create_input_colourspace_visual(self, style=None):
+        style = (self.__visuals_style_presets[
+                     'input_colourspace_visual'].current_style()
+                 if style is None else
+                 style)
+
         self.__input_colourspace_visual = (
             self.__create_colourspace_visual(
                 style, self.__input_colourspace))
 
-    def __create_correlate_colourspace_visual(self, style):
+    def __create_correlate_colourspace_visual(self, style=None):
+        style = (self.__visuals_style_presets[
+                     'correlate_colourspace_visual'].current_style()
+                 if style is None else
+                 style)
 
         self.__correlate_colourspace_visual = (
             self.__create_colourspace_visual(
@@ -391,12 +403,8 @@ class GamutView(ViewBox):
     def __create_visuals(self):
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__create_pointer_gamut_visual()
-        self.__create_input_colourspace_visual(
-            self.__visuals_style_presets[
-                'input_colourspace_visual'].current_style())
-        self.__create_correlate_colourspace_visual(
-            self.__visuals_style_presets[
-                'correlate_colourspace_visual'].current_style())
+        self.__create_input_colourspace_visual()
+        self.__create_correlate_colourspace_visual()
         self.__create_spectral_locus_visual()
         self.__create_axis_visual()
 
@@ -462,7 +470,7 @@ class GamutView(ViewBox):
         self.__title_overlay_visual = Text(str(),
                                            anchor_x='center',
                                            anchor_y='bottom',
-                                           font_size=12,
+                                           font_size=10,
                                            color=(0.8, 0.8, 0.8),
                                            parent=self)
 
@@ -483,6 +491,15 @@ class GamutView(ViewBox):
             title += ' - '
 
         title += self.__reference_colourspace
+
+        if self.__clamp_blacks:
+            title += ' - '
+            title += 'Blacks Clamped'
+
+        if self.__clamp_whites:
+            title += ' - '
+            title += 'Whites Clamped'
+
         self.__title_overlay_visual.text = title
 
     def __canvas_resize_event(self, event=None):
@@ -601,6 +618,32 @@ class GamutView(ViewBox):
 
         return True
 
+    def decrease_colourspace_visual_resolution_action(self):
+        self.__colourspace_visual_resolution -= 2
+        self.__colourspace_visual_resolution = max(
+            self.__colourspace_visual_resolution_limits[0],
+            self.__colourspace_visual_resolution)
+
+        self.__store_visuals_visibility()
+        self.__detach_visuals()
+        self.__create_input_colourspace_visual()
+        self.__create_correlate_colourspace_visual()
+        self.__attach_visuals()
+        self.__restore_visuals_visibility()
+
+    def increase_colourspace_visual_resolution_action(self):
+        self.__colourspace_visual_resolution += 2
+        self.__colourspace_visual_resolution = min(
+            self.__colourspace_visual_resolution_limits[1],
+            self.__colourspace_visual_resolution)
+
+        self.__store_visuals_visibility()
+        self.__detach_visuals()
+        self.__create_input_colourspace_visual()
+        self.__create_correlate_colourspace_visual()
+        self.__attach_visuals()
+        self.__restore_visuals_visibility()
+
     def toggle_blacks_clamp_action(self):
         self.__clamp_blacks = not self.__clamp_blacks
 
@@ -609,6 +652,8 @@ class GamutView(ViewBox):
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
+
+        self.__title_overlay_visual_text()
 
         return True
 
@@ -620,5 +665,7 @@ class GamutView(ViewBox):
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
+
+        self.__title_overlay_visual_text()
 
         return True

@@ -246,7 +246,7 @@ class ImageView(ViewBox):
         self.__title_overlay_visual = Text(str(),
                                            anchor_x='center',
                                            anchor_y='bottom',
-                                           font_size=12,
+                                           font_size=10,
                                            color=(0.8, 0.8, 0.8),
                                            parent=self)
 
