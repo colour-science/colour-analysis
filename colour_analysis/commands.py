@@ -51,6 +51,7 @@ SYNOPSIS
              [--input-colourspace INPUT_COLOURSPACE]
              [--input-oecf INPUT_OECF]
              [--input-linearity INPUT_LINEARITY]
+             [--input-resample INPUT_DOWNSIZE]
              [--reference-colourspace REFERENCE_COLOURSPACE]
              [--correlate-colourspace CORRELATE_COLOURSPACE]
              [--settings-file SETTINGS_FILE]
@@ -87,6 +88,8 @@ ARGUMENTS
         {'auto', 'linear', 'oecf'}
 
         Input image linearity.
+    -z, --input-resample
+        Input will be resampled by given factor.
     -r, --reference-colourspace, 'CIE xyY'
         {'CIE xyY', 'CIE XYZ', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
         'IPT'}
@@ -191,6 +194,13 @@ def command_line_arguments():
                         default='auto',
                         help='Input image linearity.')
 
+    parser.add_argument('--input-resample',
+                        '-z',
+                        action='store',
+                        dest='input_resample',
+                        default=1,
+                        help='Input will be resampled by given factor.')
+
     parser.add_argument('--reference-colourspace',
                         '-r',
                         action='store',
@@ -259,6 +269,7 @@ def main():
              arguments.input_colourspace,
              arguments.input_oecf,
              input_linear,
+             int(arguments.input_resample),
              arguments.reference_colourspace,
              arguments.correlate_colourspace,
              settings)

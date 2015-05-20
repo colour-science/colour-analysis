@@ -50,6 +50,7 @@ class Analysis(SceneCanvas):
                  input_colourspace='Rec. 709',
                  input_oecf='Rec. 709',
                  input_linear=True,
+                 input_resample=1,
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
                  settings=None):
@@ -57,8 +58,8 @@ class Analysis(SceneCanvas):
             self,
             keys='interactive',
             title="Colour Analysis - {0}".format(image_path),
-            size=settings.get('canvas').get('size'),
-            bgcolor=settings.get('canvas').get('canvas_background_colour'))
+            size=settings['canvas']['size'],
+            bgcolor=settings['canvas']['canvas_background_colour'])
 
         self.__image_path = None
         self.image_path = image_path
@@ -70,6 +71,8 @@ class Analysis(SceneCanvas):
         self.input_oecf = input_oecf
         self.__input_linear = None
         self.input_linear = input_linear
+        self.__input_resample = None
+        self.input_resample = input_resample
         self.__reference_colourspace = None
         self.reference_colourspace = reference_colourspace
         self.__correlate_colourspace = None
@@ -265,6 +268,35 @@ class Analysis(SceneCanvas):
                 '"{0}" attribute: "{1}" type is not "bool"!'.format(
                     'input_linear', value))
         self.__input_linear = value
+
+    @property
+    def input_resample(self):
+        """
+        Property for **self.input_resample** attribute.
+
+        Returns
+        -------
+        int
+        """
+
+        return self.__input_resample
+
+    @input_resample.setter
+    def input_resample(self, value):
+        """
+        Setter for **self.input_resample** attribute.
+
+        Parameters
+        ----------
+        value : int
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) is int, (
+                '"{0}" attribute: "{1}" type is not "int"!'.format(
+                    'input_resample', value))
+        self.__input_resample = value
 
     @property
     def reference_colourspace(self):
@@ -508,7 +540,9 @@ class Analysis(SceneCanvas):
             image = colourspace.inverse_transfer_function(image)
 
         # Keeping RGB channels only.
-        self.__image = image[..., 0:3]
+        image = image[..., 0:3]
+
+        self.__image = image[::self.__input_resample, ::self.__input_resample]
 
     def __create_actions(self):
         self.__actions = {}
