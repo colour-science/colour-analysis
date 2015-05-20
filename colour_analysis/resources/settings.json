@@ -56,18 +56,18 @@
     }
   ],
   "actions": {
-    "print_actions": {
-      "name": "print_actions",
-      "description": "Print actions",
+    "describe_actions": {
+      "name": "describe_actions",
+      "description": "Describe actions",
       "sequence": {
         "modifiers": [
         ],
         "key": "h"
       }
     },
-    "print_analysis_state": {
-      "name": "print_analysis_state",
-      "description": "Print analysis state",
+    "describe_analysis_state": {
+      "name": "describe_analysis_state",
+      "description": "Describe analysis state",
       "sequence": {
         "modifiers": [
         ],
@@ -220,7 +220,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "b"
+        "key": "z"
       }
     },
     "toggle_whites_clamp": {
@@ -229,7 +229,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "w"
+        "key": "x"
       }
     },
     "toggle_input_colourspace_out_of_gamut_colours_display": {
@@ -238,7 +238,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "i"
+        "key": "q"
       }
     },
     "toggle_correlate_colourspace_out_of_gamut_colours_display": {
@@ -247,7 +247,16 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "o"
+        "key": "w"
+      }
+    },
+    "toggle_out_of_pointer_gamut_colours_display": {
+      "name": "toggle_out_of_pointer_gamut_colours_display",
+      "description": "Toggle out of Pointer's Gamut colours display",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "e"
       }
     },
     "toggle_hdr_colours_display": {
@@ -256,7 +265,7 @@
       "sequence": {
         "modifiers": [
         ],
-        "key": "p"
+        "key": "r"
       }
     },
     "fit_image_visual_image": {
@@ -337,9 +346,9 @@
           "uniform_opacity": 0.0,
           "wireframe": true,
           "wireframe_colour": [
-            0.8,
-            0.8,
-            0.8
+            0.0,
+            0.0,
+            0.0
           ],
           "wireframe_opacity": 0.8
         }
@@ -358,9 +367,9 @@
           "uniform_opacity": 0.0,
           "wireframe": true,
           "wireframe_colour": [
-            0.8,
-            0.8,
-            0.8
+            0.0,
+            0.0,
+            0.0
           ],
           "wireframe_opacity": 0.8
         },

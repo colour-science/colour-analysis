@@ -9,7 +9,7 @@ from itertools import cycle
 
 import numpy as np
 from vispy.scene import SceneCanvas
-from colour import RGB_COLOURSPACES, message_box, read_image
+from colour import RGB_COLOURSPACES, read_image
 
 from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
@@ -103,9 +103,6 @@ class Analysis(SceneCanvas):
         self.__create_image()
         self.__create_views()
         self.__layout_views()
-
-        self.__console_view.write('This is a test!')
-        self.__console_view.write('This another a test!')
 
         self.show()
 
@@ -365,6 +362,33 @@ class Analysis(SceneCanvas):
             '"{0}" attribute is read only!'.format('settings'))
 
     @property
+    def actions(self):
+        """
+        Property for **self.__actions** private attribute.
+
+        Returns
+        -------
+        dict
+            self.__actions.
+        """
+
+        return self.__actions
+
+    @actions.setter
+    def actions(self, value):
+        """
+        Setter for **self.__actions** private attribute.
+
+        Parameters
+        ----------
+        value : dict
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('actions'))
+
+    @property
     def console_view(self):
         """
         Property for **self.console_view** attribute.
@@ -442,7 +466,6 @@ class Analysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('image_view'))
 
-
     def on_key_press(self, event):
         key = event.key.name.lower()
         modifiers = sorted([modifier.name.lower()
@@ -484,7 +507,8 @@ class Analysis(SceneCanvas):
             colourspace = RGB_COLOURSPACES[self.__input_oecf]
             image = colourspace.inverse_transfer_function(image)
 
-        self.__image = image
+        # Keeping RGB channels only.
+        self.__image = image[..., 0:3]
 
     def __create_actions(self):
         self.__actions = {}
@@ -548,41 +572,6 @@ class Analysis(SceneCanvas):
                 col=view.column,
                 row_span=view.row_span,
                 col_span=view.column_span)
-
-    def print_actions_action(self):
-        actions = []
-        for _name, action in sorted(self.__actions.items()):
-            if action.sequence.modifiers:
-                sequence = '{0} + {1}'.format(
-                    ' + '.join(action.sequence.modifiers),
-                    action.sequence.key)
-            else:
-                sequence = '{0}'.format(action.sequence.key)
-            actions.append('- {0}: {1}'.format(action.description, sequence))
-
-        message_box('Actions & Shortcuts\n\n{0}'.format(
-            '\n'.join(actions)))
-
-        return True
-
-    def print_analysis_state_action(self):
-        state = []
-        state.append('- Input image: {0}'.format(
-            self.__image_path))
-        state.append('- Input RGB colourspace: {0}'.format(
-            self.__input_colourspace))
-        state.append('- Input OECF: {0}'.format(
-            self.__input_oecf))
-        state.append('- Input linearity: {0}'.format(
-            self.__input_linear))
-        state.append('- Reference colourspace: {0}'.format(
-            self.__reference_colourspace))
-        state.append('- Correlate RGB colourspace: {0}'.format(
-            self.__correlate_colourspace))
-        message_box('Analysis State\n\n{0}'.format(
-            '\n'.join(state)))
-
-        return True
 
     def cycle_correlate_colourspace_action(self):
         self.__correlate_colourspace = next(self.__RGB_colourspaces_cycle)

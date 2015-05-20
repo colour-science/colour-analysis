@@ -8,9 +8,27 @@ from vispy.scene.cameras import PanZoomCamera
 from vispy.scene.visuals import Text
 from vispy.scene.widgets.viewbox import ViewBox
 
-from colour import RGB_COLOURSPACES, RGB_to_RGB
+from colour import (
+    RGB_COLOURSPACES,
+    RGB_to_RGB,
+    RGB_to_XYZ,
+    is_scipy_installed,
+    warning)
 
 from colour_analysis.visuals import image_visual
+
+
+def __compute_pointer_gamut_hull():
+    if not is_scipy_installed():
+        return
+
+    from scipy.spatial import Delaunay
+    from colour_analysis.visuals.pointer_gamut import POINTER_GAMUT_DATA
+
+    return Delaunay(POINTER_GAMUT_DATA)
+
+
+POINTER_GAMUT_HULL = __compute_pointer_gamut_hull()
 
 
 class ImageView(ViewBox):
@@ -38,8 +56,12 @@ class ImageView(ViewBox):
 
         self.__image_visual = None
 
+        self.__clamp_blacks = False
+        self.__clamp_whites = False
+
         self.__display_input_colourspace_out_of_gamut = False
         self.__display_correlate_colourspace_out_of_gamut = False
+        self.__display_out_of_pointer_gamut = False
         self.__display_hdr_colours = False
 
         self.__create_visuals()
@@ -207,25 +229,38 @@ class ImageView(ViewBox):
         self.__correlate_colourspace = value
 
     def __create_image(self):
-        colourspace = RGB_COLOURSPACES[self.__oecf]
         image = np.copy(self.__image)
+
+        if self.__clamp_blacks:
+            image = np.clip(image, 0, np.inf)
+
+        if self.__clamp_whites:
+            image = np.clip(image, -np.inf, 1)
 
         if self.__display_correlate_colourspace_out_of_gamut:
             image = RGB_to_RGB(image,
                                RGB_COLOURSPACES[self.__input_colourspace],
                                RGB_COLOURSPACES[self.__correlate_colourspace])
 
-            colourspace = RGB_COLOURSPACES[self.__oecf]
-
         if (self.__display_input_colourspace_out_of_gamut or
                 self.__display_correlate_colourspace_out_of_gamut):
-            image[image > 0] = 0
+            image[image >= 0] = 0
             image[image < 0] = 1
+
+        if self.__display_out_of_pointer_gamut and is_scipy_installed():
+            colourspace = RGB_COLOURSPACES[self.__input_colourspace]
+            simplex = POINTER_GAMUT_HULL.find_simplex(
+                RGB_to_XYZ(image,
+                           colourspace.whitepoint,
+                           colourspace.whitepoint,
+                           colourspace.RGB_to_XYZ_matrix))
+            image[simplex >= 0] = 0
+            image[simplex < 0] = 1
 
         if self.__display_hdr_colours:
             image[image <= 1] = 0
 
-        oecf = colourspace.transfer_function
+        oecf = RGB_COLOURSPACES[self.__oecf].transfer_function
 
         return oecf(image)
 
@@ -269,6 +304,10 @@ class ImageView(ViewBox):
                 '{0} - Out of Gamut Colours Display'.format(
                     self.__correlate_colourspace))
 
+        if self.__display_out_of_pointer_gamut:
+            self.__title_overlay_visual.text = ('Out of Pointer\'s Gamut '
+                                                'Colours Display')
+
         if self.__display_hdr_colours:
             self.__title_overlay_visual.text = 'HDR Colours Display'
 
@@ -281,6 +320,24 @@ class ImageView(ViewBox):
         self.__attach_visuals()
 
         self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_blacks_clamp_action(self):
+        self.__clamp_blacks = not self.__clamp_blacks
+
+        self.__detach_visuals()
+        self.__create_visuals()
+        self.__attach_visuals()
+
+        return True
+
+    def toggle_whites_clamp_action(self):
+        self.__clamp_whites = not self.__clamp_whites
+
+        self.__detach_visuals()
+        self.__create_visuals()
+        self.__attach_visuals()
 
         return True
 
@@ -307,6 +364,30 @@ class ImageView(ViewBox):
 
         if self.__display_correlate_colourspace_out_of_gamut:
             self.__display_input_colourspace_out_of_gamut = False
+            self.__display_out_of_pointer_gamut = False
+            self.__display_hdr_colours = False
+
+        self.__create_visuals()
+        self.__attach_visuals()
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_out_of_pointer_gamut_colours_display_action(self):
+        if not is_scipy_installed():
+            warning(
+                '"scipy" or specific "scipy" Api features are not  available, '
+                'skipping out of Pointer\'s Gamut colours computations!')
+            return False
+
+        self.__detach_visuals()
+        self.__display_out_of_pointer_gamut = (
+            not self.__display_out_of_pointer_gamut)
+
+        if self.__display_out_of_pointer_gamut:
+            self.__display_input_colourspace_out_of_gamut = False
+            self.__display_correlate_colourspace_out_of_gamut = False
             self.__display_hdr_colours = False
 
         self.__create_visuals()
@@ -324,6 +405,7 @@ class ImageView(ViewBox):
         if self.__display_hdr_colours:
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_correlate_colourspace_out_of_gamut = False
+            self.__display_out_of_pointer_gamut = False
 
         self.__create_visuals()
         self.__attach_visuals()
