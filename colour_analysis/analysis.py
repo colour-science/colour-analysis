@@ -4,7 +4,7 @@ from __future__ import division
 
 import json
 import os
-from collections import deque, namedtuple
+from collections import OrderedDict, deque, namedtuple
 from itertools import cycle
 
 import numpy as np
@@ -13,7 +13,11 @@ from colour import RGB_COLOURSPACES, read_image
 
 from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
 from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
-from colour_analysis.views import ConsoleView, GamutView, ImageView
+from colour_analysis.views import (
+    ConsoleView,
+    DiagramView,
+    GamutView,
+    ImageView)
 
 
 Sequence = namedtuple(
@@ -53,7 +57,8 @@ class Analysis(SceneCanvas):
                  input_resample=1,
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
-                 settings=None):
+                 settings=None,
+                 layout='layout_1'):
         SceneCanvas.__init__(
             self,
             keys='interactive',
@@ -80,13 +85,16 @@ class Analysis(SceneCanvas):
         self.__settings = (json.load(open(SETTINGS_FILE))
                            if settings is None else
                            settings)
+        self.__layout = None
+        self.layout = layout
 
-        self.__layout_presets = []
+        self.__layout_presets = OrderedDict()
         self.__actions = {}
 
         self.__console_view = None
         self.__gamut_view = None
         self.__image_view = None
+        self.__diagram_view = None
         self.__views = None
 
         self.__grid = None
@@ -394,6 +402,36 @@ class Analysis(SceneCanvas):
             '"{0}" attribute is read only!'.format('settings'))
 
     @property
+    def layout(self):
+        """
+        Property for **self.__layout** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__layout.
+        """
+
+        return self.__layout
+
+    @layout.setter
+    def layout(self, value):
+        """
+        Setter for **self.__layout** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (str, unicode), (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"str" or "unicode"!').format('layout', value))
+        self.__layout = value
+
+    @property
     def actions(self):
         """
         Property for **self.__actions** private attribute.
@@ -498,6 +536,32 @@ class Analysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('image_view'))
 
+    @property
+    def diagram_view(self):
+        """
+        Property for **self.diagram_view** attribute.
+
+        Returns
+        -------
+        ViewBox
+        """
+
+        return self.__diagram_view
+
+    @diagram_view.setter
+    def diagram_view(self, value):
+        """
+        Setter for **self.diagram_view** attribute.
+
+        Parameters
+        ----------
+        value : ViewBox
+            Attribute value.
+        """
+
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('diagram_view'))
+
     def on_key_press(self, event):
         key = event.key.name.lower()
         modifiers = sorted([modifier.name.lower()
@@ -526,12 +590,10 @@ class Analysis(SceneCanvas):
                     row_span=view['row_span'],
                     column_span=view['column_span'])
 
-            self.__layout_presets.append(LayoutPreset(
+            self.__layout_presets[layout['name']] = LayoutPreset(
                 name=layout['name'],
                 description=layout['description'],
-                views=views))
-
-        self.__layout_presets = cycle(self.__layout_presets)
+                views=views)
 
     def __create_image(self):
         image = read_image(self.__image_path)
@@ -591,13 +653,22 @@ class Analysis(SceneCanvas):
             bgcolor=background_colour,
             border_color=border_colour)
 
+        self.__diagram_view = DiagramView(
+            canvas=self,
+            image=self.__image,
+            oecf=self.__input_oecf,
+            input_colourspace=self.__input_colourspace,
+            correlate_colourspace=self.__correlate_colourspace,
+            bgcolor=background_colour,
+            border_color=border_colour)
+
         self.__views = (self.__console_view,
                         self.__gamut_view,
                         self.__image_view)
 
     def __layout_views(self):
         self.__grid = self.central_widget.add_grid()
-        layout = next(self.__layout_presets)
+        layout = self.__layout_presets.get(self.__layout)
 
         for view in layout.views.values():
             self.__grid.add_widget(

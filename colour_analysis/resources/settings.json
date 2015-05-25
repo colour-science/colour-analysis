@@ -36,16 +36,49 @@
         },
         "layout_1_image_view": {
           "name": "layout_1_image_view",
-          "description": "Layout 1 - Image View ",
+          "description": "Layout 1 - Image View",
           "view": "image_view",
           "row": 0,
           "column": 1,
           "row_span": 1,
           "column_span": 1
         },
-        "layout_1_console_view": {
-          "name": "layout_1_console_view",
-          "description": "Layout 1 - Console View ",
+        "layout_1_diagram_view": {
+          "name": "layout_1_diagram_view",
+          "description": "Layout 1 - Diagram View",
+          "view": "diagram_view",
+          "row": 1,
+          "column": 1,
+          "row_span": 1,
+          "column_span": 1
+        }
+      }
+    },
+    {
+      "name": "layout_2",
+      "description": "Layout 2",
+      "views": {
+        "layout_1_gamut_view": {
+          "name": "layout_2_gamut_view",
+          "description": "Layout 2 - Gamut View",
+          "view": "gamut_view",
+          "row": 0,
+          "column": 0,
+          "row_span": 2,
+          "column_span": 1
+        },
+        "layout_2_image_view": {
+          "name": "layout_2_image_view",
+          "description": "Layout 2 - Image View",
+          "view": "image_view",
+          "row": 0,
+          "column": 1,
+          "row_span": 1,
+          "column_span": 1
+        },
+        "layout_2_console_view": {
+          "name": "layout_2_console_view",
+          "description": "Layout 2 - Console View",
           "view": "console_view",
           "row": 1,
           "column": 1,
@@ -327,9 +360,9 @@
           "uniform_opacity": 1.0,
           "wireframe": true,
           "wireframe_colour": [
-            0.5,
-            0.5,
-            0.5
+            1.0,
+            1.0,
+            1.0
           ],
           "wireframe_opacity": 1.0
         },
@@ -386,9 +419,9 @@
           "uniform_opacity": 1.0,
           "wireframe": true,
           "wireframe_colour": [
-            0.5,
-            0.5,
-            0.5
+            1.0,
+            1.0,
+            1.0
           ],
           "wireframe_opacity": 1.0
         },

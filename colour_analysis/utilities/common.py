@@ -135,3 +135,24 @@ def XYZ_to_reference_colourspace(XYZ,
              '"{1}".').format(reference_colourspace,
                               ', '.join(REFERENCE_COLOURSPACES)))
     return value
+
+
+def nodes_walker(node, ascendants=False):
+    attribute = "children" if not ascendants else "parent"
+    if not hasattr(node, attribute):
+        return
+
+    elements = getattr(node, attribute)
+    elements = elements if isinstance(elements, list) else [elements]
+
+    for element in elements:
+        yield element
+
+        if not hasattr(element, attribute):
+            continue
+
+        if not getattr(element, attribute):
+            continue
+
+        for sub_element in nodes_walker(element, ascendants=ascendants):
+            yield sub_element

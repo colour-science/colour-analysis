@@ -55,6 +55,7 @@ SYNOPSIS
              [--reference-colourspace REFERENCE_COLOURSPACE]
              [--correlate-colourspace CORRELATE_COLOURSPACE]
              [--settings-file SETTINGS_FILE]
+             [--layout LAYOUT]
              [--enable-warnings ENABLE_WARNINGS]
 
 DESCRIPTION
@@ -90,7 +91,7 @@ ARGUMENTS
         Input image linearity.
     -z, --input-resample
         Input will be resampled by given factor.
-    -r, --reference-colourspace, 'CIE xyY'
+    -r, --reference-colourspace
         {'CIE xyY', 'CIE XYZ', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
         'IPT'}
 
@@ -99,6 +100,10 @@ ARGUMENTS
         Correlate colourspace, see *input-colourspace* for possible values.
     -s, --settings-file
         Settings file.
+    -y, --layout
+        {'layout_1', 'layout_2', 'layout_3', ..., 'layout_n'}
+
+        Application layout.
     -w, --enable-warnings
         Enable warnings.
 
@@ -222,6 +227,13 @@ def command_line_arguments():
                         default=None,
                         help='Settings file.')
 
+    parser.add_argument('--layout',
+                        '-y',
+                        action='store',
+                        dest='layout',
+                        default='layout_1',
+                        help='Application layout.')
+
     parser.add_argument('--enable-warnings',
                         '-w',
                         action='store_true',
@@ -272,7 +284,8 @@ def main():
              int(arguments.input_resample),
              arguments.reference_colourspace,
              arguments.correlate_colourspace,
-             settings)
+             settings,
+             arguments.layout)
     return run()
 
 
