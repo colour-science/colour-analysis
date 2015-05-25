@@ -1,10 +1,10 @@
 Colour - Analysis
 ==============
 
+..  image:: https://raw.githubusercontent.com/colour-science/colour-analysis/master/docs/_static/Colour_Analysis.png
+
 Introduction
 ------------
-
-..  image:: https://raw.githubusercontent.com/colour-science/colour-analysis/master/docs/_static/Colour_Analysis.png
 
 Image analysis tools based on `Colour <https://github.com/colour-science/colour>`_ and `Vispy <http://vispy.org/>`_.
 
