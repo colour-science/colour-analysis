@@ -10,7 +10,7 @@ from colour import (
     POINTER_GAMUT_ILLUMINANT)
 
 from colour_analysis.visuals import Symbol
-from colour_analysis.utilities.common import XYZ_to_reference_colourspace
+from colour_analysis.utilities import XYZ_to_reference_colourspace
 
 POINTER_GAMUT_DATA = Lab_to_XYZ(LCHab_to_Lab(POINTER_GAMUT_DATA),
                                 POINTER_GAMUT_ILLUMINANT)

@@ -4,19 +4,33 @@ from __future__ import division
 
 from colour import (
     CMFS,
-    RGB_COLOURSPACES,
     Lab_to_LCHab,
     Luv_to_LCHuv,
+    Luv_to_uv,
+    Luv_uv_to_xy,
+    RGB_COLOURSPACES,
+    tsplit,
+    tstack,
+    UCS_to_uv,
+    UCS_uv_to_xy,
+    xy_to_XYZ,
     XYZ_to_IPT,
     XYZ_to_Lab,
     XYZ_to_Luv,
     XYZ_to_UCS,
     XYZ_to_UVW,
-    XYZ_to_xyY,
-    tsplit,
-    tstack)
+    XYZ_to_xy,
+    XYZ_to_xyY)
 
 from colour_analysis.constants import REFERENCE_COLOURSPACES
+
+CHROMATICITY_DIAGRAM_TRANSFORMATIONS = {
+    'CIE 1931': {'XYZ_to_ij': lambda a, i: XYZ_to_xy(a, i),
+                 'ij_to_XYZ': lambda a, i: xy_to_XYZ(a)},
+    'CIE 1960 UCS': {'XYZ_to_ij': lambda a, i: UCS_to_uv(XYZ_to_UCS(a)),
+                     'ij_to_XYZ': lambda a, i: xy_to_XYZ(UCS_uv_to_xy(a))},
+    'CIE 1976 UCS': {'XYZ_to_ij': lambda a, i: Luv_to_uv(XYZ_to_Luv(a, i), i),
+                     'ij_to_XYZ': lambda a, i: xy_to_XYZ(Luv_uv_to_xy(a))}}
 
 
 def get_RGB_colourspace(colourspace):
@@ -93,8 +107,8 @@ def XYZ_to_reference_colourspace(XYZ,
         *CIE XYZ* tristimulus values *illuminant* *xy* chromaticity
         coordinates.
     reference_colourspace : unicode
-        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}**
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE Luv uv', 'CIE UCS',
+        'CIE UCS uv', 'CIE UVW', 'IPT'}**
 
         Reference colourspace to convert the *CIE XYZ* tristimulus values to.
 
@@ -118,11 +132,17 @@ def XYZ_to_reference_colourspace(XYZ,
     if reference_colourspace == 'CIE Luv':
         L, u, v = tsplit(XYZ_to_Luv(XYZ, illuminant))
         value = tstack((u, v, L))
+    if reference_colourspace == 'CIE Luv uv':
+        u, v = tsplit(Luv_to_uv(XYZ_to_Luv(XYZ, illuminant), illuminant))
+        value = tstack((u, v))
     if reference_colourspace == 'CIE LCHuv':
         L, CH, uv = tsplit(Luv_to_LCHuv(XYZ_to_Luv(XYZ, illuminant)))
         value = tstack((CH, uv, L))
     if reference_colourspace == 'CIE UCS':
         value = XYZ_to_UCS(XYZ)
+    if reference_colourspace == 'CIE UCS uv':
+        u, v = tsplit(UCS_to_uv(XYZ_to_UCS(XYZ)))
+        value = tstack((u, v))
     if reference_colourspace == 'CIE UVW':
         value = XYZ_to_UVW(XYZ * 100, illuminant)
     if reference_colourspace == 'IPT':

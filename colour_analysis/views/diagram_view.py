@@ -3,12 +3,25 @@
 from __future__ import division
 
 import numpy as np
+from collections import OrderedDict
 
 from vispy.scene.cameras import PanZoomCamera
-from vispy.scene.visuals import Text
+from vispy.scene.visuals import GridLines, Text
 from vispy.scene.widgets.viewbox import ViewBox
 
 from colour import RGB_COLOURSPACES
+
+from colour_analysis.constants import (
+    CHROMATICITY_DIAGRAMS,
+    CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE)
+from colour_analysis.utilities import Cycle
+from colour_analysis.visuals import (
+    CIE_1931_chromaticity_diagram,
+    CIE_1960_UCS_chromaticity_diagram,
+    CIE_1976_UCS_chromaticity_diagram,
+    RGB_colourspace_triangle_visual,
+    RGB_scatter_visual,
+    spectral_locus_visual)
 
 
 class DiagramView(ViewBox):
@@ -18,6 +31,7 @@ class DiagramView(ViewBox):
                  oecf='Rec. 709',
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
+                 diagram='CIE 1931',
                  **kwargs):
         ViewBox.__init__(self, **kwargs)
 
@@ -31,8 +45,22 @@ class DiagramView(ViewBox):
         self.input_colourspace = input_colourspace
         self.__correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
+        self.__diagram = None
+        self.diagram = diagram
+
+        self.__diagrams_cycle = Cycle(CHROMATICITY_DIAGRAMS)
 
         self.__title_overlay_visual = None
+
+        self.__chromaticity_diagram = None
+        self.__spectral_locus_visual = None
+        self.__RGB_scatter_visual = None
+        self.__input_colourspace_visual = None
+        self.__correlate_colourspace_visual = None
+        self.__grid = None
+
+        self.__clamp_blacks = False
+        self.__clamp_whites = False
 
         self.__create_visuals()
         self.__attach_visuals()
@@ -198,18 +226,114 @@ class DiagramView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__correlate_colourspace = value
 
+    @property
+    def diagram(self):
+        """
+        Property for **self.__diagram** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__diagram.
+        """
+
+        return self.__diagram
+
+    @diagram.setter
+    def diagram(self, value):
+        """
+        Setter for **self.__diagram** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (str, unicode), (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"str" or "unicode"!').format('diagram', value))
+            assert value in CHROMATICITY_DIAGRAMS, (
+                '"{0}" diagram not found in factory chromaticity diagrams: '
+                '"{1}".').format(value, ', '.join(
+                sorted(CHROMATICITY_DIAGRAMS.keys())))
+        self.__diagram = value
+
+    def __create_RGB_scatter_image(self):
+        image = self.__image
+
+        if self.__clamp_blacks:
+            image = np.clip(image, 0, np.inf)
+
+        if self.__clamp_whites:
+            image = np.clip(image, -np.inf, 1)
+
+        return image
+
+    def __create_chromaticity_diagram_visual(self, diagram='CIE 1931'):
+        diagrams = {'CIE 1931': CIE_1931_chromaticity_diagram,
+                    'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
+                    'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram}
+
+        self.__chromaticity_diagram = diagrams[diagram]()
+
+    def __create_spectral_locus_visual(self):
+        self.__spectral_locus_visual = spectral_locus_visual(
+            reference_colourspace=(
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+            uniform_colour=(0.8, 0.8, 0.8),
+            width=4.0)
+
+    def __create_RGB_scatter_visual(self, RGB):
+        self.__RGB_scatter_visual = RGB_scatter_visual(
+            RGB,
+            symbol='cross',
+            reference_colourspace=(
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+            uniform_colour=(0.0, 0.0, 0.0))
+
+    def __create_input_colourspace_visual(self):
+        self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
+            self.__input_colourspace,
+            self.__diagram,
+            uniform_colour=(1.0, 1.0, 0.0))
+
+    def __create_correlate_colourspace_visual(self):
+        self.__correlate_colourspace_visual = RGB_colourspace_triangle_visual(
+            self.__correlate_colourspace,
+            self.__diagram,
+            uniform_colour=(0.0, 1.0, 1.0))
+
+    def __create_grid_visual(self):
+        self.__grid = GridLines()
+
     def __create_visuals(self):
-        pass
+        self.__create_chromaticity_diagram_visual(self.__diagram)
+        self.__create_spectral_locus_visual()
+        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__create_input_colourspace_visual()
+        self.__create_correlate_colourspace_visual()
+        self.__create_grid_visual()
 
     def __create_camera(self):
         self.camera = PanZoomCamera(aspect=1)
-        self.camera.flip = (False, True, False)
 
     def __attach_visuals(self):
-        pass
+        self.__chromaticity_diagram.add_parent(self.scene)
+        self.__spectral_locus_visual.add_parent(self.scene)
+        self.__RGB_scatter_visual.add_parent(self.scene)
+        self.__input_colourspace_visual.add_parent(self.scene)
+        self.__correlate_colourspace_visual.add_parent(self.scene)
+        self.__grid.add_parent(self.scene)
 
     def __detach_visuals(self):
-        pass
+        self.__chromaticity_diagram.remove_parent(self.scene)
+        self.__spectral_locus_visual.remove_parent(self.scene)
+        self.__RGB_scatter_visual.remove_parent(self.scene)
+        self.__input_colourspace_visual.remove_parent(self.scene)
+        self.__correlate_colourspace_visual.remove_parent(self.scene)
+        self.__grid.remove_parent(self.scene)
 
     def __create_title_overlay_visual(self):
         self.__title_overlay_visual = Text(str(),
@@ -226,7 +350,106 @@ class DiagramView(ViewBox):
         self.__title_overlay_visual.pos = self.size[0] / 2, 32
 
     def __title_overlay_visual_text(self):
-        self.__title_overlay_visual.text = 'Colour - Analysis'
+        title = ''
+
+        if self.__input_colourspace_visual.visible:
+            title += self.__input_colourspace
+            title += ' - '
+        if self.__correlate_colourspace_visual.visible:
+            title += self.__correlate_colourspace
+            title += ' - '
+
+        title += '{0} Chromaticity Diagram'.format(
+            self.__diagrams_cycle.current_item())
+
+        if self.__clamp_blacks:
+            title += ' - '
+            title += 'Blacks Clamped'
+
+        if self.__clamp_whites:
+            title += ' - '
+            title += 'Whites Clamped'
+
+        self.__title_overlay_visual.text = title
 
     def __canvas_resize_event(self, event=None):
         self.__title_overlay_visual_position()
+
+    def __store_visuals_visibility(self):
+        visible = OrderedDict()
+        self.__visuals_visibility = visible
+
+    def __restore_visuals_visibility(self):
+        visible = self.__visuals_visibility
+
+    def toggle_input_colourspace_visual_visibility_action(self):
+        self.__input_colourspace_visual.visible = (
+            not self.__input_colourspace_visual.visible)
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_correlate_colourspace_visual_visibility_action(self):
+        self.__correlate_colourspace_visual.visible = (
+            not self.__correlate_colourspace_visual.visible)
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_RGB_scatter_visual_visibility_action(self):
+        self.__RGB_scatter_visual.visible = (
+            not self.__RGB_scatter_visual.visible)
+
+        return True
+
+    def cycle_correlate_colourspace_action(self):
+        self.__detach_visuals()
+
+        self.__create_correlate_colourspace_visual()
+
+        self.__attach_visuals()
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def cycle_chromaticity_diagram_action(self):
+        self.__detach_visuals()
+
+        self.__diagram = self.__diagrams_cycle.next_item()
+
+        self.__create_visuals()
+
+        self.__attach_visuals()
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_blacks_clamp_action(self):
+        self.__clamp_blacks = not self.__clamp_blacks
+
+        self.__store_visuals_visibility()
+        self.__detach_visuals()
+        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__attach_visuals()
+        self.__restore_visuals_visibility()
+
+        self.__title_overlay_visual_text()
+
+        return True
+
+    def toggle_whites_clamp_action(self):
+        self.__clamp_whites = not self.__clamp_whites
+
+        self.__store_visuals_visibility()
+        self.__detach_visuals()
+        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__attach_visuals()
+        self.__restore_visuals_visibility()
+
+        self.__title_overlay_visual_text()
+
+        return True

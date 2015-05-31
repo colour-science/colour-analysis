@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+import numpy as np
+
 from vispy.color.color_array import ColorArray
 from vispy.gloo import set_state
 from vispy.scene.visuals import create_visual_node
@@ -22,15 +24,18 @@ class PrimitiveVisual(MeshVisual):
         self.__wireframe_offset = wireframe_offset
         mode = 'lines' if self.__wireframe else 'triangles'
 
-        positions = vertices['position']
-
         uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
         if vertex_colours is not None:
-            vertex_colours[..., 3] = uniform_opacity
+            if vertex_colours.shape[-1] == 3:
+                vertex_colours = np.hstack(
+                    (vertex_colours,
+                     np.full((vertex_colours.shape[0], 1), uniform_opacity)))
+            else:
+                vertex_colours[..., 3] = uniform_opacity
 
         MeshVisual.__init__(
             self,
-            positions,
+            vertices,
             faces,
             vertex_colours,
             None,

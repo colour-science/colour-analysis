@@ -6,15 +6,16 @@ import numpy as np
 from vispy.color.color_array import ColorArray
 from colour import RGB_to_XYZ
 
-from colour_analysis.visuals import Symbol
-from colour_analysis.utilities.common import (
+from colour_analysis.utilities import (
     XYZ_to_reference_colourspace,
     get_RGB_colourspace)
+from colour_analysis.visuals import Symbol
 
 
 def RGB_scatter_visual(RGB,
                        colourspace='Rec. 709',
                        reference_colourspace='CIE xyY',
+                       symbol='disc',
                        size=4.0,
                        edge_size=0.5,
                        uniform_colour=None,
@@ -55,7 +56,7 @@ def RGB_scatter_visual(RGB,
             RGB_e = ColorArray(uniform_edge_colour,
                                alpha=uniform_edge_opacity).rgba
 
-        markers = Symbol(symbol='disc',
+        markers = Symbol(symbol=symbol,
                          points=points,
                          size=size,
                          edge_size=edge_size,

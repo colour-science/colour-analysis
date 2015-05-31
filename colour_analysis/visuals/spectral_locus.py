@@ -5,12 +5,12 @@ from __future__ import division
 import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line
-from colour import XYZ_to_sRGB
+from colour import XYZ_to_sRGB, normalise
 
-from colour_analysis.utilities.common import (
+from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
+from colour_analysis.utilities import (
     XYZ_to_reference_colourspace,
     get_cmfs)
-from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
 
 def spectral_locus_visual(reference_colourspace='CIE xyY',
@@ -22,20 +22,24 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     cmfs = get_cmfs(cmfs)
     XYZ = cmfs.values
 
+    XYZ = np.vstack((XYZ, XYZ[0, ...]))
+
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
     points = XYZ_to_reference_colourspace(XYZ,
                                           illuminant,
                                           reference_colourspace)
-    points = np.vstack((points, points[0, ...]))
     points[np.isnan(points)] = 0
 
     if uniform_colour is None:
-        RGB = XYZ_to_sRGB(points)
+        RGB = normalise(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
         RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
-    line = Line(points, np.clip(RGB, 0, 1), width=width, parent=parent)
+    line = Line(points,
+                np.clip(RGB, 0, 1),
+                width=width,
+                parent=parent)
 
     return line

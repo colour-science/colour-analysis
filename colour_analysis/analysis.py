@@ -11,8 +11,9 @@ import numpy as np
 from vispy.scene import SceneCanvas
 from colour import RGB_COLOURSPACES, read_image
 
-from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
-from colour_analysis.constants import DEFAULT_IMAGE, SETTINGS_FILE
+from colour_analysis.constants import (
+    DEFAULT_IMAGE, SETTINGS_FILE,
+    REFERENCE_COLOURSPACES)
 from colour_analysis.views import (
     ConsoleView,
     DiagramView,
@@ -664,7 +665,8 @@ class Analysis(SceneCanvas):
 
         self.__views = (self.__console_view,
                         self.__gamut_view,
-                        self.__image_view)
+                        self.__image_view,
+                        self.__diagram_view)
 
     def __layout_views(self):
         self.__grid = self.central_widget.add_grid()
@@ -683,6 +685,7 @@ class Analysis(SceneCanvas):
 
         self.__gamut_view.correlate_colourspace = self.__correlate_colourspace
         self.__image_view.correlate_colourspace = self.__correlate_colourspace
+        self.__diagram_view.correlate_colourspace = self.__correlate_colourspace
 
         return True
 

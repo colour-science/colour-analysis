@@ -13,22 +13,10 @@ from colour import (
     RGB_to_RGB,
     RGB_to_XYZ,
     is_scipy_installed,
+    is_within_pointer_gamut,
     warning)
 
 from colour_analysis.visuals import image_visual
-
-
-def __compute_pointer_gamut_hull():
-    if not is_scipy_installed():
-        return
-
-    from scipy.spatial import Delaunay
-    from colour_analysis.visuals.pointer_gamut import POINTER_GAMUT_DATA
-
-    return Delaunay(POINTER_GAMUT_DATA)
-
-
-POINTER_GAMUT_HULL = __compute_pointer_gamut_hull()
 
 
 class ImageView(ViewBox):
@@ -249,13 +237,11 @@ class ImageView(ViewBox):
 
         if self.__display_out_of_pointer_gamut and is_scipy_installed():
             colourspace = RGB_COLOURSPACES[self.__input_colourspace]
-            simplex = POINTER_GAMUT_HULL.find_simplex(
+            image = is_within_pointer_gamut(
                 RGB_to_XYZ(image,
                            colourspace.whitepoint,
                            colourspace.whitepoint,
-                           colourspace.RGB_to_XYZ_matrix))
-            image[simplex >= 0] = 0
-            image[simplex < 0] = 1
+                           colourspace.RGB_to_XYZ_matrix)).astype(int)
 
         if self.__display_hdr_colours:
             image[image <= 1] = 0

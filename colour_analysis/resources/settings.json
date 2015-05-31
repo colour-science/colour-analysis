@@ -220,6 +220,15 @@
         "key": "0"
       }
     },
+    "cycle_chromaticity_diagram": {
+      "name": "cycle_chromaticity_diagram",
+      "description": "Cycle Chromaticity Diagram.",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "8"
+      }
+    },
     "toggle_axis_visual_visibility": {
       "name": "toggle_axis_visual_visibility",
       "description": "Toggle Axis Visual visibility",

@@ -10,10 +10,10 @@ from vispy.scene.widgets.viewbox import ViewBox
 from colour import RGB_COLOURSPACES
 
 from colour_analysis.cameras import OrbitCamera
-from colour_analysis.utilities.common import REFERENCE_COLOURSPACES
-from colour_analysis.utilities.styles import Styles
+from colour_analysis.constants import REFERENCE_COLOURSPACES
+from colour_analysis.utilities import Cycle
 from colour_analysis.visuals import (
-    RGB_colourspace_visual,
+    RGB_colourspace_volume_visual,
     RGB_scatter_visual,
     axis_visual,
     spectral_locus_visual,
@@ -325,7 +325,7 @@ class GamutView(ViewBox):
                         wireframe_colour=style['wireframe_colour'],
                         wireframe_opacity=style['wireframe_opacity']))
 
-            self.__visuals_style_presets[visual] = Styles(
+            self.__visuals_style_presets[visual] = Cycle(
                 self.__visuals_style_presets[visual])
 
     def __create_axis_presets(self):
@@ -354,7 +354,7 @@ class GamutView(ViewBox):
         return image
 
     def __create_colourspace_visual(self, style, colourspace=None):
-        return RGB_colourspace_visual(
+        return RGB_colourspace_volume_visual(
             colourspace=colourspace,
             reference_colourspace=self.__reference_colourspace,
             segments=self.__colourspace_visual_resolution,
@@ -366,7 +366,7 @@ class GamutView(ViewBox):
 
     def __create_input_colourspace_visual(self, style=None):
         style = (self.__visuals_style_presets[
-                     'input_colourspace_visual'].current_style()
+                     'input_colourspace_visual'].current_item()
                  if style is None else
                  style)
 
@@ -376,7 +376,7 @@ class GamutView(ViewBox):
 
     def __create_correlate_colourspace_visual(self, style=None):
         style = (self.__visuals_style_presets[
-                     'correlate_colourspace_visual'].current_style()
+                     'correlate_colourspace_visual'].current_item()
                  if style is None else
                  style)
 
@@ -518,7 +518,7 @@ class GamutView(ViewBox):
 
         self.__create_input_colourspace_visual(
             self.__visuals_style_presets[
-                'input_colourspace_visual'].next_style())
+                'input_colourspace_visual'].next_item())
 
         self.__attach_visuals()
 
@@ -537,7 +537,7 @@ class GamutView(ViewBox):
 
         self.__create_correlate_colourspace_visual(
             self.__visuals_style_presets[
-                'correlate_colourspace_visual'].next_style())
+                'correlate_colourspace_visual'].next_item())
 
         self.__attach_visuals()
 
@@ -591,7 +591,7 @@ class GamutView(ViewBox):
 
         self.__create_correlate_colourspace_visual(
             self.__visuals_style_presets[
-                'correlate_colourspace_visual'].current_style())
+                'correlate_colourspace_visual'].current_item())
 
         self.__attach_visuals()
 

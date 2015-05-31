@@ -13,6 +13,7 @@ class Symbol(Markers):
                  edge_size=0.5,
                  face_color=None,
                  edge_color=None,
+                 scaling=False,
                  parent=None):
         Markers.__init__(self)
 
@@ -20,7 +21,8 @@ class Symbol(Markers):
                       size=size,
                       edge_width=edge_size,
                       face_color=face_color,
-                      edge_color=edge_color)
+                      edge_color=edge_color,
+                      scaling=scaling)
         self.set_symbol(symbol)
 
         if parent is not None:

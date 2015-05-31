@@ -3,14 +3,17 @@
 from __future__ import division
 
 import numpy as np
-from vispy.scene import Node
-from colour import RGB_to_XYZ
+from vispy.scene.visuals import Node, Line
 
+from colour import RGB_to_XYZ, xy_to_XYZ
+
+from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.geometries import box_geometry
-from colour_analysis.visuals import Box
-from colour_analysis.utilities.common import (
+from colour_analysis.utilities import (
+    CHROMATICITY_DIAGRAM_TRANSFORMATIONS,
     XYZ_to_reference_colourspace,
     get_RGB_colourspace)
+from colour_analysis.visuals import Box
 
 
 def RGB_identity_cube(width_segments=16,
@@ -49,15 +52,15 @@ def RGB_identity_cube(width_segments=16,
     return RGB_box
 
 
-def RGB_colourspace_visual(colourspace='Rec. 709',
-                           reference_colourspace='CIE xyY',
-                           segments=16,
-                           uniform_colour=None,
-                           uniform_opacity=0.5,
-                           wireframe=True,
-                           wireframe_colour=None,
-                           wireframe_opacity=1.0,
-                           parent=None):
+def RGB_colourspace_volume_visual(colourspace='Rec. 709',
+                                  reference_colourspace='CIE xyY',
+                                  segments=16,
+                                  uniform_colour=None,
+                                  uniform_opacity=0.5,
+                                  wireframe=True,
+                                  wireframe_colour=None,
+                                  wireframe_opacity=1.0,
+                                  parent=None):
     node = Node(parent)
 
     colourspace = get_RGB_colourspace(colourspace)
@@ -97,3 +100,34 @@ def RGB_colourspace_visual(colourspace='Rec. 709',
         RGB_cube_w.mesh_data.set_vertices(value)
 
     return node
+
+
+def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
+                                    diagram='CIE 1931',
+                                    uniform_colour=None,
+                                    uniform_opacity=1.0,
+                                    width=4.0,
+                                    parent=None):
+    if uniform_colour is None:
+        uniform_colour = (0.8, 0.8, 0.8)
+
+    colourspace = get_RGB_colourspace(colourspace)
+
+    illuminant = DEFAULT_PLOTTING_ILLUMINANT
+
+    XYZ_to_ij = CHROMATICITY_DIAGRAM_TRANSFORMATIONS[diagram]['XYZ_to_ij']
+
+    ij = XYZ_to_ij(xy_to_XYZ(colourspace.primaries), illuminant)
+    ij = np.vstack((ij, ij[0, ...]))
+
+    ij[np.isnan(ij)] = 0
+
+    RGB = np.hstack((uniform_colour, uniform_opacity)),
+
+    line = Line(ij,
+                RGB,
+                width=width,
+                method='agg',
+                parent=parent)
+
+    return line

@@ -27,7 +27,7 @@ class PlaneVisual(PrimitiveVisual):
 
         PrimitiveVisual.__init__(
             self,
-            vertices,
+            vertices['position'],
             outline if wireframe else faces,
             uniform_colour,
             uniform_opacity,
