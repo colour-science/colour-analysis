@@ -11,7 +11,7 @@ from diagrams import (
     CIE_1976_UCS_chromaticity_diagram)
 from image import image_visual
 from plane import Plane, PlaneVisual
-from pointer_gamut import pointer_gamut_visual
+from pointer_gamut import pointer_gamut_boundaries_visual, pointer_gamut_visual
 from rgb_colourspace import (
     RGB_identity_cube,
     RGB_colourspace_volume_visual,
@@ -29,7 +29,7 @@ __all__ += ['CIE_1931_chromaticity_diagram',
             'CIE_1976_UCS_chromaticity_diagram']
 __all__ += ['image_visual']
 __all__ += ['Plane', 'PlaneVisual']
-__all__ += ['pointer_gamut_visual']
+__all__ += ['pointer_gamut_boundaries_visual', 'pointer_gamut_visual']
 __all__ += ['RGB_identity_cube',
             'RGB_colourspace_volume_visual',
             'RGB_colourspace_triangle_visual']

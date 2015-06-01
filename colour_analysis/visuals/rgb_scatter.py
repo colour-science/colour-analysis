@@ -43,6 +43,8 @@ def RGB_scatter_visual(RGB,
                                               colourspace.whitepoint,
                                               reference_colourspace)
 
+        points[np.isnan(points)] = 0
+
         RGB = np.clip(RGB, 0, 1)
 
         if uniform_colour is None:

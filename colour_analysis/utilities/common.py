@@ -107,8 +107,8 @@ def XYZ_to_reference_colourspace(XYZ,
         *CIE XYZ* tristimulus values *illuminant* *xy* chromaticity
         coordinates.
     reference_colourspace : unicode
-        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE Luv uv', 'CIE UCS',
-        'CIE UCS uv', 'CIE UVW', 'IPT'}**
+        **{'CIE XYZ', 'CIE xyY', 'CIE xy', 'CIE Lab', 'CIE Luv', 'CIE Luv uv',
+        'CIE UCS', 'CIE UCS uv', 'CIE UVW', 'IPT'}**
 
         Reference colourspace to convert the *CIE XYZ* tristimulus values to.
 
@@ -123,6 +123,8 @@ def XYZ_to_reference_colourspace(XYZ,
         value = XYZ
     if reference_colourspace == 'CIE xyY':
         value = XYZ_to_xyY(XYZ, illuminant)
+    if reference_colourspace == 'CIE xy':  # Used in Chromaticity Diagram.
+        value = XYZ_to_xy(XYZ, illuminant)
     if reference_colourspace == 'CIE Lab':
         L, a, b = tsplit(XYZ_to_Lab(XYZ, illuminant))
         value = tstack((a, b, L))
@@ -132,7 +134,7 @@ def XYZ_to_reference_colourspace(XYZ,
     if reference_colourspace == 'CIE Luv':
         L, u, v = tsplit(XYZ_to_Luv(XYZ, illuminant))
         value = tstack((u, v, L))
-    if reference_colourspace == 'CIE Luv uv':
+    if reference_colourspace == 'CIE Luv uv':  # Used in Chromaticity Diagram.
         u, v = tsplit(Luv_to_uv(XYZ_to_Luv(XYZ, illuminant), illuminant))
         value = tstack((u, v))
     if reference_colourspace == 'CIE LCHuv':
@@ -140,7 +142,7 @@ def XYZ_to_reference_colourspace(XYZ,
         value = tstack((CH, uv, L))
     if reference_colourspace == 'CIE UCS':
         value = XYZ_to_UCS(XYZ)
-    if reference_colourspace == 'CIE UCS uv':
+    if reference_colourspace == 'CIE UCS uv':  # Used in Chromaticity Diagram.
         u, v = tsplit(UCS_to_uv(XYZ_to_UCS(XYZ)))
         value = tstack((u, v))
     if reference_colourspace == 'CIE UVW':

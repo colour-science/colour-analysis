@@ -409,6 +409,10 @@ class GamutView(ViewBox):
         self.__create_axis_visual()
 
     def __create_camera(self):
+        speed_factor = 10 / np.max(np.abs(
+            self.__RGB_scatter_visual._data['a_position']))
+
+
         camera_settings = self.__camera_presets[self.__reference_colourspace]
 
         self.camera = OrbitCamera(
@@ -416,7 +420,7 @@ class GamutView(ViewBox):
             elevation=camera_settings.elevation,
             azimuth=camera_settings.azimuth,
             distance=camera_settings.distance,
-            translate_speed=camera_settings.translate_speed,
+            translate_speed=camera_settings.translate_speed * speed_factor,
             center=camera_settings.center,
             up=camera_settings.up)
 

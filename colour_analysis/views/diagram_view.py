@@ -21,6 +21,8 @@ from colour_analysis.visuals import (
     CIE_1976_UCS_chromaticity_diagram,
     RGB_colourspace_triangle_visual,
     RGB_scatter_visual,
+    pointer_gamut_boundaries_visual,
+    pointer_gamut_visual,
     spectral_locus_visual)
 
 
@@ -57,7 +59,9 @@ class DiagramView(ViewBox):
         self.__RGB_scatter_visual = None
         self.__input_colourspace_visual = None
         self.__correlate_colourspace_visual = None
-        self.__grid = None
+        self.__pointer_gamut_visual = None
+        self.__pointer_gamut_boundaries_visual = None
+        self.__grid_visual = None
 
         self.__clamp_blacks = False
         self.__clamp_whites = False
@@ -293,6 +297,18 @@ class DiagramView(ViewBox):
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
             uniform_colour=(0.0, 0.0, 0.0))
 
+    def __create_pointer_gamut_visual(self):
+        self.__pointer_gamut_visual = pointer_gamut_visual(
+            reference_colourspace=(
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+            uniform_opacity=0.4)
+
+    def __create_pointer_gamut_boundaries_visual(self):
+        self.__pointer_gamut_boundaries_visual = (
+            pointer_gamut_boundaries_visual(reference_colourspace=(
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[
+                    self.__diagram])))
+
     def __create_input_colourspace_visual(self):
         self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__input_colourspace,
@@ -306,34 +322,41 @@ class DiagramView(ViewBox):
             uniform_colour=(0.0, 1.0, 1.0))
 
     def __create_grid_visual(self):
-        self.__grid = GridLines()
+        self.__grid_visual = GridLines()
 
     def __create_visuals(self):
         self.__create_chromaticity_diagram_visual(self.__diagram)
         self.__create_spectral_locus_visual()
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__create_pointer_gamut_visual()
+        self.__create_pointer_gamut_boundaries_visual()
         self.__create_input_colourspace_visual()
         self.__create_correlate_colourspace_visual()
         self.__create_grid_visual()
 
     def __create_camera(self):
-        self.camera = PanZoomCamera(aspect=1)
+        self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1),
+                                    aspect=1)
 
     def __attach_visuals(self):
         self.__chromaticity_diagram.add_parent(self.scene)
         self.__spectral_locus_visual.add_parent(self.scene)
         self.__RGB_scatter_visual.add_parent(self.scene)
+        self.__pointer_gamut_visual.add_parent(self.scene)
+        self.__pointer_gamut_boundaries_visual.add_parent(self.scene)
         self.__input_colourspace_visual.add_parent(self.scene)
         self.__correlate_colourspace_visual.add_parent(self.scene)
-        self.__grid.add_parent(self.scene)
+        self.__grid_visual.add_parent(self.scene)
 
     def __detach_visuals(self):
         self.__chromaticity_diagram.remove_parent(self.scene)
         self.__spectral_locus_visual.remove_parent(self.scene)
         self.__RGB_scatter_visual.remove_parent(self.scene)
+        self.__pointer_gamut_visual.remove_parent(self.scene)
+        self.__pointer_gamut_boundaries_visual.remove_parent(self.scene)
         self.__input_colourspace_visual.remove_parent(self.scene)
         self.__correlate_colourspace_visual.remove_parent(self.scene)
-        self.__grid.remove_parent(self.scene)
+        self.__grid_visual.remove_parent(self.scene)
 
     def __create_title_overlay_visual(self):
         self.__title_overlay_visual = Text(str(),
@@ -382,6 +405,10 @@ class DiagramView(ViewBox):
     def __restore_visuals_visibility(self):
         visible = self.__visuals_visibility
 
+    def toggle_spectral_locus_visual_visibility_action(self):
+        self.__spectral_locus_visual.visible = (
+            not self.__spectral_locus_visual.visible)
+
     def toggle_input_colourspace_visual_visibility_action(self):
         self.__input_colourspace_visual.visible = (
             not self.__input_colourspace_visual.visible)
@@ -401,6 +428,19 @@ class DiagramView(ViewBox):
     def toggle_RGB_scatter_visual_visibility_action(self):
         self.__RGB_scatter_visual.visible = (
             not self.__RGB_scatter_visual.visible)
+
+        return True
+
+    def toggle_pointer_gamut_visual_visibility_action(self):
+        self.__pointer_gamut_visual.visible = (
+            not self.__pointer_gamut_visual.visible)
+        self.__pointer_gamut_boundaries_visual.visible = (
+            not self.__pointer_gamut_boundaries_visual.visible)
+
+        return True
+
+    def toggle_grid_visual_visibility_action(self):
+        self.__grid_visual.visible = not self.__grid_visual.visible
 
         return True
 
