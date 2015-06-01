@@ -58,6 +58,15 @@ class OrbitCamera(TurntableCamera):
         self.__translate_speed = value
 
     def _dist_to_trans(self, distance):
+        """
+        Converts mouse x, y movement into x, y, z translations.
+
+        Parameters
+        ----------
+        distance : numeric
+            Distance traveled by the mouse.
+        """
+
         translate = np.asarray(TurntableCamera._dist_to_trans(self, distance))
         translate *= self.__translate_speed
 

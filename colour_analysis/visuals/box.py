@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+from vispy.geometry.generation import create_box
 from vispy.scene.visuals import create_visual_node
 
-from colour_analysis.geometries import box_geometry
 from colour_analysis.visuals import PrimitiveVisual
 
 
@@ -22,11 +22,11 @@ class BoxVisual(PrimitiveVisual):
                  vertex_colours=None,
                  wireframe=False,
                  wireframe_offset=None):
-        vertices, faces, outline = box_geometry(width, height, depth,
-                                                width_segments,
-                                                height_segments,
-                                                depth_segments,
-                                                planes)
+        vertices, faces, outline = create_box(width, height, depth,
+                                              width_segments,
+                                              height_segments,
+                                              depth_segments,
+                                              planes)
 
         PrimitiveVisual.__init__(
             self,

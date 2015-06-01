@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
+from vispy.geometry.generation import create_plane
 from vispy.scene.visuals import create_visual_node
 
-from colour_analysis.geometries import plane_geometry
 from colour_analysis.visuals import PrimitiveVisual
 
 
@@ -20,10 +20,10 @@ class PlaneVisual(PrimitiveVisual):
                  vertex_colours=None,
                  wireframe=False,
                  wireframe_offset=None):
-        vertices, faces, outline = plane_geometry(width, height,
-                                                  width_segments,
-                                                  height_segments,
-                                                  direction)
+        vertices, faces, outline = create_plane(width, height,
+                                                width_segments,
+                                                height_segments,
+                                                direction)
 
         PrimitiveVisual.__init__(
             self,

@@ -3,12 +3,12 @@
 from __future__ import division
 
 import numpy as np
+from vispy.geometry.generation import create_box
 from vispy.scene.visuals import Node, Line
 
 from colour import RGB_to_XYZ, xy_to_XYZ
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
-from colour_analysis.geometries import box_geometry
 from colour_analysis.utilities import (
     CHROMATICITY_DIAGRAM_TRANSFORMATIONS,
     XYZ_to_reference_colourspace,
@@ -26,12 +26,12 @@ def RGB_identity_cube(width_segments=16,
                       wireframe=False,
                       *args,
                       **kwargs):
-    vertices, _faces, _outline = box_geometry(width_segments=width_segments,
-                                              height_segments=height_segments,
-                                              depth_segments=depth_segments,
-                                              planes=planes)
+    vertices, _faces, _outline = create_box(width_segments=width_segments,
+                                            height_segments=height_segments,
+                                            depth_segments=depth_segments,
+                                            planes=planes)
 
-    vertex_colours = vertices['colour'] if vertex_colours else None
+    vertex_colours = vertices['color'] if vertex_colours else None
 
     RGB_box = Box(width_segments=width_segments,
                   height_segments=height_segments,

@@ -4,6 +4,8 @@
 """
 Colour - Analysis
 =================
+
+This module is the main command line entry point for *Colour - Analysis*.
 """
 
 from __future__ import division

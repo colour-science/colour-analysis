@@ -314,7 +314,7 @@ class DiagramView(ViewBox):
         self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__input_colourspace,
             self.__diagram,
-            uniform_colour=(0.8, 0.8, 0.0))
+            uniform_colour=(0.8, 0.0, 0.8))
 
     def __create_correlate_colourspace_visual(self):
         self.__correlate_colourspace_visual = RGB_colourspace_triangle_visual(
