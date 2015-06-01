@@ -12,9 +12,8 @@ from colour import (
     RGB_COLOURSPACES,
     RGB_to_RGB,
     RGB_to_XYZ,
-    is_scipy_installed,
     is_within_pointer_gamut,
-    warning)
+    tstack)
 
 from colour_analysis.visuals import image_visual
 
@@ -46,6 +45,7 @@ class ImageView(ViewBox):
 
         self.__clamp_blacks = False
         self.__clamp_whites = False
+        self.__image_overlay = True
 
         self.__display_input_colourspace_out_of_gamut = False
         self.__display_correlate_colourspace_out_of_gamut = False
@@ -219,23 +219,28 @@ class ImageView(ViewBox):
     def __create_image(self):
         image = np.copy(self.__image)
 
+        has_overlay = False
         if self.__clamp_blacks:
             image = np.clip(image, 0, np.inf)
+            has_overlay = True
 
         if self.__clamp_whites:
             image = np.clip(image, -np.inf, 1)
+            has_overlay = True
 
         if self.__display_correlate_colourspace_out_of_gamut:
             image = RGB_to_RGB(image,
                                RGB_COLOURSPACES[self.__input_colourspace],
                                RGB_COLOURSPACES[self.__correlate_colourspace])
+            has_overlay = True
 
         if (self.__display_input_colourspace_out_of_gamut or
                 self.__display_correlate_colourspace_out_of_gamut):
             image[image >= 0] = 0
             image[image < 0] = 1
+            has_overlay = True
 
-        if self.__display_out_of_pointer_gamut and is_scipy_installed():
+        if self.__display_out_of_pointer_gamut:
             colourspace = RGB_COLOURSPACES[self.__input_colourspace]
             image = is_within_pointer_gamut(
                 RGB_to_XYZ(image,
@@ -243,8 +248,17 @@ class ImageView(ViewBox):
                            colourspace.whitepoint,
                            colourspace.RGB_to_XYZ_matrix)).astype(int)
 
+            # TODO: Investigate why stacking implies that image need to be
+            # inverted.
+            image = 1 - tstack((image, image, image))
+            has_overlay = True
+
         if self.__display_hdr_colours:
             image[image <= 1] = 0
+            # has_overlay = True
+
+        if self.__image_overlay and has_overlay:
+            image = self.__image + image
 
         oecf = RGB_COLOURSPACES[self.__oecf].transfer_function
 
@@ -304,26 +318,25 @@ class ImageView(ViewBox):
         self.__detach_visuals()
         self.__create_visuals()
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
 
     def toggle_blacks_clamp_action(self):
         self.__clamp_blacks = not self.__clamp_blacks
-
         self.__detach_visuals()
         self.__create_visuals()
         self.__attach_visuals()
+        self.__title_overlay_visual_text()
 
         return True
 
     def toggle_whites_clamp_action(self):
         self.__clamp_whites = not self.__clamp_whites
-
         self.__detach_visuals()
         self.__create_visuals()
         self.__attach_visuals()
+        self.__title_overlay_visual_text()
 
         return True
 
@@ -331,14 +344,11 @@ class ImageView(ViewBox):
         self.__detach_visuals()
         self.__display_input_colourspace_out_of_gamut = (
             not self.__display_input_colourspace_out_of_gamut)
-
         if self.__display_input_colourspace_out_of_gamut:
             self.__display_correlate_colourspace_out_of_gamut = False
             self.__display_hdr_colours = False
-
         self.__create_visuals()
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
@@ -347,38 +357,26 @@ class ImageView(ViewBox):
         self.__detach_visuals()
         self.__display_correlate_colourspace_out_of_gamut = (
             not self.__display_correlate_colourspace_out_of_gamut)
-
         if self.__display_correlate_colourspace_out_of_gamut:
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_out_of_pointer_gamut = False
             self.__display_hdr_colours = False
-
         self.__create_visuals()
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
 
     def toggle_out_of_pointer_gamut_colours_display_action(self):
-        if not is_scipy_installed():
-            warning(
-                '"scipy" or specific "scipy" Api features are not  available, '
-                'skipping out of Pointer\'s Gamut colours computations!')
-            return False
-
         self.__detach_visuals()
         self.__display_out_of_pointer_gamut = (
             not self.__display_out_of_pointer_gamut)
-
         if self.__display_out_of_pointer_gamut:
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_correlate_colourspace_out_of_gamut = False
             self.__display_hdr_colours = False
-
         self.__create_visuals()
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
@@ -387,18 +385,22 @@ class ImageView(ViewBox):
         self.__detach_visuals()
         self.__display_hdr_colours = (
             not self.__display_hdr_colours)
-
         if self.__display_hdr_colours:
             self.__display_input_colourspace_out_of_gamut = False
             self.__display_correlate_colourspace_out_of_gamut = False
             self.__display_out_of_pointer_gamut = False
-
         self.__create_visuals()
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
+
+    def toggle_image_overlay_display_action(self):
+        self.__image_overlay = not self.__image_overlay
+        self.__detach_visuals()
+        self.__create_visuals()
+        self.__attach_visuals()
+        self.__title_overlay_visual_text()
 
     def fit_image_visual_image_action(self):
         # TODO: Implement definition.

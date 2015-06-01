@@ -21,6 +21,7 @@ from colour_analysis.visuals import (
     CIE_1976_UCS_chromaticity_diagram,
     RGB_colourspace_triangle_visual,
     RGB_scatter_visual,
+    axis_visual,
     pointer_gamut_boundaries_visual,
     pointer_gamut_visual,
     spectral_locus_visual)
@@ -62,6 +63,7 @@ class DiagramView(ViewBox):
         self.__pointer_gamut_visual = None
         self.__pointer_gamut_boundaries_visual = None
         self.__grid_visual = None
+        self.__axis_visual = None
 
         self.__clamp_blacks = False
         self.__clamp_whites = False
@@ -293,7 +295,6 @@ class DiagramView(ViewBox):
     def __create_RGB_scatter_visual(self, RGB):
         self.__RGB_scatter_visual = RGB_scatter_visual(
             RGB,
-            symbol='cross',
             reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
             uniform_colour=(0.0, 0.0, 0.0))
@@ -325,6 +326,9 @@ class DiagramView(ViewBox):
     def __create_grid_visual(self):
         self.__grid_visual = GridLines()
 
+    def __create_axis_visual(self):
+        self.__axis_visual = axis_visual()
+
     def __create_visuals(self):
         self.__create_chromaticity_diagram_visual(self.__diagram)
         self.__create_spectral_locus_visual()
@@ -334,6 +338,7 @@ class DiagramView(ViewBox):
         self.__create_input_colourspace_visual()
         self.__create_correlate_colourspace_visual()
         self.__create_grid_visual()
+        self.__create_axis_visual()
 
     def __create_camera(self):
         self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1),
@@ -348,6 +353,7 @@ class DiagramView(ViewBox):
         self.__input_colourspace_visual.add_parent(self.scene)
         self.__correlate_colourspace_visual.add_parent(self.scene)
         self.__grid_visual.add_parent(self.scene)
+        self.__axis_visual.add_parent(self.scene)
 
     def __detach_visuals(self):
         self.__chromaticity_diagram.remove_parent(self.scene)
@@ -358,6 +364,7 @@ class DiagramView(ViewBox):
         self.__input_colourspace_visual.remove_parent(self.scene)
         self.__correlate_colourspace_visual.remove_parent(self.scene)
         self.__grid_visual.remove_parent(self.scene)
+        self.__axis_visual.remove_parent(self.scene)
 
     def __create_title_overlay_visual(self):
         self.__title_overlay_visual = Text(str(),
@@ -417,6 +424,8 @@ class DiagramView(ViewBox):
             self.__correlate_colourspace_visual.visible)
         visible['grid_visual'] = (
             self.__grid_visual.visible)
+        visible['axis_visual'] = (
+            self.__axis_visual.visible)
 
         self.__visuals_visibility = visible
 
@@ -439,6 +448,8 @@ class DiagramView(ViewBox):
             visible['correlate_colourspace_visual'])
         self.__grid_visual.visible = (
             visible['grid_visual'])
+        self.__axis_visual.visible = (
+            visible['axis_visual'])
 
     def toggle_spectral_locus_visual_visibility_action(self):
         self.__spectral_locus_visual.visible = (
@@ -476,6 +487,12 @@ class DiagramView(ViewBox):
 
     def toggle_grid_visual_visibility_action(self):
         self.__grid_visual.visible = not self.__grid_visual.visible
+
+        return True
+
+    def toggle_axis_visual_visibility_action(self):
+        self.__axis_visual.visible = (
+            not self.__axis_visual.visible)
 
         return True
 

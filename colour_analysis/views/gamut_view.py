@@ -578,6 +578,12 @@ class GamutView(ViewBox):
 
         return True
 
+    def toggle_axis_visual_visibility_action(self):
+        self.__axis_visual.visible = (
+            not self.__axis_visual.visible)
+
+        return True
+
     def cycle_correlate_colourspace_action(self):
         self.__detach_visuals()
         self.__create_correlate_colourspace_visual(
@@ -596,12 +602,6 @@ class GamutView(ViewBox):
         self.__restore_visuals_visibility()
         self.__create_camera()
         self.__title_overlay_visual_text()
-
-        return True
-
-    def toggle_axis_visual_visibility_action(self):
-        self.__axis_visual.visible = (
-            not self.__axis_visual.visible)
 
         return True
 

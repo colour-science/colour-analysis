@@ -320,6 +320,15 @@
         "key": "r"
       }
     },
+    "toggle_image_overlay_display": {
+      "name": "toggle_image_overlay_display",
+      "description": "Toggle image overlay display",
+      "sequence": {
+        "modifiers": [
+        ],
+        "key": "o"
+      }
+    },
     "fit_image_visual_image": {
       "name": "fit_image_visual_image",
       "description": "Fit image",

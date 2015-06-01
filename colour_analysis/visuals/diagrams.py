@@ -6,7 +6,6 @@ import numpy as np
 
 from colour import (
     XYZ_to_sRGB,
-    is_scipy_installed,
     normalise,
     tstack)
 
@@ -22,37 +21,36 @@ def chromaticity_diagram_visual(
         cmfs='CIE 1931 2 Degree Standard Observer',
         transformation='CIE 1931',
         parent=None):
-    if is_scipy_installed(raise_exception=True):
-        from scipy.spatial import Delaunay
+    from scipy.spatial import Delaunay
 
-        cmfs = get_cmfs(cmfs)
+    cmfs = get_cmfs(cmfs)
 
-        illuminant = DEFAULT_PLOTTING_ILLUMINANT
+    illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-        XYZ_to_ij = (
-            CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['XYZ_to_ij'])
-        ij_to_XYZ = (
-            CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['ij_to_XYZ'])
+    XYZ_to_ij = (
+        CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['XYZ_to_ij'])
+    ij_to_XYZ = (
+        CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['ij_to_XYZ'])
 
-        ij_c = XYZ_to_ij(cmfs.values, illuminant)
+    ij_c = XYZ_to_ij(cmfs.values, illuminant)
 
-        triangulation = Delaunay(ij_c, qhull_options='QJ')
-        samples = np.linspace(0, 1, samples)
-        ii, jj = np.meshgrid(samples, samples)
-        ij = tstack((ii, jj))
-        ij = np.vstack((ij_c, ij[triangulation.find_simplex(ij) > 0]))
+    triangulation = Delaunay(ij_c, qhull_options='QJ')
+    samples = np.linspace(0, 1, samples)
+    ii, jj = np.meshgrid(samples, samples)
+    ij = tstack((ii, jj))
+    ij = np.vstack((ij_c, ij[triangulation.find_simplex(ij) > 0]))
 
-        ij_p = np.hstack((ij, np.full((ij.shape[0], 1), 0)))
-        triangulation = Delaunay(ij, qhull_options='QJ')
-        RGB = normalise(XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant),
-                        axis=-1)
+    ij_p = np.hstack((ij, np.full((ij.shape[0], 1), 0)))
+    triangulation = Delaunay(ij, qhull_options='QJ')
+    RGB = normalise(XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant),
+                    axis=-1)
 
-        diagram = Primitive(vertices=ij_p,
-                            faces=triangulation.simplices,
-                            vertex_colours=RGB,
-                            parent=parent)
+    diagram = Primitive(vertices=ij_p,
+                        faces=triangulation.simplices,
+                        vertex_colours=RGB,
+                        parent=parent)
 
-        return diagram
+    return diagram
 
 
 def CIE_1931_chromaticity_diagram(
