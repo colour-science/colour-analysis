@@ -18,6 +18,7 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
                           uniform_colour=None,
                           uniform_opacity=1.0,
                           width=2.0,
+                          method='gl',
                           parent=None):
     cmfs = get_cmfs(cmfs)
     XYZ = cmfs.values
@@ -40,6 +41,7 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     line = Line(points,
                 np.clip(RGB, 0, 1),
                 width=width,
+                method=method,
                 parent=parent)
 
     return line

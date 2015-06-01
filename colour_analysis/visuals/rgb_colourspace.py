@@ -118,7 +118,8 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
     XYZ_to_ij = CHROMATICITY_DIAGRAM_TRANSFORMATIONS[diagram]['XYZ_to_ij']
 
     ij = XYZ_to_ij(xy_to_XYZ(colourspace.primaries), illuminant)
-    ij = np.vstack((ij, ij[0, ...]))
+    # TODO: Remove following hack dealing with 'agg' method issues.
+    ij = np.vstack((ij[-1, ...], ij, ij[0, ...]))
 
     ij[np.isnan(ij)] = 0
 

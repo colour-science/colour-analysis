@@ -54,7 +54,7 @@ def pointer_gamut_visual(reference_colourspace='CIE xyY',
 def pointer_gamut_boundaries_visual(reference_colourspace='CIE xyY',
                                     uniform_colour=(0.9, 0.9, 0.9),
                                     uniform_opacity=0.8,
-                                    width=4.0,
+                                    width=2.0,
                                     parent=None):
     XYZ = np.vstack((POINTER_GAMUT_BOUNDARIES,
                      POINTER_GAMUT_BOUNDARIES[0, ...]))

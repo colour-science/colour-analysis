@@ -286,8 +286,9 @@ class DiagramView(ViewBox):
         self.__spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
-            uniform_colour=(0.8, 0.8, 0.8),
-            width=4.0)
+            uniform_colour=(0.0, 0.0, 0.0),
+            width=2.0,
+            method='agg')
 
     def __create_RGB_scatter_visual(self, RGB):
         self.__RGB_scatter_visual = RGB_scatter_visual(
@@ -313,13 +314,13 @@ class DiagramView(ViewBox):
         self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__input_colourspace,
             self.__diagram,
-            uniform_colour=(1.0, 1.0, 0.0))
+            uniform_colour=(0.8, 0.8, 0.0))
 
     def __create_correlate_colourspace_visual(self):
         self.__correlate_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__correlate_colourspace,
             self.__diagram,
-            uniform_colour=(0.0, 1.0, 1.0))
+            uniform_colour=(0.0, 0.8, 0.8))
 
     def __create_grid_visual(self):
         self.__grid_visual = GridLines()
@@ -400,19 +401,54 @@ class DiagramView(ViewBox):
 
     def __store_visuals_visibility(self):
         visible = OrderedDict()
+        visible['chromaticity_diagram_visual'] = (
+            self.__chromaticity_diagram.visible)
+        visible['spectral_locus_visual'] = (
+            self.__spectral_locus_visual.visible)
+        visible['RGB_scatter_visual'] = (
+            self.__RGB_scatter_visual.visible)
+        visible['pointer_gamut_visual'] = (
+            self.__pointer_gamut_visual.visible)
+        visible['pointer_gamut_boundaries_visual'] = (
+            self.__pointer_gamut_boundaries_visual.visible)
+        visible['input_colourspace_visual'] = (
+            self.__input_colourspace_visual.visible)
+        visible['correlate_colourspace_visual'] = (
+            self.__correlate_colourspace_visual.visible)
+        visible['grid_visual'] = (
+            self.__grid_visual.visible)
+
         self.__visuals_visibility = visible
 
     def __restore_visuals_visibility(self):
         visible = self.__visuals_visibility
 
+        self.__chromaticity_diagram.visible = (
+            visible['chromaticity_diagram_visual'])
+        self.__spectral_locus_visual.visible = (
+            visible['spectral_locus_visual'])
+        self.__RGB_scatter_visual.visible = (
+            visible['RGB_scatter_visual'])
+        self.__pointer_gamut_visual.visible = (
+            visible['pointer_gamut_visual'])
+        self.__pointer_gamut_boundaries_visual.visible = (
+            visible['pointer_gamut_boundaries_visual'])
+        self.__input_colourspace_visual.visible = (
+            visible['input_colourspace_visual'])
+        self.__correlate_colourspace_visual.visible = (
+            visible['correlate_colourspace_visual'])
+        self.__grid_visual.visible = (
+            visible['grid_visual'])
+
     def toggle_spectral_locus_visual_visibility_action(self):
         self.__spectral_locus_visual.visible = (
             not self.__spectral_locus_visual.visible)
 
+        return True
+
     def toggle_input_colourspace_visual_visibility_action(self):
         self.__input_colourspace_visual.visible = (
             not self.__input_colourspace_visual.visible)
-
         self.__title_overlay_visual_text()
 
         return True
@@ -420,7 +456,6 @@ class DiagramView(ViewBox):
     def toggle_correlate_colourspace_visual_visibility_action(self):
         self.__correlate_colourspace_visual.visible = (
             not self.__correlate_colourspace_visual.visible)
-
         self.__title_overlay_visual_text()
 
         return True
@@ -446,50 +481,41 @@ class DiagramView(ViewBox):
 
     def cycle_correlate_colourspace_action(self):
         self.__detach_visuals()
-
         self.__create_correlate_colourspace_visual()
-
         self.__attach_visuals()
-
         self.__title_overlay_visual_text()
 
         return True
 
     def cycle_chromaticity_diagram_action(self):
+        self.__store_visuals_visibility()
         self.__detach_visuals()
-
         self.__diagram = self.__diagrams_cycle.next_item()
-
         self.__create_visuals()
-
         self.__attach_visuals()
-
+        self.__restore_visuals_visibility()
         self.__title_overlay_visual_text()
 
         return True
 
     def toggle_blacks_clamp_action(self):
         self.__clamp_blacks = not self.__clamp_blacks
-
         self.__store_visuals_visibility()
         self.__detach_visuals()
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
-
         self.__title_overlay_visual_text()
 
         return True
 
     def toggle_whites_clamp_action(self):
         self.__clamp_whites = not self.__clamp_whites
-
         self.__store_visuals_visibility()
         self.__detach_visuals()
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
-
         self.__title_overlay_visual_text()
 
         return True
