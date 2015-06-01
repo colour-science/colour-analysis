@@ -71,3 +71,6 @@ class OrbitCamera(TurntableCamera):
         translate *= self.__translate_speed
 
         return translate
+
+    def _get_depth_value(self):
+        return 100.0

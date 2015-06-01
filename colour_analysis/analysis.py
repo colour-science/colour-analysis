@@ -65,7 +65,8 @@ class Analysis(SceneCanvas):
             keys='interactive',
             title="Colour Analysis - {0}".format(image_path),
             size=settings['canvas']['size'],
-            bgcolor=settings['canvas']['canvas_background_colour'])
+            bgcolor=settings['canvas']['canvas_background_colour'],
+            config={'samples': settings['canvas']['samples']})
 
         self.__image_path = None
         self.image_path = image_path
