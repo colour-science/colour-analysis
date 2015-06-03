@@ -3,6 +3,7 @@
 from __future__ import division
 
 import numpy as np
+from scipy.spatial import Delaunay
 
 from colour import (
     XYZ_to_sRGB,
@@ -21,7 +22,6 @@ def chromaticity_diagram_visual(
         cmfs='CIE 1931 2 Degree Standard Observer',
         transformation='CIE 1931',
         parent=None):
-    from scipy.spatial import Delaunay
 
     cmfs = get_cmfs(cmfs)
 

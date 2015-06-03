@@ -17,7 +17,8 @@ from colour_analysis.visuals import (
     RGB_scatter_visual,
     axis_visual,
     spectral_locus_visual,
-    pointer_gamut_visual)
+    pointer_gamut_visual,
+    pointer_gamut_hull_visual)
 
 
 CameraPreset = namedtuple(
@@ -90,6 +91,7 @@ class GamutView(ViewBox):
         self.__correlate_colourspace_visual = None
         self.__RGB_scatter_visual = None
         self.__pointer_gamut_visual = None
+        self.__pointer_gamut_hull_visual = None
         self.__spectral_locus_visual = None
         self.__axis_visual = None
 
@@ -392,6 +394,10 @@ class GamutView(ViewBox):
         self.__pointer_gamut_visual = pointer_gamut_visual(
             reference_colourspace=self.__reference_colourspace)
 
+    def __create_pointer_gamut_hull_visual(self):
+        self.__pointer_gamut_hull_visual = pointer_gamut_hull_visual(
+            reference_colourspace=self.__reference_colourspace)
+
     def __create_spectral_locus_visual(self):
         self.__spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=self.__reference_colourspace)
@@ -403,6 +409,7 @@ class GamutView(ViewBox):
     def __create_visuals(self):
         self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
         self.__create_pointer_gamut_visual()
+        self.__create_pointer_gamut_hull_visual()
         self.__create_input_colourspace_visual()
         self.__create_correlate_colourspace_visual()
         self.__create_spectral_locus_visual()
@@ -428,6 +435,7 @@ class GamutView(ViewBox):
         self.__input_colourspace_visual.add_parent(self.scene)
         self.__correlate_colourspace_visual.add_parent(self.scene)
         self.__pointer_gamut_visual.add_parent(self.scene)
+        self.__pointer_gamut_hull_visual.add_parent(self.scene)
         self.__spectral_locus_visual.add_parent(self.scene)
         self.__axis_visual.add_parent(self.scene)
 
@@ -436,6 +444,7 @@ class GamutView(ViewBox):
         self.__input_colourspace_visual.remove_parent(self.scene)
         self.__correlate_colourspace_visual.remove_parent(self.scene)
         self.__pointer_gamut_visual.remove_parent(self.scene)
+        self.__pointer_gamut_hull_visual.remove_parent(self.scene)
         self.__spectral_locus_visual.remove_parent(self.scene)
         self.__axis_visual.remove_parent(self.scene)
 
@@ -449,6 +458,8 @@ class GamutView(ViewBox):
             self.__correlate_colourspace_visual.children[0].visible)
         visible['pointer_gamut_visual'] = (
             self.__pointer_gamut_visual.visible)
+        visible['pointer_gamut_hull_visual'] = (
+            self.__pointer_gamut_hull_visual.children[0].visible)
         visible['spectral_locus_visual'] = (
             self.__spectral_locus_visual.visible)
         visible['axis_visual'] = (
@@ -464,6 +475,8 @@ class GamutView(ViewBox):
         for visual in self.__correlate_colourspace_visual.children:
             visual.visible = visible['correlate_colourspace_visual']
         self.__pointer_gamut_visual.visible = visible['pointer_gamut_visual']
+        for visual in self.__pointer_gamut_hull_visual.children:
+            visual.visible = visible['pointer_gamut_hull_visual']
         self.__spectral_locus_visual.visible = (
             visible['spectral_locus_visual'])
         self.__axis_visual.visible = visible['axis_visual']
@@ -555,6 +568,8 @@ class GamutView(ViewBox):
     def toggle_pointer_gamut_visual_visibility_action(self):
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
+        for visual in self.__pointer_gamut_hull_visual.children:
+            visual.visible = self.__pointer_gamut_visual.visible
 
         return True
 
