@@ -1,28 +1,34 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Common Utilities
+================
+
+Defines common utilities objects that don't fall in any specific category.
+"""
+
+from __future__ import division, unicode_literals
 
 from colour import (
-    CMFS,
-    Lab_to_LCHab,
-    Luv_to_LCHuv,
     Luv_to_uv,
     Luv_uv_to_xy,
-    RGB_COLOURSPACES,
-    tsplit,
-    tstack,
     UCS_to_uv,
     UCS_uv_to_xy,
     xy_to_XYZ,
-    XYZ_to_IPT,
-    XYZ_to_Lab,
     XYZ_to_Luv,
     XYZ_to_UCS,
-    XYZ_to_UVW,
-    XYZ_to_xy,
-    XYZ_to_xyY)
+    XYZ_to_xy)
 
-from colour_analysis.constants import REFERENCE_COLOURSPACES
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['CHROMATICITY_DIAGRAM_TRANSFORMATIONS',
+           'Cycle']
 
 CHROMATICITY_DIAGRAM_TRANSFORMATIONS = {
     'CIE 1931': {'XYZ_to_ij': lambda a, i: XYZ_to_xy(a, i),
@@ -31,150 +37,113 @@ CHROMATICITY_DIAGRAM_TRANSFORMATIONS = {
                      'ij_to_XYZ': lambda a, i: xy_to_XYZ(UCS_uv_to_xy(a))},
     'CIE 1976 UCS': {'XYZ_to_ij': lambda a, i: Luv_to_uv(XYZ_to_Luv(a, i), i),
                      'ij_to_XYZ': lambda a, i: xy_to_XYZ(Luv_uv_to_xy(a))}}
+"""
+Chromaticity diagram specific helper conversion objects.
+
+CHROMATICITY_DIAGRAM_TRANSFORMATIONS : dict
+    {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
+"""
 
 
-def get_RGB_colourspace(colourspace):
+class Cycle(object):
     """
-    Returns the *RGB* colourspace with given name.
+    Defines a cycling array like container where items can be retrieved
+    endlessly in a circular way.
 
     Parameters
     ----------
-    colourspace : unicode
-        *RGB* colourspace name.
+    items : array_like
+        Items to iterate on.
 
-    Returns
-    -------
-    RGB_Colourspace
-        *RGB* colourspace.
+    Examples
+    --------
+    >>> cycle = Cycle((0, 1, 2))
+    >>> cycle.current_item()
+    0
+    >>> cycle.next_item()
+    1
+    >>> cycle.next_item()
+    2
+    >>> cycle.next_item()
+    0
 
-    Raises
-    ------
-    KeyError
-        If the given *RGB* colourspace is not found in the factory *RGB*
-        colourspaces.
+    :class:`Cycle` class also implements the iterator protocol, it is important
+    to note that when using `next` the first item retrieved is at index 0
+    whereas using :meth:`Cycle.next_item` method the first item retrieved is at
+    index 1:
+    >>> cycle = Cycle((0, 1, 2))
+    >>> next(cycle)
+    0
+    >>> next(cycle)
+    1
+    >>> next(cycle)
+    2
+    >>> next(cycle)
+    0
     """
 
-    colourspace, name = RGB_COLOURSPACES.get(colourspace), colourspace
-    if colourspace is None:
-        raise KeyError(
-            ('"{0}" colourspace not found in factory colourspaces: '
-             '"{1}".').format(name, ', '.join(
-                sorted(RGB_COLOURSPACES.keys()))))
+    def __init__(self, items):
+        self.__items = items
+        self.__index = 0
 
-    return colourspace
+    def __iter__(self):
+        """
+        Reimplements :meth:`Object.__iter__` method.
 
+        Return
+        ------
+        Cycle
+        """
 
-def get_cmfs(cmfs):
-    """
-    Returns the colour matching functions with given name.
+        return self
 
-    Parameters
-    ----------
-    cmfs : unicode
-        Colour matching functions name.
+    def next(self):
+        """
+        Retrieves the item at current internal index and then increments the
+        index.
 
-    Returns
-    -------
-    RGB_ColourMatchingFunctions or XYZ_ColourMatchingFunctions
-        Colour matching functions.
+        Return
+        ------
+        Object
+        """
 
-    Raises
-    ------
-    KeyError
-        If the given colour matching functions is not found in the factory
-        colour matching functions.
-    """
+        item = self.current_item()
 
-    cmfs, name = CMFS.get(cmfs), cmfs
-    if cmfs is None:
-        raise KeyError(
-            ('"{0}" not found in factory colour matching functions: '
-             '"{1}".').format(name, ', '.join(sorted(CMFS.keys()))))
-    return cmfs
+        self.__increment_index()
 
+        return item
 
-def XYZ_to_reference_colourspace(XYZ,
-                                 illuminant,
-                                 reference_colourspace):
-    """
-    Converts from *CIE XYZ* tristimulus values to given reference colourspace.
+    def __increment_index(self):
+        """
+        Increments the internal index pointing at the current item.
+        """
 
-    Parameters
-    ----------
-    XYZ : array_like
-        *CIE XYZ* tristimulus values.
-    illuminant : array_like
-        *CIE XYZ* tristimulus values *illuminant* *xy* chromaticity
-        coordinates.
-    reference_colourspace : unicode
-        **{'CIE XYZ', 'CIE xyY', 'CIE xy', 'CIE Lab', 'CIE Luv', 'CIE Luv uv',
-        'CIE UCS', 'CIE UCS uv', 'CIE UVW', 'IPT'}**
+        self.__index += 1
 
-        Reference colourspace to convert the *CIE XYZ* tristimulus values to.
+        if self.__index >= len(self.__items):
+            self.__index = 0
 
-    Returns
-    -------
-    ndarray
-        Reference colourspace values.
-    """
+    def current_item(self):
+        """
+        Returns the item at current internal index and then increments the
+        index.
 
-    value = None
-    if reference_colourspace == 'CIE XYZ':
-        value = XYZ
-    if reference_colourspace == 'CIE xyY':
-        value = XYZ_to_xyY(XYZ, illuminant)
-    if reference_colourspace == 'CIE xy':  # Used in Chromaticity Diagram.
-        value = XYZ_to_xy(XYZ, illuminant)
-    if reference_colourspace == 'CIE Lab':
-        L, a, b = tsplit(XYZ_to_Lab(XYZ, illuminant))
-        value = tstack((a, b, L))
-    if reference_colourspace == 'CIE LCHab':
-        L, CH, ab = tsplit(Lab_to_LCHab(XYZ_to_Lab(XYZ, illuminant)))
-        value = tstack((CH, ab, L))
-    if reference_colourspace == 'CIE Luv':
-        L, u, v = tsplit(XYZ_to_Luv(XYZ, illuminant))
-        value = tstack((u, v, L))
-    if reference_colourspace == 'CIE Luv uv':  # Used in Chromaticity Diagram.
-        u, v = tsplit(Luv_to_uv(XYZ_to_Luv(XYZ, illuminant), illuminant))
-        value = tstack((u, v))
-    if reference_colourspace == 'CIE LCHuv':
-        L, CH, uv = tsplit(Luv_to_LCHuv(XYZ_to_Luv(XYZ, illuminant)))
-        value = tstack((CH, uv, L))
-    if reference_colourspace == 'CIE UCS':
-        value = XYZ_to_UCS(XYZ)
-    if reference_colourspace == 'CIE UCS uv':  # Used in Chromaticity Diagram.
-        u, v = tsplit(UCS_to_uv(XYZ_to_UCS(XYZ)))
-        value = tstack((u, v))
-    if reference_colourspace == 'CIE UVW':
-        value = XYZ_to_UVW(XYZ * 100, illuminant)
-    if reference_colourspace == 'IPT':
-        I, P, T = tsplit(XYZ_to_IPT(XYZ))
-        value = tstack((P, T, I))
+        Return
+        ------
+        Object
+        """
 
-    if value is None:
-        raise ValueError(
-            ('"{0}" not found in reference colourspace models: '
-             '"{1}".').format(reference_colourspace,
-                              ', '.join(REFERENCE_COLOURSPACES)))
-    return value
+        return self.__items[self.__index]
 
+    def next_item(self):
+        """
+        Increments the internal index and then returns the item at index.
 
-def nodes_walker(node, ascendants=False):
-    attribute = "children" if not ascendants else "parent"
-    if not hasattr(node, attribute):
-        return
+        Return
+        ------
+        Object
+        """
 
-    elements = getattr(node, attribute)
-    elements = elements if isinstance(elements, list) else [elements]
+        self.__increment_index()
 
-    for element in elements:
-        yield element
-
-        if not hasattr(element, attribute):
-            continue
-
-        if not getattr(element, attribute):
-            continue
-
-        for sub_element in nodes_walker(element, ascendants=ascendants):
-            yield sub_element
+        return self.current_item()

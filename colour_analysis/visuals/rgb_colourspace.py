@@ -5,14 +5,12 @@ from __future__ import division
 import numpy as np
 from vispy.geometry.generation import create_box
 from vispy.scene.visuals import Node, Line
-
 from colour import RGB_to_XYZ, xy_to_XYZ
+from colour.plotting import get_RGB_colourspace
+from colour.plotting.volume import XYZ_to_reference_colourspace
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
-from colour_analysis.utilities import (
-    CHROMATICITY_DIAGRAM_TRANSFORMATIONS,
-    XYZ_to_reference_colourspace,
-    get_RGB_colourspace)
+from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.visuals import Box
 
 

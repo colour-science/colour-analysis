@@ -4,7 +4,6 @@ from __future__ import division
 
 import numpy as np
 from vispy.color.color_array import ColorArray
-from vispy.geometry.generation import create_plane
 from vispy.scene.visuals import Line, Node
 
 from colour import (
@@ -14,10 +13,10 @@ from colour import (
     POINTER_GAMUT_DATA,
     POINTER_GAMUT_ILLUMINANT,
     xy_to_XYZ)
+from colour.plotting.volume import XYZ_to_reference_colourspace
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Symbol
-from colour_analysis.utilities import XYZ_to_reference_colourspace
 
 POINTER_GAMUT_DATA = Lab_to_XYZ(LCHab_to_Lab(POINTER_GAMUT_DATA),
                                 POINTER_GAMUT_ILLUMINANT)

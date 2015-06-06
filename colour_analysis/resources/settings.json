@@ -357,17 +357,6 @@
           "name": "input_colourspace_visual_style_2",
           "description": "Input Colourspace - Visual Style 2",
           "visual": "input_colourspace_visual",
-          "segments": 48,
-          "uniform_colour": null,
-          "uniform_opacity": 0.5,
-          "wireframe": true,
-          "wireframe_colour": null,
-          "wireframe_opacity": 1.0
-        },
-        {
-          "name": "input_colourspace_visual_style_3",
-          "description": "Input Colourspace - Visual Style 3",
-          "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
           "uniform_opacity": 0.5,
@@ -376,8 +365,8 @@
           "wireframe_opacity": 1.0
         },
         {
-          "name": "input_colourspace_visual_style_4",
-          "description": "Input Colourspace - Visual Style 4",
+          "name": "input_colourspace_visual_style_3",
+          "description": "Input Colourspace - Visual Style 3",
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
@@ -395,8 +384,8 @@
           "wireframe_opacity": 1.0
         },
         {
-          "name": "input_colourspace_visual_style_5",
-          "description": "Input Colourspace - Visual Style 5",
+          "name": "input_colourspace_visual_style_4",
+          "description": "Input Colourspace - Visual Style 4",
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": [
@@ -467,17 +456,6 @@
         {
           "name": "correlate_colourspace_visual_style_4",
           "description": "Correlate Colourspace - Visual Style 4",
-          "visual": "correlate_colourspace_visual",
-          "segments": 48,
-          "uniform_colour": null,
-          "uniform_opacity": 0.5,
-          "wireframe": true,
-          "wireframe_colour": null,
-          "wireframe_opacity": 1.0
-        },
-        {
-          "name": "correlate_colourspace_visual_style_5",
-          "description": "Correlate Colourspace - Visual Style 5",
           "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,

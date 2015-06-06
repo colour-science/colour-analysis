@@ -5,12 +5,12 @@ from __future__ import division
 import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line
+
 from colour import XYZ_to_sRGB, normalise
+from colour.plotting import get_cmfs
+from colour.plotting.volume import XYZ_to_reference_colourspace
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
-from colour_analysis.utilities import (
-    XYZ_to_reference_colourspace,
-    get_cmfs)
 
 
 def spectral_locus_visual(reference_colourspace='CIE xyY',

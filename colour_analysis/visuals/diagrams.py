@@ -9,10 +9,9 @@ from colour import (
     XYZ_to_sRGB,
     normalise,
     tstack)
+from colour.plotting import get_cmfs
 
-from colour_analysis.utilities import (
-    CHROMATICITY_DIAGRAM_TRANSFORMATIONS,
-    get_cmfs)
+from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Primitive
 
