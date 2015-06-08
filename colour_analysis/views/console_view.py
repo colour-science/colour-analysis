@@ -1,13 +1,56 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Console View
+============
+
+Defines the *Console View* related objects:
+
+-   :class:`ConsoleView`
+"""
+
+from __future__ import division, unicode_literals
 
 from vispy.scene.widgets import Console
 
 from colour import message_box
 
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['ConsoleView']
+
 
 class ConsoleView(Console):
+    """
+    Defines the *Console View*.
+
+    Parameters
+    ----------
+    canvas : SceneCanvas
+        Current `vispy.scene.SceneCanvas` instance.
+    \*args : \*, optional
+        Arguments passed to :class:`vispy.scene.widgets.Console` class
+        constructor.
+    \*\*kwargs : \*\*, optional
+        Keywords arguments passed to :class:`vispy.scene.widgets.Console`
+        class constructor.
+
+    Attributes
+    ----------
+    canvas
+
+    Methods
+    -------
+    describe_actions_action
+    describe_analysis_state_action
+    """
+
     def __init__(self, canvas=None, *args, **kwargs):
         Console.__init__(self, *args, **kwargs)
 
@@ -41,6 +84,15 @@ class ConsoleView(Console):
         raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
 
     def describe_actions_action(self):
+        """
+        Defines the slot triggered by the *describe_actions* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         actions = ['Actions & Shortcuts\n']
         for _name, action in sorted(self.canvas.actions.items()):
             if action.sequence.modifiers:
@@ -60,7 +112,17 @@ class ConsoleView(Console):
         return True
 
     def describe_analysis_state_action(self):
+        """
+        Defines the slot triggered by the *describe_analysis_state* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         state = ['Analysis State\n']
+
         state.append('- Input image: {0}'.format(
             self.canvas.image_path))
         state.append('- Input RGB colourspace: {0}'.format(

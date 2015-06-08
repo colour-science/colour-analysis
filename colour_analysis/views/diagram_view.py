@@ -1,6 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Diagram View
+============
+
+Defines the *Diagram View* related objects:
+
+-   :class:`DiagramView`
+"""
+
+from __future__ import division, unicode_literals
 
 import numpy as np
 from collections import OrderedDict
@@ -26,8 +36,81 @@ from colour_analysis.visuals import (
     pointer_gamut_visual,
     spectral_locus_visual)
 
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['DiagramView']
+
 
 class DiagramView(ViewBox):
+    """
+    Defines the *Diagram View*.
+
+    Parameters
+    ----------
+    canvas : SceneCanvas
+        Current `vispy.scene.SceneCanvas` instance.
+    image : array_like
+        Image to use in the view interactions.
+    oecf : unicode
+        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
+        'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
+        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
+        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
+        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
+        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
+        'adobe1998', 'prophoto', 'sRGB'}
+
+        :class:`colour.RGB_Colourspace` class instance name defining the image
+        opto-electronic conversion function.
+    input_colourspace : unicode
+        See `oecf` argument for possible values.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the
+        `image` argument colourspace.
+    correlate_colourspace : unicode
+        See `oecf` argument for possible values, default value is *ACEScg*.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the
+        comparison / correlate colourspace.
+    diagram : unicode
+        {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
+
+        Chromaticity diagram to draw.
+    \*\*kwargs : \*\*, optional
+        Keywords arguments passed to
+        :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.
+
+    Attributes
+    ----------
+    canvas
+    image
+    oecf
+    input_colourspace
+    correlate_colourspace
+    diagram
+
+    Methods
+    -------
+    toggle_spectral_locus_visual_visibility_action
+    toggle_input_colourspace_visual_visibility_action
+    toggle_correlate_colourspace_visual_visibility_action
+    toggle_RGB_scatter_visual_visibility_action
+    toggle_pointer_gamut_visual_visibility_action
+    toggle_grid_visual_visibility_action
+    toggle_axis_visual_visibility_action
+    cycle_correlate_colourspace_action
+    cycle_chromaticity_diagram_action
+    toggle_blacks_clamp_action
+    toggle_whites_clamp_action
+    """
+
     def __init__(self,
                  canvas=None,
                  image=None,
@@ -266,7 +349,18 @@ class DiagramView(ViewBox):
                 sorted(CHROMATICITY_DIAGRAMS.keys())))
         self.__diagram = value
 
-    def __create_RGB_scatter_image(self):
+    def __create_image(self):
+        """
+        Creates the image used by the *Diagram View* according to
+        :attr:`DiagramView.__clamp_blacks` or
+        :attr:`DiagramView.__clamp_whites` attributes values.
+
+        Returns
+        -------
+        ndarray
+            Image
+        """
+
         image = self.__image
 
         if self.__clamp_blacks:
@@ -278,6 +372,17 @@ class DiagramView(ViewBox):
         return image
 
     def __create_chromaticity_diagram_visual(self, diagram='CIE 1931'):
+        """
+        Creates the given chromaticity diagram visual.
+
+        Parameters
+        ----------
+        diagram : unicode
+            {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
+
+            Chromaticity diagram to draw.
+        """
+
         diagrams = {'CIE 1931': CIE_1931_chromaticity_diagram,
                     'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
                     'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram}
@@ -285,6 +390,11 @@ class DiagramView(ViewBox):
         self.__chromaticity_diagram = diagrams[diagram]()
 
     def __create_spectral_locus_visual(self):
+        """
+        Creates the spectral locus visual according to
+        :attr:`DiagramView.diagram` attribute value.
+        """
+
         self.__spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
@@ -293,6 +403,16 @@ class DiagramView(ViewBox):
             method='agg')
 
     def __create_RGB_scatter_visual(self, RGB):
+        """
+        Creates the *RGB* scatter visual for given *RGB* array according to
+        :attr:`DiagramView.diagram` attribute value.
+
+        Parameters
+        ----------
+        RGB : array_like
+            *RGB* array to draw.
+        """
+
         self.__RGB_scatter_visual = RGB_scatter_visual(
             RGB,
             reference_colourspace=(
@@ -300,39 +420,71 @@ class DiagramView(ViewBox):
             uniform_colour=(0.0, 0.0, 0.0))
 
     def __create_pointer_gamut_visual(self):
+        """
+        Creates the *Pointer's Gamut* visual according to
+        :attr:`DiagramView.diagram` attribute value.
+        """
+
         self.__pointer_gamut_visual = pointer_gamut_visual(
             reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
             uniform_opacity=0.4)
 
     def __create_pointer_gamut_boundaries_visual(self):
+        """
+        Creates the *Pointer's Gamut* boundaries visual according to
+        :attr:`DiagramView.diagram` attribute value.
+        """
+
         self.__pointer_gamut_boundaries_visual = (
             pointer_gamut_boundaries_visual(reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[
                     self.__diagram])))
 
     def __create_input_colourspace_visual(self):
+        """
+        Creates the input colourspace visual according to
+        :attr:`DiagramView.input_colourspace` attribute value.
+        """
+
         self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__input_colourspace,
             self.__diagram,
             uniform_colour=(0.8, 0.0, 0.8))
 
     def __create_correlate_colourspace_visual(self):
+        """
+        Creates the correlate colourspace visual according to
+        :attr:`DiagramView.correlate_colourspace` attribute value.
+        """
+
         self.__correlate_colourspace_visual = RGB_colourspace_triangle_visual(
             self.__correlate_colourspace,
             self.__diagram,
             uniform_colour=(0.0, 0.8, 0.8))
 
     def __create_grid_visual(self):
+        """
+        Creates the grid visual.
+        """
+
         self.__grid_visual = GridLines()
 
     def __create_axis_visual(self):
+        """
+        Creates the axis visual.
+        """
+
         self.__axis_visual = axis_visual()
 
     def __create_visuals(self):
+        """
+        Creates the *Diagram View* visuals.
+        """
+
         self.__create_chromaticity_diagram_visual(self.__diagram)
         self.__create_spectral_locus_visual()
-        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__create_RGB_scatter_visual(self.__create_image())
         self.__create_pointer_gamut_visual()
         self.__create_pointer_gamut_boundaries_visual()
         self.__create_input_colourspace_visual()
@@ -341,10 +493,18 @@ class DiagramView(ViewBox):
         self.__create_axis_visual()
 
     def __create_camera(self):
+        """
+        Creates the *Diagram View* camera.
+        """
+
         self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1),
                                     aspect=1)
 
     def __attach_visuals(self):
+        """
+        Attaches / parents the visuals to the *Diagram View* scene.
+        """
+
         self.__chromaticity_diagram.add_parent(self.scene)
         self.__spectral_locus_visual.add_parent(self.scene)
         self.__RGB_scatter_visual.add_parent(self.scene)
@@ -356,6 +516,10 @@ class DiagramView(ViewBox):
         self.__axis_visual.add_parent(self.scene)
 
     def __detach_visuals(self):
+        """
+        Detaches / un-parents the visuals from the *Diagram View* scene.
+        """
+
         self.__chromaticity_diagram.remove_parent(self.scene)
         self.__spectral_locus_visual.remove_parent(self.scene)
         self.__RGB_scatter_visual.remove_parent(self.scene)
@@ -366,47 +530,12 @@ class DiagramView(ViewBox):
         self.__grid_visual.remove_parent(self.scene)
         self.__axis_visual.remove_parent(self.scene)
 
-    def __create_title_overlay_visual(self):
-        self.__title_overlay_visual = Text(str(),
-                                           anchor_x='center',
-                                           anchor_y='bottom',
-                                           font_size=10,
-                                           color=(0.8, 0.8, 0.8),
-                                           parent=self)
-
-        self.__title_overlay_visual_position()
-        self.__title_overlay_visual_text()
-
-    def __title_overlay_visual_position(self):
-        self.__title_overlay_visual.pos = self.size[0] / 2, 32
-
-    def __title_overlay_visual_text(self):
-        title = ''
-
-        if self.__input_colourspace_visual.visible:
-            title += self.__input_colourspace
-            title += ' - '
-        if self.__correlate_colourspace_visual.visible:
-            title += self.__correlate_colourspace
-            title += ' - '
-
-        title += '{0} Chromaticity Diagram'.format(
-            self.__diagrams_cycle.current_item())
-
-        if self.__clamp_blacks:
-            title += ' - '
-            title += 'Blacks Clamped'
-
-        if self.__clamp_whites:
-            title += ' - '
-            title += 'Whites Clamped'
-
-        self.__title_overlay_visual.text = title
-
-    def __canvas_resize_event(self, event=None):
-        self.__title_overlay_visual_position()
-
     def __store_visuals_visibility(self):
+        """
+        Stores visuals visibility in :attr:`DiagramView.__visuals_visibility`
+        attribute.
+        """
+
         visible = OrderedDict()
         visible['chromaticity_diagram_visual'] = (
             self.__chromaticity_diagram.visible)
@@ -430,6 +559,11 @@ class DiagramView(ViewBox):
         self.__visuals_visibility = visible
 
     def __restore_visuals_visibility(self):
+        """
+        Restores visuals visibility from
+        :attr:`DiagramView.__visuals_visibility` attribute.
+        """
+
         visible = self.__visuals_visibility
 
         self.__chromaticity_diagram.visible = (
@@ -451,13 +585,94 @@ class DiagramView(ViewBox):
         self.__axis_visual.visible = (
             visible['axis_visual'])
 
+    def __create_title_overlay_visual(self):
+        """
+        Creates the title overlay visual.
+        """
+
+        self.__title_overlay_visual = Text(str(),
+                                           anchor_x='center',
+                                           anchor_y='bottom',
+                                           font_size=10,
+                                           color=(0.8, 0.8, 0.8),
+                                           parent=self)
+
+        self.__title_overlay_visual_position()
+        self.__title_overlay_visual_text()
+
+    def __title_overlay_visual_position(self):
+        """
+        Sets the title overlay visual position.
+        """
+
+        self.__title_overlay_visual.pos = self.size[0] / 2, 32
+
+    def __title_overlay_visual_text(self):
+        """
+        Sets the title overlay visual text.
+        """
+
+        title = ''
+
+        if self.__input_colourspace_visual.visible:
+            title += self.__input_colourspace
+            title += ' - '
+        if self.__correlate_colourspace_visual.visible:
+            title += self.__correlate_colourspace
+            title += ' - '
+
+        title += '{0} Chromaticity Diagram'.format(
+            self.__diagrams_cycle.current_item())
+
+        if self.__clamp_blacks:
+            title += ' - '
+            title += 'Blacks Clamped'
+
+        if self.__clamp_whites:
+            title += ' - '
+            title += 'Whites Clamped'
+
+        self.__title_overlay_visual.text = title
+
+    def __canvas_resize_event(self, event=None):
+        """
+        Slot for current `vispy.scene.SceneCanvas` instance resize event.
+
+        Parameters
+        ----------
+        event : Object
+            Event.
+        """
+
+        self.__title_overlay_visual_position()
+
     def toggle_spectral_locus_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the
+        *toggle_spectral_locus_visual_visibility* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__spectral_locus_visual.visible = (
             not self.__spectral_locus_visual.visible)
 
         return True
 
     def toggle_input_colourspace_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the
+        *toggle_input_colourspace_visual_visibility* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__input_colourspace_visual.visible = (
             not self.__input_colourspace_visual.visible)
         self.__title_overlay_visual_text()
@@ -465,6 +680,16 @@ class DiagramView(ViewBox):
         return True
 
     def toggle_correlate_colourspace_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the
+        *toggle_correlate_colourspace_visual_visibility* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__correlate_colourspace_visual.visible = (
             not self.__correlate_colourspace_visual.visible)
         self.__title_overlay_visual_text()
@@ -472,12 +697,32 @@ class DiagramView(ViewBox):
         return True
 
     def toggle_RGB_scatter_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the
+        *toggle_RGB_scatter_visual_visibility* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__RGB_scatter_visual.visible = (
             not self.__RGB_scatter_visual.visible)
 
         return True
 
     def toggle_pointer_gamut_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the
+        *toggle_pointer_gamut_visual_visibility* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
         self.__pointer_gamut_boundaries_visual.visible = (
@@ -486,17 +731,46 @@ class DiagramView(ViewBox):
         return True
 
     def toggle_grid_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the *toggle_grid_visual_visibility*
+        action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__grid_visual.visible = not self.__grid_visual.visible
 
         return True
 
     def toggle_axis_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the *toggle_axis_visual_visibility*
+        action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__axis_visual.visible = (
             not self.__axis_visual.visible)
 
         return True
 
     def cycle_correlate_colourspace_action(self):
+        """
+        Defines the slot triggered by the *cycle_correlate_colourspace* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__detach_visuals()
         self.__create_correlate_colourspace_visual()
         self.__attach_visuals()
@@ -505,6 +779,15 @@ class DiagramView(ViewBox):
         return True
 
     def cycle_chromaticity_diagram_action(self):
+        """
+        Defines the slot triggered by the *cycle_chromaticity_diagram* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__store_visuals_visibility()
         self.__detach_visuals()
         self.__diagram = self.__diagrams_cycle.next_item()
@@ -516,10 +799,19 @@ class DiagramView(ViewBox):
         return True
 
     def toggle_blacks_clamp_action(self):
+        """
+        Defines the slot triggered by the *toggle_blacks_clamp* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__clamp_blacks = not self.__clamp_blacks
         self.__store_visuals_visibility()
         self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__create_RGB_scatter_visual(self.__create_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
         self.__title_overlay_visual_text()
@@ -527,10 +819,19 @@ class DiagramView(ViewBox):
         return True
 
     def toggle_whites_clamp_action(self):
+        """
+        Defines the slot triggered by the *toggle_whites_clamp* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__clamp_whites = not self.__clamp_whites
         self.__store_visuals_visibility()
         self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_RGB_scatter_image())
+        self.__create_RGB_scatter_visual(self.__create_image())
         self.__attach_visuals()
         self.__restore_visuals_visibility()
         self.__title_overlay_visual_text()
