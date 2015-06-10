@@ -52,11 +52,11 @@ class DiagramView(ViewBox):
 
     Parameters
     ----------
-    canvas : SceneCanvas
+    canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
-    image : array_like
+    image : array_like, optional
         Image to use in the view interactions.
-    oecf : unicode
+    oecf : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
@@ -69,17 +69,17 @@ class DiagramView(ViewBox):
 
         :class:`colour.RGB_Colourspace` class instance name defining the image
         opto-electronic conversion function.
-    input_colourspace : unicode
+    input_colourspace : unicode, optional
         See `oecf` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         `image` argument colourspace.
-    correlate_colourspace : unicode
+    correlate_colourspace : unicode, optional
         See `oecf` argument for possible values, default value is *ACEScg*.
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
-    diagram : unicode
+    diagram : unicode, optional
         {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
 
         Chromaticity diagram to draw.

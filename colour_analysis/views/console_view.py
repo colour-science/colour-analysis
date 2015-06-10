@@ -32,7 +32,7 @@ class ConsoleView(Console):
 
     Parameters
     ----------
-    canvas : SceneCanvas
+    canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
     \*args : \*, optional
         Arguments passed to :class:`vispy.scene.widgets.Console` class

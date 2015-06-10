@@ -80,11 +80,11 @@ class GamutView(ViewBox):
 
     Parameters
     ----------
-    canvas : SceneCanvas
+    canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
-    image : array_like
+    image : array_like, optional
         Image to use in the view interactions.
-    input_colourspace : unicode
+    input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
@@ -97,12 +97,12 @@ class GamutView(ViewBox):
 
         :class:`colour.RGB_Colourspace` class instance name defining `image`
         argument colourspace.
-    reference_colourspace : unicode
+    reference_colourspace : unicode, optional
         {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
         'IPT'}
 
         Reference colourspace to use for colour conversions / transformations.
-    correlate_colourspace : unicode
+    correlate_colourspace : unicode, optional
         See `input_colourspace` argument for possible values, default value is
         *ACEScg*.
 

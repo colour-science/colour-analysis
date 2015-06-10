@@ -1,6 +1,16 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+RGB Scatter Visual
+==================
+
+Defines the *RGB Scatter Visual*:
+
+-   :def:`RGB_scatter_visual`
+"""
+
+from __future__ import division, unicode_literals
 
 import numpy as np
 from vispy.color.color_array import ColorArray
@@ -10,6 +20,15 @@ from colour.plotting import get_RGB_colourspace
 from colour.plotting.volume import XYZ_to_reference_colourspace
 
 from colour_analysis.visuals import Symbol
+
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['RGB_scatter_visual']
 
 
 def RGB_scatter_visual(RGB,
@@ -24,6 +43,58 @@ def RGB_scatter_visual(RGB,
                        uniform_edge_opacity=1.0,
                        resampling='auto',
                        parent=None):
+    """
+    Returns a :class:`vispy.scene.visuals.Symbol` class instance representing
+    *RGB* data using given symbols.
+
+    Parameters
+    ----------
+    RGB : array_like
+        *RGB* data to draw.
+    colourspace : unicode, optional
+        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
+        'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
+        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
+        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
+        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
+        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
+        'adobe1998', 'prophoto', 'sRGB'}
+
+        :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
+        colourspace of the data to draw.
+    reference_colourspace : unicode, optional
+        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT'}
+
+        Reference colourspace to use for colour conversions / transformations.
+    symbol : unicode, optional
+        Symbol type to draw.
+    size : numeric, optional
+        Symbol size.
+    edge_size : numeric, optional
+        Symbol edge size.
+    uniform_colour : array_like, optional
+        Uniform symbol colour.
+    uniform_opacity : numeric, optional
+        Uniform symbol opacity.
+    uniform_edge_colour : array_like, optional
+        Uniform symbol edge colour.
+    uniform_edge_opacity : numeric, optional
+        Uniform symbol edge opacity.
+    resampling : numeric or unicode, optional
+        Resampling value, if numeric input, one pixel every `resampling`
+        argument value will be kept.
+    parent : Node, optional
+        Parent of the *RGB* scatter visual in the `SceneGraph`.
+
+    Returns
+    -------
+    Symbol
+        *RGB* scatter visual.
+    """
+
     colourspace = get_RGB_colourspace(colourspace)
 
     RGB = np.asarray(RGB)
@@ -59,11 +130,11 @@ def RGB_scatter_visual(RGB,
                                alpha=uniform_edge_opacity).rgba
 
         markers = Symbol(symbol=symbol,
-                         points=points,
+                         positions=points,
                          size=size,
                          edge_size=edge_size,
-                         face_color=RGB,
-                         edge_color=RGB_e,
+                         face_colour=RGB,
+                         edge_colour=RGB_e,
                          parent=parent)
 
         return markers

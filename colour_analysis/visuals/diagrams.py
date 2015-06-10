@@ -1,6 +1,18 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Chromaticity Diagram Visuals
+============================
+
+Defines the *Chromaticity Diagram Visuals*:
+
+-   :def:`CIE_1931_chromaticity_diagram`
+-   :def:`CIE_1960_UCS_chromaticity_diagram`
+-   :def:`CIE_1976_UCS_chromaticity_diagram`
+"""
+
+from __future__ import division, unicode_literals
 
 import numpy as np
 from scipy.spatial import Delaunay
@@ -16,11 +28,48 @@ from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Primitive
 
 
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['chromaticity_diagram_visual',
+           'CIE_1931_chromaticity_diagram',
+           'CIE_1960_UCS_chromaticity_diagram',
+           'CIE_1976_UCS_chromaticity_diagram']
+
+
 def chromaticity_diagram_visual(
         samples=256,
         cmfs='CIE 1931 2 Degree Standard Observer',
         transformation='CIE 1931',
         parent=None):
+    """
+    Creates a chromaticity diagram visual based on
+    :class:`colour_analysis.visuals.Primitive` class.
+
+    Parameters
+    ----------
+    samples : int, optional
+        Inner samples count used to construct the chromaticity diagram
+        triangulation.
+    cmfs : unicode, optional
+        Standard observer colour matching functions used for the chromaticity
+        diagram boundaries.
+    transformation : unicode, optional
+        {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
+
+        Chromaticity diagram transformation.
+    parent : Node, optional
+        Parent of the chromaticity diagram in the `SceneGraph`.
+
+    Returns
+    -------
+    Primitive
+        Chromaticity diagram visual.
+    """
 
     cmfs = get_cmfs(cmfs)
 
@@ -56,6 +105,27 @@ def CIE_1931_chromaticity_diagram(
         samples=256,
         cmfs='CIE 1931 2 Degree Standard Observer',
         parent=None):
+    """
+    Creates the *CIE 1931* chromaticity diagram visual based on
+    :class:`colour_analysis.visuals.Primitive` class.
+
+    Parameters
+    ----------
+    samples : int, optional
+        Inner samples count used to construct the *CIE 1931* chromaticity
+        diagram triangulation.
+    cmfs : unicode, optional
+        Standard observer colour matching functions used for the chromaticity
+        diagram boundaries.
+    parent : Node, optional
+        Parent of the *CIE 1931* chromaticity diagram in the `SceneGraph`.
+
+    Returns
+    -------
+    Primitive
+        *CIE 1931* chromaticity diagram visual.
+    """
+
     return chromaticity_diagram_visual(samples, cmfs, 'CIE 1931', parent)
 
 
@@ -63,6 +133,27 @@ def CIE_1960_UCS_chromaticity_diagram(
         samples=256,
         cmfs='CIE 1931 2 Degree Standard Observer',
         parent=None):
+    """
+    Creates the *CIE 1960 UCS* chromaticity diagram visual based on
+    :class:`colour_analysis.visuals.Primitive` class.
+
+    Parameters
+    ----------
+    samples : int, optional
+        Inner samples count used to construct the *CIE 1960 UCS* chromaticity
+        diagram triangulation.
+    cmfs : unicode, optional
+        Standard observer colour matching functions used for the chromaticity
+        diagram boundaries.
+    parent : Node, optional
+        Parent of the *CIE 1960 UCS* chromaticity diagram in the `SceneGraph`.
+
+    Returns
+    -------
+    Primitive
+        *CIE 1960 UCS* chromaticity diagram visual.
+    """
+
     return chromaticity_diagram_visual(samples, cmfs, 'CIE 1960 UCS', parent)
 
 
@@ -70,5 +161,25 @@ def CIE_1976_UCS_chromaticity_diagram(
         samples=256,
         cmfs='CIE 1931 2 Degree Standard Observer',
         parent=None):
-    return chromaticity_diagram_visual(samples, cmfs, 'CIE 1976 UCS', parent)
+    """
+    Creates the *CIE 1976 UCS* chromaticity diagram visual based on
+    :class:`colour_analysis.visuals.Primitive` class.
 
+    Parameters
+    ----------
+    samples : int, optional
+        Inner samples count used to construct the *CIE 1976 UCS* chromaticity
+        diagram triangulation.
+    cmfs : unicode, optional
+        Standard observer colour matching functions used for the chromaticity
+        diagram boundaries.
+    parent : Node, optional
+        Parent of the *CIE 1976 UCS* chromaticity diagram in the `SceneGraph`.
+
+    Returns
+    -------
+    Primitive
+        *CIE 1976 UCS* chromaticity diagram visual.
+    """
+
+    return chromaticity_diagram_visual(samples, cmfs, 'CIE 1976 UCS', parent)
