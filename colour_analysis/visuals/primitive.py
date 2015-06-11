@@ -78,6 +78,8 @@ class PrimitiveVisual(MeshVisual):
                 vertex_colours = np.hstack(
                     (vertex_colours,
                      np.full((vertex_colours.shape[0], 1), uniform_opacity)))
+            else:
+                vertex_colours[..., 3] = uniform_opacity
 
         MeshVisual.__init__(
             self,

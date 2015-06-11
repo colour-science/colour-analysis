@@ -54,6 +54,11 @@ CameraPreset = namedtuple(
      'translate_speed',
      'center',
      'up'))
+"""
+Defines a camera settings preset.
+
+CameraPreset : namedtuple
+"""
 
 RGB_colourspaceVisualPreset = namedtuple(
     'RGB_colourspaceVisualPreset',
@@ -65,6 +70,11 @@ RGB_colourspaceVisualPreset = namedtuple(
      'wireframe',
      'wireframe_colour',
      'wireframe_opacity'))
+"""
+Defines a *RGB* colourspace volume visual style preset.
+
+RGB_colourspaceVisualPreset : namedtuple
+"""
 
 AxisPreset = namedtuple(
     'AxisPreset',
@@ -72,6 +82,11 @@ AxisPreset = namedtuple(
      'description',
      'reference_colourspace',
      'scale'))
+"""
+Defines an axis visual style preset.
+
+AxisPreset : namedtuple
+"""
 
 
 class GamutView(ViewBox):
@@ -747,7 +762,8 @@ class GamutView(ViewBox):
 
     def __canvas_resize_event(self, event=None):
         """
-        Slot for current `vispy.scene.SceneCanvas` instance resize event.
+        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
+        event.
 
         Parameters
         ----------

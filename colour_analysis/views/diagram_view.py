@@ -636,7 +636,8 @@ class DiagramView(ViewBox):
 
     def __canvas_resize_event(self, event=None):
         """
-        Slot for current `vispy.scene.SceneCanvas` instance resize event.
+        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
+        event.
 
         Parameters
         ----------

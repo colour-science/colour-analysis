@@ -1,6 +1,16 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Colour Analysis
+===============
+
+Defines *Colour - Analysis* main class:
+
+-   :class:`ColourAnalysis`
+"""
+
+from __future__ import division, unicode_literals
 
 import json
 import os
@@ -20,17 +30,45 @@ from colour_analysis.views import (
     GamutView,
     ImageView)
 
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['Sequence',
+           'Action',
+           'ViewPreset',
+           'LayoutPreset',
+           'ColourAnalysis']
 
 Sequence = namedtuple(
     'Sequence',
     ('modifiers',
      'key'))
+"""
+Defines a modifier and key keyboard sequence.
+
+Sequence : namedtuple
+"""
 
 Action = namedtuple(
     'Action',
     ('name',
      'description',
      'sequence'))
+"""
+Defines a user action / interaction associated with a :class:`Sequence`.
+
+Actions are name bound to methods affixed with *_action* in
+:class:`ColourAnalysis` or its children views. For example an action
+named *toggle_blacks_clamp* will be bound to available
+*toggle_blacks_clamp_action* methods in :class:`ColourAnalysis` or its children
+views.
+
+Action : namedtuple
+"""
 
 ViewPreset = namedtuple(
     'ViewPreset',
@@ -41,15 +79,99 @@ ViewPreset = namedtuple(
      'column',
      'row_span',
      'column_span'))
+"""
+Defines a view preset used with :class:`LayoutPreset` describing the location
+of the view in the layout grid.
+
+ViewPreset : namedtuple
+"""
 
 LayoutPreset = namedtuple(
     'LayoutPreset',
     ('name',
      'description',
      'views'))
+"""
+Defines a layout preset describing which views are added to the
+:class:`ColourAnalysis` class.
+
+LayoutPreset : namedtuple
+"""
 
 
-class Analysis(SceneCanvas):
+class ColourAnalysis(SceneCanvas):
+    """
+    Defines *Colour - Analysis* canvas, a class inheriting from
+    :class:`vispy.scene.SceneCanvas`.
+
+    Parameters
+    ----------
+    image_path : unicode, optional
+        Path of the image to analyse.
+    input_colourspace : unicode, optional
+        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
+        'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
+        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
+        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
+        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
+        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
+        'adobe1998', 'prophoto', 'sRGB'}
+
+        :class:`colour.RGB_Colourspace` class instance name defining `image`
+        argument colourspace.
+    input_oecf : unicode, optional
+        See `input_colourspace` argument for possible values.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the image
+        opto-electronic conversion function.
+    input_linear : bool, optional
+        Is input image linear.
+    input_resample : int, optional
+        Resampling value, one pixel every `input_resample` argument value will
+        be kept.
+    reference_colourspace : unicode, optional
+        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT'}
+
+        Reference colourspace to use for colour conversions / transformations.
+    correlate_colourspace : unicode, optional
+        See `input_colourspace` argument for possible values, default value is
+        *ACEScg*.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the
+        comparison / correlate colourspace.
+    settings : dict, optional
+        Settings for the :class:`ColourAnalysis` class and its children views.
+    layout : unicode, optional
+        Layout the :class:`ColourAnalysis` class will use.
+
+    Attributes
+    ----------
+    image_path
+    image
+    input_colourspace
+    input_oecf
+    input_linear
+    input_resample
+    reference_colourspace
+    correlate_colourspace
+    settings
+    layout
+    actions
+    console_view
+    gamut_view
+    image_view
+    diagram_view
+
+    Methods
+    -------
+    on_key_press
+    cycle_correlate_colourspace_action
+    cycle_reference_colourspace_action
+    """
+
     def __init__(self,
                  image_path=DEFAULT_IMAGE,
                  input_colourspace='Rec. 709',
@@ -565,6 +687,17 @@ class Analysis(SceneCanvas):
             '"{0}" attribute is read only!'.format('diagram_view'))
 
     def on_key_press(self, event):
+        """
+        Reimplements :meth:`vispy.scene.SceneCanvas.on_key_press` method and
+        triggers the various actions defined by :class:`ColourAnalysis` class
+        and its children views.
+
+        Parameters
+        ----------
+        event : Object
+            Event.
+        """
+
         key = event.key.name.lower()
         modifiers = sorted([modifier.name.lower()
                             for modifier in event.modifiers])
@@ -629,40 +762,47 @@ class Analysis(SceneCanvas):
             self.__settings['canvas']['views_background_colour'])
         border_colour = self.__settings['canvas']['views_border_colour']
 
-        self.__console_view = ConsoleView(
-            canvas=self,
-            text_color=(0.8, 0.8, 0.8),
-            font_size=10.0,
-            bgcolor=background_colour,
-            border_color=border_colour)
+        views = self.__layout_presets.get(self.__layout).views.values()
+        views = [view.view for view in views]
 
-        self.__gamut_view = GamutView(
-            canvas=self,
-            image=self.__image,
-            input_colourspace=self.__input_colourspace,
-            reference_colourspace=self.__reference_colourspace,
-            correlate_colourspace=self.__correlate_colourspace,
-            settings=self.__settings,
-            bgcolor=background_colour,
-            border_color=border_colour)
+        if 'console_view' in views:
+            self.__console_view = ConsoleView(
+                canvas=self,
+                text_color=(0.8, 0.8, 0.8),
+                font_size=10.0,
+                bgcolor=background_colour,
+                border_color=border_colour)
 
-        self.__image_view = ImageView(
-            canvas=self,
-            image=self.__image,
-            oecf=self.__input_oecf,
-            input_colourspace=self.__input_colourspace,
-            correlate_colourspace=self.__correlate_colourspace,
-            bgcolor=background_colour,
-            border_color=border_colour)
+        if 'gamut_view' in views:
+            self.__gamut_view = GamutView(
+                canvas=self,
+                image=self.__image,
+                input_colourspace=self.__input_colourspace,
+                reference_colourspace=self.__reference_colourspace,
+                correlate_colourspace=self.__correlate_colourspace,
+                settings=self.__settings,
+                bgcolor=background_colour,
+                border_color=border_colour)
 
-        self.__diagram_view = DiagramView(
-            canvas=self,
-            image=self.__image,
-            oecf=self.__input_oecf,
-            input_colourspace=self.__input_colourspace,
-            correlate_colourspace=self.__correlate_colourspace,
-            bgcolor=background_colour,
-            border_color=border_colour)
+        if 'image_view' in views:
+            self.__image_view = ImageView(
+                canvas=self,
+                image=self.__image,
+                oecf=self.__input_oecf,
+                input_colourspace=self.__input_colourspace,
+                correlate_colourspace=self.__correlate_colourspace,
+                bgcolor=background_colour,
+                border_color=border_colour)
+
+        if 'diagram_view' in views:
+            self.__diagram_view = DiagramView(
+                canvas=self,
+                image=self.__image,
+                oecf=self.__input_oecf,
+                input_colourspace=self.__input_colourspace,
+                correlate_colourspace=self.__correlate_colourspace,
+                bgcolor=background_colour,
+                border_color=border_colour)
 
         self.__views = (self.__console_view,
                         self.__gamut_view,
@@ -673,27 +813,57 @@ class Analysis(SceneCanvas):
         self.__grid = self.central_widget.add_grid()
         layout = self.__layout_presets.get(self.__layout)
 
-        for view in layout.views.values():
+        for view_preset in layout.views.values():
+            view = getattr(self, '{0}'.format(view_preset.view))
+            if view is None:
+                continue
+
             self.__grid.add_widget(
-                getattr(self, '{0}'.format(view.view)),
-                row=view.row,
-                col=view.column,
-                row_span=view.row_span,
-                col_span=view.column_span)
+                view,
+                row=view_preset.row,
+                col=view_preset.column,
+                row_span=view_preset.row_span,
+                col_span=view_preset.column_span)
 
     def cycle_correlate_colourspace_action(self):
+        """
+        Defines the slot triggered by the *cycle_correlate_colourspace* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__correlate_colourspace = next(self.__RGB_colourspaces_cycle)
 
-        self.__gamut_view.correlate_colourspace = self.__correlate_colourspace
-        self.__image_view.correlate_colourspace = self.__correlate_colourspace
-        self.__diagram_view.correlate_colourspace = self.__correlate_colourspace
+        if self.__gamut_view is not None:
+            self.__gamut_view.correlate_colourspace = (
+                self.__correlate_colourspace)
+        if self.__image_view is not None:
+            self.__image_view.correlate_colourspace = (
+                self.__correlate_colourspace)
+        if self.__diagram_view is not None:
+            self.__diagram_view.correlate_colourspace = (
+                self.__correlate_colourspace)
 
         return True
 
     def cycle_reference_colourspace_action(self):
+        """
+        Defines the slot triggered by the *cycle_reference_colourspace* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
         self.__reference_colourspace = next(
             self.__reference_colourspaces_cycle)
 
-        self.__gamut_view.reference_colourspace = self.__reference_colourspace
+        if self.__gamut_view is not None:
+            self.__gamut_view.reference_colourspace = (
+                self.__reference_colourspace)
 
         return True

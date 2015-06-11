@@ -87,6 +87,51 @@
           "column_span": 1
         }
       }
+    },
+    {
+      "name": "layout_3",
+      "description": "Layout 3",
+      "views": {
+        "layout_3_gamut_view": {
+          "name": "layout_3_gamut_view",
+          "description": "Layout 3 - Gamut View",
+          "view": "gamut_view",
+          "row": 0,
+          "column": 0,
+          "row_span": 1,
+          "column_span": 1
+        }
+      }
+    },
+    {
+      "name": "layout_4",
+      "description": "Layout 4",
+      "views": {
+        "layout_4_diagrams_view": {
+          "name": "layout_4_diagram_view",
+          "description": "Layout 4 - Diagram View",
+          "view": "diagram_view",
+          "row": 0,
+          "column": 0,
+          "row_span": 1,
+          "column_span": 1
+        }
+      }
+    },
+    {
+      "name": "layout_5",
+      "description": "Layout 5",
+      "views": {
+        "layout_5_image_view": {
+          "name": "layout_5_image_view",
+          "description": "Layout 5 - Image View",
+          "view": "image_view",
+          "row": 0,
+          "column": 0,
+          "row_span": 1,
+          "column_span": 1
+        }
+      }
     }
   ],
   "actions": {

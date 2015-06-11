@@ -1,6 +1,14 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import division
+
+"""
+Commands
+========
+
+Defines the command line related objects.
+"""
+
+from __future__ import division, unicode_literals
 
 import os
 import sys
@@ -14,11 +22,23 @@ import traceback
 import warnings
 from vispy.app import run
 
-from colour_analysis.analysis import Analysis
+from colour_analysis.analysis import ColourAnalysis
 from colour_analysis.constants import (
     DEFAULT_IMAGE,
     LINEAR_IMAGE_FORMATS,
     SETTINGS_FILE)
+
+__author__ = 'Colour Developers'
+__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
+__maintainer__ = 'Colour Developers'
+__email__ = 'colour-science@googlegroups.com'
+__status__ = 'Production'
+
+__all__ = ['ManualAction',
+           'system_exit',
+           'command_line_arguments',
+           'main']
 
 
 class ManualAction(argparse.Action):
@@ -151,6 +171,15 @@ def system_exit(object):
 
 
 def command_line_arguments():
+    """
+    Returns a command line arguments parser.
+
+    Return
+    ------
+    ArgumentParser
+        Command line arguments parser.
+    """
+
     parser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument('-v',
@@ -277,15 +306,15 @@ def main():
     if not arguments.enable_warnings:
         warnings.filterwarnings("ignore")
 
-    Analysis(arguments.input_image,
-             arguments.input_colourspace,
-             arguments.input_oecf,
-             input_linear,
-             int(arguments.input_resample),
-             arguments.reference_colourspace,
-             arguments.correlate_colourspace,
-             settings,
-             arguments.layout)
+    ColourAnalysis(arguments.input_image,
+                   arguments.input_colourspace,
+                   arguments.input_oecf,
+                   input_linear,
+                   int(arguments.input_resample),
+                   arguments.reference_colourspace,
+                   arguments.correlate_colourspace,
+                   settings,
+                   arguments.layout)
     return run()
 
 
