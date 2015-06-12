@@ -754,7 +754,7 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if is_openimageio_installed:
-            image = read_image(self.__image_path)
+            image = read_image(str(self.__image_path))
         else:
             warning('"OpenImageIO" is not available, images reading is not '
                     'supported, falling back to random noise!')
