@@ -19,7 +19,11 @@ from itertools import cycle
 
 import numpy as np
 from vispy.scene import SceneCanvas
-from colour import RGB_COLOURSPACES, read_image
+from colour import (
+    RGB_COLOURSPACES,
+    is_openimageio_installed,
+    read_image,
+    warning)
 
 from colour_analysis.constants import (
     DEFAULT_IMAGE, SETTINGS_FILE,
@@ -712,6 +716,15 @@ class ColourAnalysis(SceneCanvas):
                     hasattr(view, method) and getattr(view, method)()
 
     def __create_layout_presets(self):
+        """
+        Creates the layout presets from :attr:`ColourAnalysis.settings`
+        attribute *layout* key value.
+
+        Notes
+        -----
+        -   There is no way to change the current layout at the moment.
+        """
+
         layouts = self.__settings['layouts']
         for layout in layouts:
             views = {}
@@ -731,7 +744,21 @@ class ColourAnalysis(SceneCanvas):
                 views=views)
 
     def __create_image(self):
-        image = read_image(self.__image_path)
+        """
+        Reads and creates the image to analyse.
+
+        Notes
+        -----
+        -   If *OpenImageIO* is not installed, and thus the image cannot be
+        read, random colours will be used instead.
+        """
+
+        if is_openimageio_installed:
+            image = read_image(self.__image_path)
+        else:
+            warning('"OpenImageIO" is not available, images reading is not '
+                    'supported, falling back to random noise!')
+            image = (np.random.random((256, 256, 3)) - 0.1) * 1.25
         if not self.__input_linear:
             colourspace = RGB_COLOURSPACES[self.__input_oecf]
             image = colourspace.inverse_transfer_function(image)
@@ -742,6 +769,11 @@ class ColourAnalysis(SceneCanvas):
         self.__image = image[::self.__input_resample, ::self.__input_resample]
 
     def __create_actions(self):
+        """
+        Creates the actions from :attr:`ColourAnalysis.settings` attribute
+        *actions* key value.
+        """
+
         self.__actions = {}
 
         for name, action in self.__settings.get('actions', ()).items():
@@ -758,6 +790,10 @@ class ColourAnalysis(SceneCanvas):
                 sequence=sequence)
 
     def __create_views(self):
+        """
+        Creates the views from :attr:`ColourAnalysis.settings` attribute value.
+        """
+
         background_colour = (
             self.__settings['canvas']['views_background_colour'])
         border_colour = self.__settings['canvas']['views_border_colour']
@@ -810,6 +846,11 @@ class ColourAnalysis(SceneCanvas):
                         self.__diagram_view)
 
     def __layout_views(self):
+        """
+        Layout the views according to :attr:`ColourAnalysis.layout` attribute
+        value.
+        """
+
         self.__grid = self.central_widget.add_grid()
         layout = self.__layout_presets.get(self.__layout)
 
