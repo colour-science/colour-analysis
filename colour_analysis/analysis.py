@@ -184,6 +184,8 @@ class ColourAnalysis(SceneCanvas):
                  correlate_colourspace='ACEScg',
                  settings=None,
                  layout='layout_1'):
+        self.__initialised = False
+
         SceneCanvas.__init__(
             self,
             keys='interactive',
@@ -247,6 +249,8 @@ class ColourAnalysis(SceneCanvas):
 
         self.show()
 
+        self.__initialised = True
+
     @property
     def image(self):
         """
@@ -275,7 +279,15 @@ class ColourAnalysis(SceneCanvas):
             assert type(value) in (tuple, list, np.ndarray, np.matrix), (
                 ('"{0}" attribute: "{1}" type is not "tuple", "list", '
                  '"ndarray" or "matrix"!').format('image', value))
+
         self.__image = value
+
+        if self.__initialised:
+            image = self.__create_image()
+
+            for view in self.__views:
+                if hasattr(view, 'image'):
+                    view.image = image
 
     @property
     def image_path(self):
