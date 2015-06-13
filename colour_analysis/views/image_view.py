@@ -25,6 +25,7 @@ from colour import (
     is_within_pointer_gamut,
     tstack)
 
+from colour_analysis.constants import DEFAULT_OECF
 from colour_analysis.visuals import image_visual
 
 
@@ -48,7 +49,7 @@ class ImageView(ViewBox):
         Current `vispy.scene.SceneCanvas` instance.
     image : array_like, optional
         Image to use in the view interactions.
-    oecf : unicode, optional
+    input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
@@ -59,15 +60,11 @@ class ImageView(ViewBox):
         'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
         'adobe1998', 'prophoto', 'sRGB'}
 
-        :class:`colour.RGB_Colourspace` class instance name defining the image
-        opto-electronic conversion function.
-    input_colourspace : unicode, optional
-        See `oecf` argument for possible values.
-
         :class:`colour.RGB_Colourspace` class instance name defining the
         `image` argument colourspace.
     correlate_colourspace : unicode, optional
-        See `oecf` argument for possible values, default value is *ACEScg*.
+        See `input_colourspace` argument for possible values, default value is
+        *ACEScg*.
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
@@ -79,7 +76,6 @@ class ImageView(ViewBox):
     ----------
     canvas
     image
-    oecf
     input_colourspace
     correlate_colourspace
 
@@ -96,7 +92,6 @@ class ImageView(ViewBox):
     def __init__(self,
                  canvas=None,
                  image=None,
-                 oecf='Rec. 709',
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
                  **kwargs):
@@ -108,8 +103,6 @@ class ImageView(ViewBox):
 
         self.__image = None
         self.image = image
-        self.__oecf = None
-        self.oecf = oecf
         self.__input_colourspace = None
         self.input_colourspace = input_colourspace
         self.__correlate_colourspace = None
@@ -196,40 +189,6 @@ class ImageView(ViewBox):
             self.__create_visuals()
             self.__attach_visuals()
             self.__title_overlay_visual_text()
-
-    @property
-    def oecf(self):
-        """
-        Property for **self.__oecf** private attribute.
-
-        Returns
-        -------
-        unicode
-            self.__oecf.
-        """
-
-        return self.__oecf
-
-    @oecf.setter
-    def oecf(self, value):
-        """
-        Setter for **self.__oecf** private attribute.
-
-        Parameters
-        ----------
-        value : unicode
-            Attribute value.
-        """
-
-        if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('oecf', value))
-            assert value in RGB_COLOURSPACES, (
-                '"{0}" OECF is not associated with any factory '
-                'RGB colourspaces: "{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
-        self.__oecf = value
 
     @property
     def input_colourspace(self):
@@ -362,7 +321,7 @@ class ImageView(ViewBox):
         if self.__image_overlay and has_overlay:
             image = self.__image + image
 
-        oecf = RGB_COLOURSPACES[self.__oecf].transfer_function
+        oecf = RGB_COLOURSPACES[DEFAULT_OECF].transfer_function
 
         return oecf(image)
 

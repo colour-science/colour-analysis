@@ -22,9 +22,12 @@ import traceback
 import warnings
 from vispy.app import run
 
+from colour import RGB_COLOURSPACES, is_openimageio_installed, read_image, \
+    warning
+
 from colour_analysis.analysis import ColourAnalysis
 from colour_analysis.constants import (
-    DEFAULT_IMAGE,
+    DEFAULT_IMAGE_PATH,
     LINEAR_IMAGE_FORMATS,
     SETTINGS_FILE)
 
@@ -204,7 +207,7 @@ def command_line_arguments():
                         '-i',
                         action='store',
                         dest='input_image',
-                        default=DEFAULT_IMAGE,
+                        default=DEFAULT_IMAGE_PATH,
                         help='Image to analyse.')
 
     parser.add_argument('--input-colourspace',
@@ -303,14 +306,40 @@ def main():
         else:
             input_linear = False
 
+    if arguments.input_image is not None:
+        assert os.path.exists(arguments.input_image), (
+            '"{0}" input image doesn\'t exists!'.format(arguments.input_image))
+
+        image_path = arguments.input_image
+    else:
+        image_path = DEFAULT_IMAGE_PATH
+
+    if is_openimageio_installed:
+        image = read_image(str(image_path))
+        if not input_linear:
+            colourspace = RGB_COLOURSPACES[arguments.input_oecf]
+            image = colourspace.inverse_transfer_function(image)
+
+        # Keeping RGB channels only.
+        image = image[..., 0:3]
+
+        image = image[::int(arguments.input_resample),
+                      ::int(arguments.input_resample)]
+    else:
+        warning(
+            '"OpenImageIO" is not available, images reading is not supported, '
+            'falling back to random noise!')
+
+        image = None
+
     if not arguments.enable_warnings:
         warnings.filterwarnings("ignore")
 
-    ColourAnalysis(arguments.input_image,
+    ColourAnalysis(image,
+                   arguments.input_image,
                    arguments.input_colourspace,
                    arguments.input_oecf,
                    input_linear,
-                   int(arguments.input_resample),
                    arguments.reference_colourspace,
                    arguments.correlate_colourspace,
                    settings,

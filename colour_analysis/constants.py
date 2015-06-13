@@ -10,6 +10,7 @@ Defines the various constants used in *Colour - Analysis*.
 
 from __future__ import division, unicode_literals
 
+import numpy as np
 import os
 
 from colour import ILLUMINANTS
@@ -24,7 +25,9 @@ __status__ = 'Production'
 __all__ = ['RESOURCES_DIRECTORY',
            'SETTINGS_FILE',
            'IMAGES_DIRECTORY',
+           'DEFAULT_IMAGE_PATH',
            'DEFAULT_IMAGE',
+           'DEFAULT_OECF',
            'DEFAULT_PLOTTING_ILLUMINANT',
            'REFERENCE_COLOURSPACES',
            'REFERENCE_COLOURSPACES_TO_LABELS',
@@ -53,11 +56,35 @@ Default images directory.
 IMAGES_DIRECTORY : unicode
 """
 
-DEFAULT_IMAGE = os.path.join(IMAGES_DIRECTORY, 'Digital_LAD_2048x1556.exr')
+DEFAULT_IMAGE_PATH = os.path.join(IMAGES_DIRECTORY,
+                                  'Digital_LAD_2048x1556.exr')
 """
-Default image if not is provided on startup.
+Default image path if not is provided on startup.
 
-DEFAULT_IMAGE : unicode
+DEFAULT_IMAGE_PATH : unicode
+"""
+
+DEFAULT_IMAGE = (np.random.random((256, 256, 3)) - 0.1) * 1.25
+"""
+Default image.
+
+DEFAULT_IMAGE : ndarray
+"""
+
+DEFAULT_OECF = 'sRGB'
+"""
+Default display OECF.
+
+DEFAULT_OECF : unicode
+    {'sRGB', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+    'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+    'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
+    'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
+    'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
+    'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
+    'REDcolor4', 'Rec. 709', 'Rec. 2020', 'Russell RGB', 'S-Gamut',
+    'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB',
+    'aces', 'adobe1998', 'prophoto'}
 """
 
 DEFAULT_PLOTTING_ILLUMINANT = ILLUMINANTS.get(

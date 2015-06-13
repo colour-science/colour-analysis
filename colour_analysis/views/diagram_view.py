@@ -56,19 +56,6 @@ class DiagramView(ViewBox):
         Current `vispy.scene.SceneCanvas` instance.
     image : array_like, optional
         Image to use in the view interactions.
-    oecf : unicode, optional
-        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
-        'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
-        'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
-        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
-        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
-        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
-        'adobe1998', 'prophoto', 'sRGB'}
-
-        :class:`colour.RGB_Colourspace` class instance name defining the image
-        opto-electronic conversion function.
     input_colourspace : unicode, optional
         See `oecf` argument for possible values.
 
@@ -91,7 +78,6 @@ class DiagramView(ViewBox):
     ----------
     canvas
     image
-    oecf
     input_colourspace
     correlate_colourspace
     diagram
@@ -111,7 +97,6 @@ class DiagramView(ViewBox):
     def __init__(self,
                  canvas=None,
                  image=None,
-                 oecf='Rec. 709',
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
                  diagram='CIE 1931',
@@ -124,8 +109,6 @@ class DiagramView(ViewBox):
 
         self.__image = None
         self.image = image
-        self.__oecf = None
-        self.oecf = oecf
         self.__input_colourspace = None
         self.input_colourspace = input_colourspace
         self.__correlate_colourspace = None
@@ -147,8 +130,7 @@ class DiagramView(ViewBox):
         self.__grid_visual = None
         self.__axis_visual = None
 
-        self.__clamp_blacks = False
-        self.__clamp_whites = False
+        self.__visuals_visibility = None
 
         self.__create_visuals()
         self.__attach_visuals()
@@ -216,46 +198,12 @@ class DiagramView(ViewBox):
         self.__image = value
 
         if self.__initialised:
-            self.visibility = self.__store_visuals_visibility()
+            self.__store_visuals_visibility()
             self.__detach_visuals()
             self.__create_RGB_scatter_visual(self.__image)
             self.__attach_visuals()
             self.__restore_visuals_visibility()
             self.__title_overlay_visual_text()
-
-    @property
-    def oecf(self):
-        """
-        Property for **self.__oecf** private attribute.
-
-        Returns
-        -------
-        unicode
-            self.__oecf.
-        """
-
-        return self.__oecf
-
-    @oecf.setter
-    def oecf(self, value):
-        """
-        Setter for **self.__oecf** private attribute.
-
-        Parameters
-        ----------
-        value : unicode
-            Attribute value.
-        """
-
-        if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('oecf', value))
-            assert value in RGB_COLOURSPACES, (
-                '"{0}" OECF is not associated with any factory '
-                'RGB colourspaces: "{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
-        self.__oecf = value
 
     @property
     def input_colourspace(self):

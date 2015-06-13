@@ -196,9 +196,6 @@ class GamutView(ViewBox):
         self.__spectral_locus_visual = None
         self.__axis_visual = None
 
-        self.__clamp_blacks = False
-        self.__clamp_whites = False
-
         self.__visuals_visibility = None
 
         self.__create_presets()

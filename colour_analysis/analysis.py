@@ -19,14 +19,10 @@ from itertools import cycle
 
 import numpy as np
 from vispy.scene import SceneCanvas
-from colour import (
-    RGB_COLOURSPACES,
-    is_openimageio_installed,
-    read_image,
-    warning)
+from colour import RGB_COLOURSPACES
 
 from colour_analysis.constants import (
-    DEFAULT_IMAGE, SETTINGS_FILE,
+    SETTINGS_FILE,
     REFERENCE_COLOURSPACES)
 from colour_analysis.views import (
     ConsoleView,
@@ -110,8 +106,10 @@ class ColourAnalysis(SceneCanvas):
 
     Parameters
     ----------
+    image : array_like, optional
+        Image to analyse.
     image_path : unicode, optional
-        Path of the image to analyse.
+        Image path.
     input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
@@ -132,9 +130,6 @@ class ColourAnalysis(SceneCanvas):
         opto-electronic conversion function.
     input_linear : bool, optional
         Is input image linear.
-    input_resample : int, optional
-        Resampling value, one pixel every `input_resample` argument value will
-        be kept.
     reference_colourspace : unicode, optional
         {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
         'IPT'}
@@ -153,12 +148,11 @@ class ColourAnalysis(SceneCanvas):
 
     Attributes
     ----------
-    image_path
     image
+    image_path
     input_colourspace
     input_oecf
     input_linear
-    input_resample
     reference_colourspace
     correlate_colourspace
     settings
@@ -176,14 +170,16 @@ class ColourAnalysis(SceneCanvas):
     on_key_press
     cycle_correlate_colourspace_action
     cycle_reference_colourspace_action
+    toggle_blacks_clamp_action
+    toggle_whites_clamp_action
     """
 
     def __init__(self,
-                 image_path=DEFAULT_IMAGE,
+                 image=None,
+                 image_path=None,
                  input_colourspace='Rec. 709',
                  input_oecf='Rec. 709',
                  input_linear=True,
-                 input_resample=1,
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
                  settings=None,
@@ -191,23 +187,25 @@ class ColourAnalysis(SceneCanvas):
         SceneCanvas.__init__(
             self,
             keys='interactive',
-            title="Colour Analysis - {0}".format(image_path),
+            title=('Colour Analysis - {0}'.format(image_path)
+                   if image_path is not None
+                   else 'Colour Analysis'),
             size=settings['canvas']['size'],
             bgcolor=settings['canvas']['canvas_background_colour'],
             config={'samples': settings['canvas']['samples']})
 
+        self.__image = None
+        self.image = (image
+                      if image is not None else
+                      (np.random.random((256, 256, 3)) - 0.1) * 1.25)
         self.__image_path = None
         self.image_path = image_path
-        self.__image = None
-        self.image = np.random.random((256, 256, 3))
         self.__input_colourspace = None
         self.input_colourspace = input_colourspace
         self.__input_oecf = None
         self.input_oecf = input_oecf
         self.__input_linear = None
         self.input_linear = input_linear
-        self.__input_resample = None
-        self.input_resample = input_resample
         self.__reference_colourspace = None
         self.reference_colourspace = reference_colourspace
         self.__correlate_colourspace = None
@@ -244,11 +242,40 @@ class ColourAnalysis(SceneCanvas):
 
         self.__create_layout_presets()
         self.__create_actions()
-        self.__create_image()
         self.__create_views()
         self.__layout_views()
 
         self.show()
+
+    @property
+    def image(self):
+        """
+        Property for **self.__image** private attribute.
+
+        Returns
+        -------
+        array_like
+            self.__image.
+        """
+
+        return self.__image
+
+    @image.setter
+    def image(self, value):
+        """
+        Setter for **self.__image** private attribute.
+
+        Parameters
+        ----------
+        value : array_like
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
+                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
+                 '"ndarray" or "matrix"!').format('image', value))
+        self.__image = value
 
     @property
     def image_path(self):
@@ -281,36 +308,6 @@ class ColourAnalysis(SceneCanvas):
             assert os.path.exists(value), (
                 '"{0}" input image doesn\'t exists!'.format(value))
         self.__image_path = value
-
-    @property
-    def image(self):
-        """
-        Property for **self.__image** private attribute.
-
-        Returns
-        -------
-        array_like
-            self.__image.
-        """
-
-        return self.__image
-
-    @image.setter
-    def image(self, value):
-        """
-        Setter for **self.__image** private attribute.
-
-        Parameters
-        ----------
-        value : array_like
-            Attribute value.
-        """
-
-        if value is not None:
-            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
-                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
-                 '"ndarray" or "matrix"!').format('image', value))
-        self.__image = value
 
     @property
     def input_colourspace(self):
@@ -409,35 +406,6 @@ class ColourAnalysis(SceneCanvas):
                 '"{0}" attribute: "{1}" type is not "bool"!'.format(
                     'input_linear', value))
         self.__input_linear = value
-
-    @property
-    def input_resample(self):
-        """
-        Property for **self.input_resample** attribute.
-
-        Returns
-        -------
-        int
-        """
-
-        return self.__input_resample
-
-    @input_resample.setter
-    def input_resample(self, value):
-        """
-        Setter for **self.input_resample** attribute.
-
-        Parameters
-        ----------
-        value : int
-            Attribute value.
-        """
-
-        if value is not None:
-            assert type(value) is int, (
-                '"{0}" attribute: "{1}" type is not "int"!'.format(
-                    'input_resample', value))
-        self.__input_resample = value
 
     @property
     def reference_colourspace(self):
@@ -726,18 +694,11 @@ class ColourAnalysis(SceneCanvas):
 
         self.__clamp_blacks = value
 
-        image = (np.clip(self.__image, 0, np.inf)
-                 if self.__clamp_blacks else
-                 self.__image)
+        image = self.__create_image()
 
-        if self.__gamut_view is not None:
-            self.__gamut_view.image = image
-
-        if self.__image_view is not None:
-            self.__image_view.image = image
-
-        if self.__diagram_view is not None:
-            self.__diagram_view.image = image
+        for view in self.__views:
+            if hasattr(view, 'image'):
+                view.image = image
 
     @property
     def clamp_whites(self):
@@ -770,18 +731,11 @@ class ColourAnalysis(SceneCanvas):
 
         self.__clamp_whites = value
 
-        image = (np.clip(self.__image, -np.inf, 1)
-                 if self.__clamp_whites else
-                 self.__image)
+        image = self.__create_image()
 
-        if self.__gamut_view is not None:
-            self.__gamut_view.image = image
-
-        if self.__image_view is not None:
-            self.__image_view.image = image
-
-        if self.__diagram_view is not None:
-            self.__diagram_view.image = image
+        for view in self.__views:
+            if hasattr(view, 'image'):
+                view.image = image
 
     def on_key_press(self, event):
         """
@@ -835,31 +789,6 @@ class ColourAnalysis(SceneCanvas):
                 name=layout['name'],
                 description=layout['description'],
                 views=views)
-
-    def __create_image(self):
-        """
-        Reads and creates the image to analyse.
-
-        Notes
-        -----
-        -   If *OpenImageIO* is not installed, and thus the image cannot be
-        read, random colours will be used instead.
-        """
-
-        if is_openimageio_installed:
-            image = read_image(str(self.__image_path))
-        else:
-            warning('"OpenImageIO" is not available, images reading is not '
-                    'supported, falling back to random noise!')
-            image = (np.random.random((256, 256, 3)) - 0.1) * 1.25
-        if not self.__input_linear:
-            colourspace = RGB_COLOURSPACES[self.__input_oecf]
-            image = colourspace.inverse_transfer_function(image)
-
-        # Keeping RGB channels only.
-        image = image[..., 0:3]
-
-        self.__image = image[::self.__input_resample, ::self.__input_resample]
 
     def __create_actions(self):
         """
@@ -916,7 +845,6 @@ class ColourAnalysis(SceneCanvas):
             self.__image_view = ImageView(
                 canvas=self,
                 image=self.__image,
-                oecf=self.__input_oecf,
                 input_colourspace=self.__input_colourspace,
                 correlate_colourspace=self.__correlate_colourspace,
                 bgcolor=background_colour,
@@ -926,7 +854,6 @@ class ColourAnalysis(SceneCanvas):
             self.__diagram_view = DiagramView(
                 canvas=self,
                 image=self.__image,
-                oecf=self.__input_oecf,
                 input_colourspace=self.__input_colourspace,
                 correlate_colourspace=self.__correlate_colourspace,
                 bgcolor=background_colour,
@@ -958,6 +885,28 @@ class ColourAnalysis(SceneCanvas):
                 row_span=view_preset.row_span,
                 col_span=view_preset.column_span)
 
+    def __create_image(self):
+        """
+        Creates the image used by the *Diagram View* according to
+        :attr:`ColourAnalysis.clamp_blacks` or
+        :attr:`ColourAnalysis.clamp_whites` attributes values.
+
+        Returns
+        -------
+        ndarray
+            Image
+        """
+
+        image = self.__image
+
+        if self.__clamp_blacks:
+            image = np.clip(image, 0, np.inf)
+
+        if self.__clamp_whites:
+            image = np.clip(image, -np.inf, 1)
+
+        return image
+
     def cycle_correlate_colourspace_action(self):
         """
         Defines the slot triggered by the *cycle_correlate_colourspace* action.
@@ -970,15 +919,9 @@ class ColourAnalysis(SceneCanvas):
 
         self.__correlate_colourspace = next(self.__RGB_colourspaces_cycle)
 
-        if self.__gamut_view is not None:
-            self.__gamut_view.correlate_colourspace = (
-                self.__correlate_colourspace)
-        if self.__image_view is not None:
-            self.__image_view.correlate_colourspace = (
-                self.__correlate_colourspace)
-        if self.__diagram_view is not None:
-            self.__diagram_view.correlate_colourspace = (
-                self.__correlate_colourspace)
+        for view in self.__views:
+            if hasattr(view, 'correlate_colourspace'):
+                view.correlate_colourspace = self.__correlate_colourspace
 
         return True
 
@@ -995,9 +938,9 @@ class ColourAnalysis(SceneCanvas):
         self.__reference_colourspace = next(
             self.__reference_colourspaces_cycle)
 
-        if self.__gamut_view is not None:
-            self.__gamut_view.reference_colourspace = (
-                self.__reference_colourspace)
+        for view in self.__views:
+            if hasattr(view, 'reference_colourspace'):
+                view.reference_colourspace = self.__reference_colourspace
 
         return True
 
