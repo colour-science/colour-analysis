@@ -131,22 +131,26 @@ class GamutView(ViewBox):
     ----------
     canvas
     image
-    oecf
     input_colourspace
+    reference_colourspace
     correlate_colourspace
-    diagram
+    settings
 
     Methods
     -------
-    toggle_spectral_locus_visual_visibility_action
     toggle_input_colourspace_visual_visibility_action
+    cycle_input_colourspace_visual_style_action
     toggle_correlate_colourspace_visual_visibility_action
+    cycle_correlate_colourspace_visual_style_action
     toggle_RGB_scatter_visual_visibility_action
+    cycle_RGB_scatter_visual_style_action
     toggle_pointer_gamut_visual_visibility_action
-    toggle_grid_visual_visibility_action
+    cycle_pointer_gamut_visual_style_action
+    toggle_spectral_locus_visual_visibility_action
+    cycle_spectral_locus_visual_style_action
     toggle_axis_visual_visibility_action
-    cycle_correlate_colourspace_action
-    cycle_chromaticity_diagram_action
+    decrease_colourspace_visual_resolution_action
+    increase_colourspace_visual_resolution_action
     toggle_blacks_clamp_action
     toggle_whites_clamp_action
     """
@@ -159,6 +163,8 @@ class GamutView(ViewBox):
                  correlate_colourspace='ACEScg',
                  settings=None,
                  **kwargs):
+        self.__initialised = False
+
         ViewBox.__init__(self, **kwargs)
 
         self.__canvas = canvas
@@ -205,6 +211,8 @@ class GamutView(ViewBox):
 
         self.__create_title_overlay_visual()
         self.__canvas.events.resize.connect(self.__canvas_resize_event)
+
+        self.__initialised = True
 
     @property
     def canvas(self):
@@ -293,7 +301,16 @@ class GamutView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+
         self.__input_colourspace = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_input_colourspace_visual(
+                self.__visuals_style_presets[
+                    'input_colourspace_visual'].current_item())
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     @property
     def reference_colourspace(self):
@@ -327,7 +344,17 @@ class GamutView(ViewBox):
                 '"{0}" reference colourspace not found in factory reference '
                 'colourspaces: "{1}".').format(
                 value, ', '.join(sorted(REFERENCE_COLOURSPACES.keys())))
+
         self.__reference_colourspace = value
+
+        if self.__initialised:
+            self.__store_visuals_visibility()
+            self.__detach_visuals()
+            self.__create_visuals()
+            self.__attach_visuals()
+            self.__restore_visuals_visibility()
+            self.__create_camera()
+            self.__title_overlay_visual_text()
 
     @property
     def correlate_colourspace(self):
@@ -361,7 +388,16 @@ class GamutView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
+
         self.__correlate_colourspace = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_correlate_colourspace_visual(
+                self.__visuals_style_presets[
+                    'correlate_colourspace_visual'].current_item())
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     @property
     def settings(self):
@@ -959,47 +995,6 @@ class GamutView(ViewBox):
 
         self.__axis_visual.visible = (
             not self.__axis_visual.visible)
-
-        return True
-
-    def cycle_correlate_colourspace_action(self):
-        """
-        Defines the slot triggered by the *cycle_correlate_colourspace*
-        action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__detach_visuals()
-        self.__create_correlate_colourspace_visual(
-            self.__visuals_style_presets[
-                'correlate_colourspace_visual'].current_item())
-        self.__attach_visuals()
-        self.__title_overlay_visual_text()
-
-        return True
-
-    def cycle_reference_colourspace_action(self):
-        """
-        Defines the slot triggered by the *cycle_reference_colourspace*
-        action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__create_camera()
-        self.__title_overlay_visual_text()
 
         return True
 

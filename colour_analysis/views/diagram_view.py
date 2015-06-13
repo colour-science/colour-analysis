@@ -105,7 +105,6 @@ class DiagramView(ViewBox):
     toggle_pointer_gamut_visual_visibility_action
     toggle_grid_visual_visibility_action
     toggle_axis_visual_visibility_action
-    cycle_correlate_colourspace_action
     cycle_chromaticity_diagram_action
     toggle_blacks_clamp_action
     toggle_whites_clamp_action
@@ -119,6 +118,8 @@ class DiagramView(ViewBox):
                  correlate_colourspace='ACEScg',
                  diagram='CIE 1931',
                  **kwargs):
+        self.__initialised = False
+
         ViewBox.__init__(self, **kwargs)
 
         self.__canvas = canvas
@@ -157,6 +158,8 @@ class DiagramView(ViewBox):
 
         self.__create_title_overlay_visual()
         self.__canvas.events.resize.connect(self.__canvas_resize_event)
+
+        self.__initialised = True
 
     @property
     def canvas(self):
@@ -279,7 +282,14 @@ class DiagramView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+
         self.__input_colourspace = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_input_colourspace_visual()
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     @property
     def correlate_colourspace(self):
@@ -315,6 +325,12 @@ class DiagramView(ViewBox):
                 sorted(RGB_COLOURSPACES.keys())))
         self.__correlate_colourspace = value
 
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_correlate_colourspace_visual()
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
+
     @property
     def diagram(self):
         """
@@ -347,7 +363,18 @@ class DiagramView(ViewBox):
                 '"{0}" diagram not found in factory chromaticity diagrams: '
                 '"{1}".').format(value, ', '.join(
                 sorted(CHROMATICITY_DIAGRAMS.keys())))
+
+        if self.__initialised:
+            self.__store_visuals_visibility()
+            self.__detach_visuals()
+
         self.__diagram = value
+
+        if self.__initialised:
+            self.__create_visuals()
+            self.__attach_visuals()
+            self.__restore_visuals_visibility()
+            self.__title_overlay_visual_text()
 
     def __create_image(self):
         """
@@ -621,8 +648,7 @@ class DiagramView(ViewBox):
             title += self.__correlate_colourspace
             title += ' - '
 
-        title += '{0} Chromaticity Diagram'.format(
-            self.__diagrams_cycle.current_item())
+        title += '{0} Chromaticity Diagram'.format(self.__diagram)
 
         if self.__clamp_blacks:
             title += ' - '
@@ -762,23 +788,6 @@ class DiagramView(ViewBox):
 
         return True
 
-    def cycle_correlate_colourspace_action(self):
-        """
-        Defines the slot triggered by the *cycle_correlate_colourspace* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__detach_visuals()
-        self.__create_correlate_colourspace_visual()
-        self.__attach_visuals()
-        self.__title_overlay_visual_text()
-
-        return True
-
     def cycle_chromaticity_diagram_action(self):
         """
         Defines the slot triggered by the *cycle_chromaticity_diagram* action.
@@ -789,13 +798,7 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__diagram = self.__diagrams_cycle.next_item()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__title_overlay_visual_text()
+        self.diagram = self.__diagrams_cycle.next_item()
 
         return True
 

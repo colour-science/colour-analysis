@@ -103,6 +103,8 @@ class ImageView(ViewBox):
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
                  **kwargs):
+        self.__initialised = False
+
         ViewBox.__init__(self, **kwargs)
 
         self.__canvas = canvas
@@ -135,6 +137,8 @@ class ImageView(ViewBox):
 
         self.__create_title_overlay_visual()
         self.__canvas.events.resize.connect(self.__canvas_resize_event)
+
+        self.__initialised = True
 
     @property
     def canvas(self):
@@ -257,7 +261,14 @@ class ImageView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+
         self.__input_colourspace = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_visuals()
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     @property
     def correlate_colourspace(self):
@@ -291,7 +302,14 @@ class ImageView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
+
         self.__correlate_colourspace = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_visuals()
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     def __create_image(self):
         """
@@ -314,11 +332,11 @@ class ImageView(ViewBox):
         has_overlay = False
         if self.__clamp_blacks:
             image = np.clip(image, 0, np.inf)
-            has_overlay = True
+            # has_overlay = True
 
         if self.__clamp_whites:
             image = np.clip(image, -np.inf, 1)
-            has_overlay = True
+            # has_overlay = True
 
         if (self.__display_input_colourspace_out_of_gamut or
                 self.__display_correlate_colourspace_out_of_gamut):
@@ -340,7 +358,7 @@ class ImageView(ViewBox):
                            colourspace.whitepoint,
                            colourspace.RGB_to_XYZ_matrix)).astype(int)
 
-            # TODO: Investigate why stacking implies that image need to be
+            # TODO: Investigate why stacking implies that image needs to be
             # inverted.
             image = 1 - tstack((image, image, image))
             has_overlay = True
@@ -443,24 +461,6 @@ class ImageView(ViewBox):
         """
 
         self.__title_overlay_visual_position()
-
-    def cycle_correlate_colourspace_action(self):
-        """
-        Defines the slot triggered by the *cycle_correlate_colourspace*
-        action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__detach_visuals()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__title_overlay_visual_text()
-
-        return True
 
     def toggle_blacks_clamp_action(self):
         """

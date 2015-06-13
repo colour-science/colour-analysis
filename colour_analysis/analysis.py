@@ -798,16 +798,15 @@ class ColourAnalysis(SceneCanvas):
             self.__settings['canvas']['views_background_colour'])
         border_colour = self.__settings['canvas']['views_border_colour']
 
+        self.__console_view = ConsoleView(
+            canvas=self,
+            text_color=(0.8, 0.8, 0.8),
+            font_size=10.0,
+            bgcolor=background_colour,
+            border_color=border_colour)
+
         views = self.__layout_presets.get(self.__layout).views.values()
         views = [view.view for view in views]
-
-        if 'console_view' in views:
-            self.__console_view = ConsoleView(
-                canvas=self,
-                text_color=(0.8, 0.8, 0.8),
-                font_size=10.0,
-                bgcolor=background_colour,
-                border_color=border_colour)
 
         if 'gamut_view' in views:
             self.__gamut_view = GamutView(
