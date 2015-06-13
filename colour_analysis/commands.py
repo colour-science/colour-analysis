@@ -25,6 +25,7 @@ from vispy.app import run
 from colour import RGB_COLOURSPACES, is_openimageio_installed, read_image, \
     warning
 
+from colour_analysis import __application_name__, __version__
 from colour_analysis.analysis import ColourAnalysis
 from colour_analysis.constants import (
     DEFAULT_IMAGE_PATH,
@@ -288,6 +289,12 @@ def main():
     """
 
     arguments = command_line_arguments()
+
+    if arguments.version:
+        print('{0} - {1}'.format(__application_name__, __version__))
+
+        return True
+
     settings = json.load(open(SETTINGS_FILE))
     if arguments.settings_file is not None:
         assert os.path.exists(arguments.settings_file), (
@@ -324,7 +331,7 @@ def main():
         image = image[..., 0:3]
 
         image = image[::int(arguments.input_resample),
-                      ::int(arguments.input_resample)]
+                ::int(arguments.input_resample)]
     else:
         warning(
             '"OpenImageIO" is not available, images reading is not supported, '

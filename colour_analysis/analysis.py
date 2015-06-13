@@ -21,6 +21,7 @@ import numpy as np
 from vispy.scene import SceneCanvas
 from colour import RGB_COLOURSPACES
 
+from colour_analysis import __application_name__, __version__
 from colour_analysis.constants import (
     SETTINGS_FILE,
     REFERENCE_COLOURSPACES)
@@ -186,12 +187,14 @@ class ColourAnalysis(SceneCanvas):
                  layout='layout_1'):
         self.__initialised = False
 
+        title = '{0} - {1}'.format(__application_name__, __version__)
+
         SceneCanvas.__init__(
             self,
             keys='interactive',
-            title=('Colour Analysis - {0}'.format(image_path)
+            title=('{0} - {1}'.format(title, image_path)
                    if image_path is not None
-                   else 'Colour Analysis'),
+                   else title),
             size=settings['canvas']['size'],
             bgcolor=settings['canvas']['canvas_background_colour'],
             config={'samples': settings['canvas']['samples']})
