@@ -106,8 +106,6 @@ class DiagramView(ViewBox):
     toggle_grid_visual_visibility_action
     toggle_axis_visual_visibility_action
     cycle_chromaticity_diagram_action
-    toggle_blacks_clamp_action
-    toggle_whites_clamp_action
     """
 
     def __init__(self,
@@ -214,7 +212,16 @@ class DiagramView(ViewBox):
             assert type(value) in (tuple, list, np.ndarray, np.matrix), (
                 ('"{0}" attribute: "{1}" type is not "tuple", "list", '
                  '"ndarray" or "matrix"!').format('image', value))
+
         self.__image = value
+
+        if self.__initialised:
+            self.visibility = self.__store_visuals_visibility()
+            self.__detach_visuals()
+            self.__create_RGB_scatter_visual(self.__image)
+            self.__attach_visuals()
+            self.__restore_visuals_visibility()
+            self.__title_overlay_visual_text()
 
     @property
     def oecf(self):
@@ -376,28 +383,6 @@ class DiagramView(ViewBox):
             self.__restore_visuals_visibility()
             self.__title_overlay_visual_text()
 
-    def __create_image(self):
-        """
-        Creates the image used by the *Diagram View* according to
-        :attr:`DiagramView.__clamp_blacks` or
-        :attr:`DiagramView.__clamp_whites` attributes values.
-
-        Returns
-        -------
-        ndarray
-            Image
-        """
-
-        image = self.__image
-
-        if self.__clamp_blacks:
-            image = np.clip(image, 0, np.inf)
-
-        if self.__clamp_whites:
-            image = np.clip(image, -np.inf, 1)
-
-        return image
-
     def __create_chromaticity_diagram_visual(self, diagram='CIE 1931'):
         """
         Creates the given chromaticity diagram visual.
@@ -511,7 +496,7 @@ class DiagramView(ViewBox):
 
         self.__create_chromaticity_diagram_visual(self.__diagram)
         self.__create_spectral_locus_visual()
-        self.__create_RGB_scatter_visual(self.__create_image())
+        self.__create_RGB_scatter_visual(self.__image)
         self.__create_pointer_gamut_visual()
         self.__create_pointer_gamut_boundaries_visual()
         self.__create_input_colourspace_visual()
@@ -650,11 +635,11 @@ class DiagramView(ViewBox):
 
         title += '{0} Chromaticity Diagram'.format(self.__diagram)
 
-        if self.__clamp_blacks:
+        if self.__canvas.clamp_blacks:
             title += ' - '
             title += 'Blacks Clamped'
 
-        if self.__clamp_whites:
+        if self.__canvas.clamp_whites:
             title += ' - '
             title += 'Whites Clamped'
 
@@ -799,45 +784,5 @@ class DiagramView(ViewBox):
         """
 
         self.diagram = self.__diagrams_cycle.next_item()
-
-        return True
-
-    def toggle_blacks_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_blacks_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_blacks = not self.__clamp_blacks
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_image())
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__title_overlay_visual_text()
-
-        return True
-
-    def toggle_whites_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_whites_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_whites = not self.__clamp_whites
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_image())
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__title_overlay_visual_text()
 
         return True

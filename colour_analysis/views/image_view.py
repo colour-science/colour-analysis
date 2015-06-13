@@ -85,9 +85,6 @@ class ImageView(ViewBox):
 
     Methods
     -------
-    cycle_correlate_colourspace_action
-    toggle_blacks_clamp_action
-    toggle_whites_clamp_action
     toggle_input_colourspace_out_of_gamut_colours_display_action
     toggle_correlate_colourspace_out_of_gamut_colours_display_action
     toggle_out_of_pointer_gamut_colours_display_action
@@ -122,8 +119,6 @@ class ImageView(ViewBox):
 
         self.__image_visual = None
 
-        self.__clamp_blacks = False
-        self.__clamp_whites = False
         self.__image_overlay = True
 
         self.__display_input_colourspace_out_of_gamut = False
@@ -193,7 +188,14 @@ class ImageView(ViewBox):
             assert type(value) in (tuple, list, np.ndarray, np.matrix), (
                 ('"{0}" attribute: "{1}" type is not "tuple", "list", '
                  '"ndarray" or "matrix"!').format('image', value))
+
         self.__image = value
+
+        if self.__initialised:
+            self.__detach_visuals()
+            self.__create_visuals()
+            self.__attach_visuals()
+            self.__title_overlay_visual_text()
 
     @property
     def oecf(self):
@@ -314,8 +316,6 @@ class ImageView(ViewBox):
     def __create_image(self):
         """
         Creates the image used by the *Image View* according to
-        :attr:`GamutView.__clamp_blacks`,
-        :attr:`GamutView.__clamp_whites`,
         :attr:`GamutView.__display_input_colourspace_out_of_gamut`,
         :attr:`GamutView.__display_correlate_colourspace_out_of_gamut`,
         :attr:`GamutView.__display_out_of_pointer_gamut` and
@@ -330,14 +330,6 @@ class ImageView(ViewBox):
         image = np.copy(self.__image)
 
         has_overlay = False
-        if self.__clamp_blacks:
-            image = np.clip(image, 0, np.inf)
-            # has_overlay = True
-
-        if self.__clamp_whites:
-            image = np.clip(image, -np.inf, 1)
-            # has_overlay = True
-
         if (self.__display_input_colourspace_out_of_gamut or
                 self.__display_correlate_colourspace_out_of_gamut):
             image[image >= 0] = 0
@@ -461,42 +453,6 @@ class ImageView(ViewBox):
         """
 
         self.__title_overlay_visual_position()
-
-    def toggle_blacks_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_blacks_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_blacks = not self.__clamp_blacks
-        self.__detach_visuals()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__title_overlay_visual_text()
-
-        return True
-
-    def toggle_whites_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_whites_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_whites = not self.__clamp_whites
-        self.__detach_visuals()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__title_overlay_visual_text()
-
-        return True
 
     def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
         """

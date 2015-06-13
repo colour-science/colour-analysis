@@ -151,8 +151,6 @@ class GamutView(ViewBox):
     toggle_axis_visual_visibility_action
     decrease_colourspace_visual_resolution_action
     increase_colourspace_visual_resolution_action
-    toggle_blacks_clamp_action
-    toggle_whites_clamp_action
     """
 
     def __init__(self,
@@ -267,7 +265,16 @@ class GamutView(ViewBox):
             assert type(value) in (tuple, list, np.ndarray, np.matrix), (
                 ('"{0}" attribute: "{1}" type is not "tuple", "list", '
                  '"ndarray" or "matrix"!').format('image', value))
+
         self.__image = value
+
+        if self.__initialised:
+            self.__store_visuals_visibility()
+            self.__detach_visuals()
+            self.__create_RGB_scatter_visual(self.__image)
+            self.__attach_visuals()
+            self.__restore_visuals_visibility()
+            self.__title_overlay_visual_text()
 
     @property
     def input_colourspace(self):
@@ -496,28 +503,6 @@ class GamutView(ViewBox):
         self.__create_visuals_style_presets()
         self.__create_axis_presets()
 
-    def __create_image(self):
-        """
-        Creates the image used by the *Gamut View* according to
-        :attr:`GamutView.__clamp_blacks` or
-        :attr:`GamutView.__clamp_whites` attributes values.
-
-        Returns
-        -------
-        ndarray
-            Image
-        """
-
-        image = self.__image
-
-        if self.__clamp_blacks:
-            image = np.clip(image, 0, np.inf)
-
-        if self.__clamp_whites:
-            image = np.clip(image, -np.inf, 1)
-
-        return image
-
     def __create_RGB_colourspace_visual(self, colourspace, style):
         """
         Creates a *RGB* colourspace volume visual with given colourspace and
@@ -652,7 +637,7 @@ class GamutView(ViewBox):
         Creates the *Gamut View* visuals.
         """
 
-        self.__create_RGB_scatter_visual(self.__create_image())
+        self.__create_RGB_scatter_visual(self.__image)
         self.__create_pointer_gamut_visual()
         self.__create_pointer_gamut_hull_visual()
         self.__create_input_colourspace_visual()
@@ -786,11 +771,11 @@ class GamutView(ViewBox):
 
         title += self.__reference_colourspace
 
-        if self.__clamp_blacks:
+        if self.__canvas.clamp_blacks:
             title += ' - '
             title += 'Blacks Clamped'
 
-        if self.__clamp_whites:
+        if self.__canvas.clamp_whites:
             title += ' - '
             title += 'Whites Clamped'
 
@@ -909,7 +894,7 @@ class GamutView(ViewBox):
         """
 
         self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_image())
+        self.__create_RGB_scatter_visual(self.__image)
         self.__attach_visuals()
 
         return True
@@ -1043,43 +1028,3 @@ class GamutView(ViewBox):
         self.__create_correlate_colourspace_visual()
         self.__attach_visuals()
         self.__restore_visuals_visibility()
-
-    def toggle_blacks_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_blacks_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_blacks = not self.__clamp_blacks
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_image())
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__title_overlay_visual_text()
-
-        return True
-
-    def toggle_whites_clamp_action(self):
-        """
-        Defines the slot triggered by the *toggle_whites_clamp* action.
-
-        Returns
-        -------
-        bool
-            Definition success.
-        """
-
-        self.__clamp_whites = not self.__clamp_whites
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__create_image())
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
-        self.__title_overlay_visual_text()
-
-        return True

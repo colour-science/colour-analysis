@@ -168,6 +168,8 @@ class ColourAnalysis(SceneCanvas):
     gamut_view
     image_view
     diagram_view
+    clamp_blacks
+    clamp_whites
 
     Methods
     -------
@@ -215,6 +217,9 @@ class ColourAnalysis(SceneCanvas):
                            settings)
         self.__layout = None
         self.layout = layout
+
+        self.__clamp_blacks = False
+        self.__clamp_whites = False
 
         self.__layout_presets = OrderedDict()
         self.__actions = {}
@@ -690,6 +695,94 @@ class ColourAnalysis(SceneCanvas):
         raise AttributeError(
             '"{0}" attribute is read only!'.format('diagram_view'))
 
+    @property
+    def clamp_blacks(self):
+        """
+        Property for **self.__clamp_blacks** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__clamp_blacks.
+        """
+
+        return self.__clamp_blacks
+
+    @clamp_blacks.setter
+    def clamp_blacks(self, value):
+        """
+        Setter for **self.__clamp_blacks** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) is bool, (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"bool"!').format('clamp_blacks', value))
+
+        self.__clamp_blacks = value
+
+        image = (np.clip(self.__image, 0, np.inf)
+                 if self.__clamp_blacks else
+                 self.__image)
+
+        if self.__gamut_view is not None:
+            self.__gamut_view.image = image
+
+        if self.__image_view is not None:
+            self.__image_view.image = image
+
+        if self.__diagram_view is not None:
+            self.__diagram_view.image = image
+
+    @property
+    def clamp_whites(self):
+        """
+        Property for **self.__clamp_whites** private attribute.
+
+        Returns
+        -------
+        unicode
+            self.__clamp_whites.
+        """
+
+        return self.__clamp_whites
+
+    @clamp_whites.setter
+    def clamp_whites(self, value):
+        """
+        Setter for **self.__clamp_whites** private attribute.
+
+        Parameters
+        ----------
+        value : unicode
+            Attribute value.
+        """
+
+        if value is not None:
+            assert type(value) is bool, (
+                ('"{0}" attribute: "{1}" type is not '
+                 '"bool"!').format('clamp_whites', value))
+
+        self.__clamp_whites = value
+
+        image = (np.clip(self.__image, -np.inf, 1)
+                 if self.__clamp_whites else
+                 self.__image)
+
+        if self.__gamut_view is not None:
+            self.__gamut_view.image = image
+
+        if self.__image_view is not None:
+            self.__image_view.image = image
+
+        if self.__diagram_view is not None:
+            self.__diagram_view.image = image
+
     def on_key_press(self, event):
         """
         Reimplements :meth:`vispy.scene.SceneCanvas.on_key_press` method and
@@ -905,5 +998,33 @@ class ColourAnalysis(SceneCanvas):
         if self.__gamut_view is not None:
             self.__gamut_view.reference_colourspace = (
                 self.__reference_colourspace)
+
+        return True
+
+    def toggle_blacks_clamp_action(self):
+        """
+        Defines the slot triggered by the *toggle_blacks_clamp* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
+        self.clamp_blacks = not self.clamp_blacks
+
+        return True
+
+    def toggle_whites_clamp_action(self):
+        """
+        Defines the slot triggered by the *toggle_whites_clamp* action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
+        self.clamp_whites = not self.clamp_whites
 
         return True
