@@ -900,7 +900,7 @@ class ColourAnalysis(SceneCanvas):
     def __create_image(self):
         """
         Creates the image used by the *Diagram View* according to
-        :attr:`ColourAnalysis.clamp_blacks` or
+        :attr:`ColourAnalysis.clamp_blacks` and
         :attr:`ColourAnalysis.clamp_whites` attributes values.
 
         Returns

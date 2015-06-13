@@ -135,6 +135,10 @@ class ConsoleView(Console):
             self.canvas.reference_colourspace))
         state.append('- Correlate RGB colourspace: {0}'.format(
             self.canvas.correlate_colourspace))
+        state.append('- Blacks Clamped: {0}'.format(
+            self.canvas.clamp_blacks))
+        state.append('- Whites Clamped: {0}'.format(
+            self.canvas.clamp_whites))
         state = '\n'.join(state)
 
         self.write('{0}'.format(state))
