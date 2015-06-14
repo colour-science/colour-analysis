@@ -196,6 +196,14 @@ class GamutView(ViewBox):
         self.__spectral_locus_visual = None
         self.__axis_visual = None
 
+        self.__visuals = ('RGB_scatter_visual',
+                          'input_colourspace_visual',
+                          'correlate_colourspace_visual',
+                          'pointer_gamut_visual',
+                          'pointer_gamut_hull_visual',
+                          'spectral_locus_visual',
+                          'axis_visual')
+
         self.__visuals_visibility = None
 
         self.__create_presets()
@@ -580,16 +588,18 @@ class GamutView(ViewBox):
             self.__create_RGB_colourspace_visual(
                 self.__correlate_colourspace, style))
 
-    def __create_RGB_scatter_visual(self, RGB):
+    def __create_RGB_scatter_visual(self, RGB=None):
         """
         Creates the *RGB* scatter visual for given *RGB* array according to
         :attr:`GamutView.__reference_colourspace` attribute value.
 
         Parameters
         ----------
-        RGB : array_like
+        RGB : array_like, optional
             *RGB* array to draw.
         """
+
+        RGB = self.__image if RGB is None else RGB
 
         self.__RGB_scatter_visual = RGB_scatter_visual(
             RGB, reference_colourspace=self.__reference_colourspace)
@@ -634,13 +644,9 @@ class GamutView(ViewBox):
         Creates the *Gamut View* visuals.
         """
 
-        self.__create_RGB_scatter_visual(self.__image)
-        self.__create_pointer_gamut_visual()
-        self.__create_pointer_gamut_hull_visual()
-        self.__create_input_colourspace_visual()
-        self.__create_correlate_colourspace_visual()
-        self.__create_spectral_locus_visual()
-        self.__create_axis_visual()
+        for visual in self.__visuals:
+            visual = '_GamutView__create_{0}'.format(visual)
+            getattr(self, visual)()
 
     def __create_camera(self):
         """
@@ -666,26 +672,18 @@ class GamutView(ViewBox):
         Attaches / parents the visuals to the *Gamut View* scene.
         """
 
-        self.__RGB_scatter_visual.add_parent(self.scene)
-        self.__input_colourspace_visual.add_parent(self.scene)
-        self.__correlate_colourspace_visual.add_parent(self.scene)
-        self.__pointer_gamut_visual.add_parent(self.scene)
-        self.__pointer_gamut_hull_visual.add_parent(self.scene)
-        self.__spectral_locus_visual.add_parent(self.scene)
-        self.__axis_visual.add_parent(self.scene)
+        for visual in self.__visuals:
+            visual = '_GamutView__{0}'.format(visual)
+            getattr(self, visual).add_parent(self.scene)
 
     def __detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Gamut View* scene.
         """
 
-        self.__RGB_scatter_visual.remove_parent(self.scene)
-        self.__input_colourspace_visual.remove_parent(self.scene)
-        self.__correlate_colourspace_visual.remove_parent(self.scene)
-        self.__pointer_gamut_visual.remove_parent(self.scene)
-        self.__pointer_gamut_hull_visual.remove_parent(self.scene)
-        self.__spectral_locus_visual.remove_parent(self.scene)
-        self.__axis_visual.remove_parent(self.scene)
+        for visual in self.__visuals:
+            visual = '_GamutView__{0}'.format(visual)
+            getattr(self, visual).remove_parent(self.scene)
 
     def __store_visuals_visibility(self):
         """
@@ -693,23 +691,12 @@ class GamutView(ViewBox):
         attribute.
         """
 
-        visible = OrderedDict()
-        visible['RGB_scatter_visual'] = (
-            self.__RGB_scatter_visual.visible)
-        visible['input_colourspace_visual'] = (
-            self.__input_colourspace_visual.children[0].visible)
-        visible['correlate_colourspace_visual'] = (
-            self.__correlate_colourspace_visual.children[0].visible)
-        visible['pointer_gamut_visual'] = (
-            self.__pointer_gamut_visual.visible)
-        visible['pointer_gamut_hull_visual'] = (
-            self.__pointer_gamut_hull_visual.children[0].visible)
-        visible['spectral_locus_visual'] = (
-            self.__spectral_locus_visual.visible)
-        visible['axis_visual'] = (
-            self.__axis_visual.visible)
+        visibility = OrderedDict()
+        for visual in self.__visuals:
+            visibility[visual] = (
+                getattr(self, '_GamutView__{0}'.format(visual)).visible)
 
-        self.__visuals_visibility = visible
+        self.__visuals_visibility = visibility
 
     def __restore_visuals_visibility(self):
         """
@@ -717,18 +704,10 @@ class GamutView(ViewBox):
         attribute.
         """
 
-        visible = self.__visuals_visibility
-        self.__RGB_scatter_visual.visible = visible['RGB_scatter_visual']
-        for visual in self.__input_colourspace_visual.children:
-            visual.visible = visible['input_colourspace_visual']
-        for visual in self.__correlate_colourspace_visual.children:
-            visual.visible = visible['correlate_colourspace_visual']
-        self.__pointer_gamut_visual.visible = visible['pointer_gamut_visual']
-        for visual in self.__pointer_gamut_hull_visual.children:
-            visual.visible = visible['pointer_gamut_hull_visual']
-        self.__spectral_locus_visual.visible = (
-            visible['spectral_locus_visual'])
-        self.__axis_visual.visible = visible['axis_visual']
+        visibility = self.__visuals_visibility
+        for visual in self.__visuals:
+            getattr(self, '_GamutView__{0}'.format(visual)).visible = (
+                visibility[visual])
 
     def __create_title_overlay_visual(self):
         """
@@ -802,8 +781,8 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        for visual in self.__input_colourspace_visual.children:
-            visual.visible = not visual.visible
+        self.__input_colourspace_visual.visible = (
+            not self.__input_colourspace_visual.visible)
         self.__title_overlay_visual_text()
 
         return True
@@ -838,8 +817,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        for visual in self.__correlate_colourspace_visual.children:
-            visual.visible = not visual.visible
+
+        self.__correlate_colourspace_visual.visible = (
+            not self.__correlate_colourspace_visual.visible)
         self.__title_overlay_visual_text()
 
         return True
@@ -909,8 +889,8 @@ class GamutView(ViewBox):
 
         self.__pointer_gamut_visual.visible = (
             not self.__pointer_gamut_visual.visible)
-        for visual in self.__pointer_gamut_hull_visual.children:
-            visual.visible = self.__pointer_gamut_visual.visible
+        self.__pointer_gamut_hull_visual.visible = (
+            not self.__pointer_gamut_hull_visual.visible)
 
         return True
 

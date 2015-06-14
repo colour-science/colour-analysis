@@ -24,6 +24,8 @@ if sys.version_info[0] >= 3:
     builtins.reduce = functools.reduce
     itertools.izip = zip
 
+from .guerilla import *
+
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'

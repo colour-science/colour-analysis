@@ -120,7 +120,7 @@ class DiagramView(ViewBox):
 
         self.__title_overlay_visual = None
 
-        self.__chromaticity_diagram = None
+        self.__chromaticity_diagram_visual = None
         self.__spectral_locus_visual = None
         self.__RGB_scatter_visual = None
         self.__input_colourspace_visual = None
@@ -129,6 +129,16 @@ class DiagramView(ViewBox):
         self.__pointer_gamut_boundaries_visual = None
         self.__grid_visual = None
         self.__axis_visual = None
+
+        self.__visuals = ('chromaticity_diagram_visual',
+                          'spectral_locus_visual',
+                          'RGB_scatter_visual',
+                          'input_colourspace_visual',
+                          'correlate_colourspace_visual',
+                          'pointer_gamut_visual',
+                          'pointer_gamut_boundaries_visual',
+                          'grid_visual',
+                          'axis_visual')
 
         self.__visuals_visibility = None
 
@@ -331,23 +341,25 @@ class DiagramView(ViewBox):
             self.__restore_visuals_visibility()
             self.__title_overlay_visual_text()
 
-    def __create_chromaticity_diagram_visual(self, diagram='CIE 1931'):
+    def __create_chromaticity_diagram_visual(self, diagram=None):
         """
         Creates the given chromaticity diagram visual.
 
         Parameters
         ----------
-        diagram : unicode
+        diagram : unicode, optional
             {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
 
             Chromaticity diagram to draw.
         """
 
+        diagram = self.__diagram if diagram is None else diagram
+
         diagrams = {'CIE 1931': CIE_1931_chromaticity_diagram,
                     'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
                     'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram}
 
-        self.__chromaticity_diagram = diagrams[diagram]()
+        self.__chromaticity_diagram_visual = diagrams[diagram]()
 
     def __create_spectral_locus_visual(self):
         """
@@ -362,16 +374,18 @@ class DiagramView(ViewBox):
             width=2.0,
             method='agg')
 
-    def __create_RGB_scatter_visual(self, RGB):
+    def __create_RGB_scatter_visual(self, RGB=None):
         """
         Creates the *RGB* scatter visual for given *RGB* array according to
         :attr:`DiagramView.diagram` attribute value.
 
         Parameters
         ----------
-        RGB : array_like
+        RGB : array_like, optional
             *RGB* array to draw.
         """
+
+        RGB = self.__image if RGB is None else RGB
 
         self.__RGB_scatter_visual = RGB_scatter_visual(
             RGB,
@@ -442,15 +456,9 @@ class DiagramView(ViewBox):
         Creates the *Diagram View* visuals.
         """
 
-        self.__create_chromaticity_diagram_visual(self.__diagram)
-        self.__create_spectral_locus_visual()
-        self.__create_RGB_scatter_visual(self.__image)
-        self.__create_pointer_gamut_visual()
-        self.__create_pointer_gamut_boundaries_visual()
-        self.__create_input_colourspace_visual()
-        self.__create_correlate_colourspace_visual()
-        self.__create_grid_visual()
-        self.__create_axis_visual()
+        for visual in self.__visuals:
+            visual = '_DiagramView__create_{0}'.format(visual)
+            getattr(self, visual)()
 
     def __create_camera(self):
         """
@@ -465,30 +473,18 @@ class DiagramView(ViewBox):
         Attaches / parents the visuals to the *Diagram View* scene.
         """
 
-        self.__chromaticity_diagram.add_parent(self.scene)
-        self.__spectral_locus_visual.add_parent(self.scene)
-        self.__RGB_scatter_visual.add_parent(self.scene)
-        self.__pointer_gamut_visual.add_parent(self.scene)
-        self.__pointer_gamut_boundaries_visual.add_parent(self.scene)
-        self.__input_colourspace_visual.add_parent(self.scene)
-        self.__correlate_colourspace_visual.add_parent(self.scene)
-        self.__grid_visual.add_parent(self.scene)
-        self.__axis_visual.add_parent(self.scene)
+        for visual in self.__visuals:
+            visual = '_DiagramView__{0}'.format(visual)
+            getattr(self, visual).add_parent(self.scene)
 
     def __detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Diagram View* scene.
         """
 
-        self.__chromaticity_diagram.remove_parent(self.scene)
-        self.__spectral_locus_visual.remove_parent(self.scene)
-        self.__RGB_scatter_visual.remove_parent(self.scene)
-        self.__pointer_gamut_visual.remove_parent(self.scene)
-        self.__pointer_gamut_boundaries_visual.remove_parent(self.scene)
-        self.__input_colourspace_visual.remove_parent(self.scene)
-        self.__correlate_colourspace_visual.remove_parent(self.scene)
-        self.__grid_visual.remove_parent(self.scene)
-        self.__axis_visual.remove_parent(self.scene)
+        for visual in self.__visuals:
+            visual = '_DiagramView__{0}'.format(visual)
+            getattr(self, visual).remove_parent(self.scene)
 
     def __store_visuals_visibility(self):
         """
@@ -496,27 +492,12 @@ class DiagramView(ViewBox):
         attribute.
         """
 
-        visible = OrderedDict()
-        visible['chromaticity_diagram_visual'] = (
-            self.__chromaticity_diagram.visible)
-        visible['spectral_locus_visual'] = (
-            self.__spectral_locus_visual.visible)
-        visible['RGB_scatter_visual'] = (
-            self.__RGB_scatter_visual.visible)
-        visible['pointer_gamut_visual'] = (
-            self.__pointer_gamut_visual.visible)
-        visible['pointer_gamut_boundaries_visual'] = (
-            self.__pointer_gamut_boundaries_visual.visible)
-        visible['input_colourspace_visual'] = (
-            self.__input_colourspace_visual.visible)
-        visible['correlate_colourspace_visual'] = (
-            self.__correlate_colourspace_visual.visible)
-        visible['grid_visual'] = (
-            self.__grid_visual.visible)
-        visible['axis_visual'] = (
-            self.__axis_visual.visible)
+        visibility = OrderedDict()
+        for visual in self.__visuals:
+            visibility[visual] = (
+                getattr(self, '_DiagramView__{0}'.format(visual)).visible)
 
-        self.__visuals_visibility = visible
+        self.__visuals_visibility = visibility
 
     def __restore_visuals_visibility(self):
         """
@@ -524,26 +505,10 @@ class DiagramView(ViewBox):
         :attr:`DiagramView.__visuals_visibility` attribute.
         """
 
-        visible = self.__visuals_visibility
-
-        self.__chromaticity_diagram.visible = (
-            visible['chromaticity_diagram_visual'])
-        self.__spectral_locus_visual.visible = (
-            visible['spectral_locus_visual'])
-        self.__RGB_scatter_visual.visible = (
-            visible['RGB_scatter_visual'])
-        self.__pointer_gamut_visual.visible = (
-            visible['pointer_gamut_visual'])
-        self.__pointer_gamut_boundaries_visual.visible = (
-            visible['pointer_gamut_boundaries_visual'])
-        self.__input_colourspace_visual.visible = (
-            visible['input_colourspace_visual'])
-        self.__correlate_colourspace_visual.visible = (
-            visible['correlate_colourspace_visual'])
-        self.__grid_visual.visible = (
-            visible['grid_visual'])
-        self.__axis_visual.visible = (
-            visible['axis_visual'])
+        visibility = self.__visuals_visibility
+        for visual in self.__visuals:
+            getattr(self, '_DiagramView__{0}'.format(visual)).visible = (
+                visibility[visual])
 
     def __create_title_overlay_visual(self):
         """

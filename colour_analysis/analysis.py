@@ -19,6 +19,7 @@ from itertools import cycle
 
 import numpy as np
 from vispy.scene import SceneCanvas
+
 from colour import RGB_COLOURSPACES
 
 from colour_analysis import __application_name__, __version__
