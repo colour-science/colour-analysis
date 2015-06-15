@@ -24,6 +24,7 @@ from colour import RGB_COLOURSPACES
 
 from colour_analysis import __application_name__, __version__
 from colour_analysis.constants import (
+    DEFAULT_FAILSAFE_IMAGE,
     SETTINGS_FILE,
     REFERENCE_COLOURSPACES)
 from colour_analysis.views import (
@@ -201,9 +202,7 @@ class ColourAnalysis(SceneCanvas):
             config={'samples': settings['canvas']['samples']})
 
         self.__image = None
-        self.image = (image
-                      if image is not None else
-                      (np.random.random((256, 256, 3)) - 0.1) * 1.25)
+        self.image = image if image is not None else DEFAULT_FAILSAFE_IMAGE
         self.__image_path = None
         self.image_path = image_path
         self.__input_colourspace = None

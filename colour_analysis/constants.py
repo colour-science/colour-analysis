@@ -12,6 +12,7 @@ from __future__ import division, unicode_literals
 
 import numpy as np
 import os
+import scipy.ndimage
 
 from colour import ILLUMINANTS
 
@@ -26,7 +27,7 @@ __all__ = ['RESOURCES_DIRECTORY',
            'SETTINGS_FILE',
            'IMAGES_DIRECTORY',
            'DEFAULT_IMAGE_PATH',
-           'DEFAULT_IMAGE',
+           'DEFAULT_FAILSAFE_IMAGE',
            'DEFAULT_OECF',
            'DEFAULT_PLOTTING_ILLUMINANT',
            'REFERENCE_COLOURSPACES',
@@ -64,11 +65,12 @@ Default image path if not is provided on startup.
 DEFAULT_IMAGE_PATH : unicode
 """
 
-DEFAULT_IMAGE = (np.random.random((256, 256, 3)) - 0.1) * 1.25
+DEFAULT_FAILSAFE_IMAGE = scipy.ndimage.gaussian_filter(
+    (np.random.random((256, 256, 3)) - 0.1) * 1.25, sigma=0.4)
 """
-Default image.
+Default failsafe image in case *OpenImageIO* is not available.
 
-DEFAULT_IMAGE : ndarray
+DEFAULT_FAILSAFE_IMAGE : ndarray
 """
 
 DEFAULT_OECF = 'sRGB'
