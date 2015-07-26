@@ -321,7 +321,7 @@ def main():
     else:
         image_path = DEFAULT_IMAGE_PATH
 
-    if not is_openimageio_installed:
+    if is_openimageio_installed:
         image = read_image(str(image_path))
         if not input_linear:
             colourspace = RGB_COLOURSPACES[arguments.input_oecf]
