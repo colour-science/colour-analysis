@@ -95,7 +95,7 @@ class GamutView(ViewBox):
 
     Parameters
     ----------
-    canvas : SceneCanvas, optional
+    scene_canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
     image : array_like, optional
         Image to use in the view interactions.
@@ -129,7 +129,7 @@ class GamutView(ViewBox):
 
     Attributes
     ----------
-    canvas
+    scene_canvas
     image
     input_colourspace
     reference_colourspace
@@ -154,7 +154,7 @@ class GamutView(ViewBox):
     """
 
     def __init__(self,
-                 canvas=None,
+                 scene_canvas=None,
                  image=None,
                  input_colourspace='Rec. 709',
                  reference_colourspace='CIE xyY',
@@ -165,7 +165,9 @@ class GamutView(ViewBox):
 
         ViewBox.__init__(self, **kwargs)
 
-        self.__canvas = canvas
+        self.unfreeze()
+
+        self.__scene_canvas = scene_canvas
 
         self.__image = None
         self.image = image
@@ -213,26 +215,27 @@ class GamutView(ViewBox):
         self.__create_camera()
 
         self.__create_title_overlay_visual()
-        self.__canvas.events.resize.connect(self.__canvas_resize_event)
+        self.__scene_canvas.events.resize.connect(
+            self.__scene_canvas_resize_event)
 
         self.__initialised = True
 
     @property
-    def canvas(self):
+    def scene_canvas(self):
         """
-        Property for **self.canvas** attribute.
+        Property for **self.scene_canvas** attribute.
 
         Returns
         -------
         SceneCanvas
         """
 
-        return self.__canvas
+        return self.__scene_canvas
 
-    @canvas.setter
-    def canvas(self, value):
+    @scene_canvas.setter
+    def scene_canvas(self, value):
         """
-        Setter for **self.canvas** attribute.
+        Setter for **self.scene_canvas** attribute.
 
         Parameters
         ----------
@@ -240,7 +243,8 @@ class GamutView(ViewBox):
             Attribute value.
         """
 
-        raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
+        raise AttributeError('"{0}" attribute is read only!'.format(
+            'scene_canvas'))
 
     @property
     def image(self):
@@ -674,7 +678,7 @@ class GamutView(ViewBox):
 
         for visual in self.__visuals:
             visual = '_GamutView__{0}'.format(visual)
-            getattr(self, visual).add_parent(self.scene)
+            getattr(self, visual).parent = self.scene
 
     def __detach_visuals(self):
         """
@@ -683,7 +687,7 @@ class GamutView(ViewBox):
 
         for visual in self.__visuals:
             visual = '_GamutView__{0}'.format(visual)
-            getattr(self, visual).remove_parent(self.scene)
+            getattr(self, visual).parent = None
 
     def __store_visuals_visibility(self):
         """
@@ -747,17 +751,17 @@ class GamutView(ViewBox):
 
         title += self.__reference_colourspace
 
-        if self.__canvas.clamp_blacks:
+        if self.__scene_canvas.clamp_blacks:
             title += ' - '
             title += 'Blacks Clamped'
 
-        if self.__canvas.clamp_whites:
+        if self.__scene_canvas.clamp_whites:
             title += ' - '
             title += 'Whites Clamped'
 
         self.__title_overlay_visual.text = title
 
-    def __canvas_resize_event(self, event=None):
+    def __scene_canvas_resize_event(self, event=None):
         """
         Slot for current :class:`vispy.scene.SceneCanvas` instance resize
         event.
@@ -816,7 +820,6 @@ class GamutView(ViewBox):
         bool
             Definition success.
         """
-
 
         self.__correlate_colourspace_visual.visible = (
             not self.__correlate_colourspace_visual.visible)

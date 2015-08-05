@@ -28,7 +28,6 @@ from colour import (
 from colour_analysis.constants import DEFAULT_OECF
 from colour_analysis.visuals import image_visual
 
-
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
@@ -45,7 +44,7 @@ class ImageView(ViewBox):
 
     Parameters
     ----------
-    canvas : SceneCanvas, optional
+    scene_canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
     image : array_like, optional
         Image to use in the view interactions.
@@ -74,7 +73,7 @@ class ImageView(ViewBox):
 
     Attributes
     ----------
-    canvas
+    scene_canvas
     image
     input_colourspace
     correlate_colourspace
@@ -90,7 +89,7 @@ class ImageView(ViewBox):
     """
 
     def __init__(self,
-                 canvas=None,
+                 scene_canvas=None,
                  image=None,
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
@@ -99,7 +98,9 @@ class ImageView(ViewBox):
 
         ViewBox.__init__(self, **kwargs)
 
-        self.__canvas = canvas
+        self.unfreeze()
+
+        self.__scene_canvas = scene_canvas
 
         self.__image = None
         self.image = image
@@ -124,26 +125,27 @@ class ImageView(ViewBox):
         self.__create_camera()
 
         self.__create_title_overlay_visual()
-        self.__canvas.events.resize.connect(self.__canvas_resize_event)
+        self.__scene_canvas.events.resize.connect(
+            self.__scene_canvas_resize_event)
 
         self.__initialised = True
 
     @property
-    def canvas(self):
+    def scene_canvas(self):
         """
-        Property for **self.canvas** attribute.
+        Property for **self.scene_canvas** attribute.
 
         Returns
         -------
         SceneCanvas
         """
 
-        return self.__canvas
+        return self.__scene_canvas
 
-    @canvas.setter
-    def canvas(self, value):
+    @scene_canvas.setter
+    def scene_canvas(self, value):
         """
-        Setter for **self.canvas** attribute.
+        Setter for **self.scene_canvas** attribute.
 
         Parameters
         ----------
@@ -151,7 +153,8 @@ class ImageView(ViewBox):
             Attribute value.
         """
 
-        raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
+        raise AttributeError('"{0}" attribute is read only!'.format(
+            'scene_canvas'))
 
     @property
     def image(self):
@@ -345,14 +348,14 @@ class ImageView(ViewBox):
         Attaches / parents the visuals to the *Image View* scene.
         """
 
-        self.__image_visual.add_parent(self.scene)
+        self.__image_visual.parent = self.scene
 
     def __detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Image View* scene.
         """
 
-        self.__image_visual.remove_parent(self.scene)
+        self.__image_visual.parent = None
 
     def __create_title_overlay_visual(self):
         """
@@ -400,7 +403,7 @@ class ImageView(ViewBox):
         if self.__display_hdr_colours:
             self.__title_overlay_visual.text = 'HDR Colours Display'
 
-    def __canvas_resize_event(self, event=None):
+    def __scene_canvas_resize_event(self, event=None):
         """
         Slot for current :class:`vispy.scene.SceneCanvas` instance resize
         event.

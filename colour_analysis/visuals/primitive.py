@@ -90,8 +90,8 @@ class PrimitiveVisual(MeshVisual):
             uniform_colour,
             mode=mode)
 
-    def draw(self, transforms):
-        MeshVisual.draw(self, transforms)
+    def draw(self):
+        MeshVisual.draw(self)
         if self.__wireframe and self.__wireframe_offset:
             set_state(polygon_offset=self.__wireframe_offset,
                       polygon_offset_fill=True)

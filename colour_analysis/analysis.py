@@ -104,7 +104,7 @@ LayoutPreset : namedtuple
 
 class ColourAnalysis(SceneCanvas):
     """
-    Defines *Colour - Analysis* canvas, a class inheriting from
+    Defines *Colour - Analysis* scene_canvas, a class inheriting from
     :class:`vispy.scene.SceneCanvas`.
 
     Parameters
@@ -197,9 +197,11 @@ class ColourAnalysis(SceneCanvas):
             title=('{0} - {1}'.format(title, image_path)
                    if image_path is not None
                    else title),
-            size=settings['canvas']['size'],
-            bgcolor=settings['canvas']['canvas_background_colour'],
-            config={'samples': settings['canvas']['samples']})
+            size=settings['scene_canvas']['size'],
+            bgcolor=settings['scene_canvas']['scene_canvas_background_colour'],
+            config={'samples': settings['scene_canvas']['samples']})
+
+        self.unfreeze()
 
         self.__image = None
         self.image = image if image is not None else DEFAULT_FAILSAFE_IMAGE
@@ -832,11 +834,11 @@ class ColourAnalysis(SceneCanvas):
         """
 
         background_colour = (
-            self.__settings['canvas']['views_background_colour'])
-        border_colour = self.__settings['canvas']['views_border_colour']
+            self.__settings['scene_canvas']['views_background_colour'])
+        border_colour = self.__settings['scene_canvas']['views_border_colour']
 
         self.__console_view = ConsoleView(
-            canvas=self,
+            scene_canvas=self,
             text_color=(0.8, 0.8, 0.8),
             font_size=10.0,
             bgcolor=background_colour,
@@ -847,7 +849,7 @@ class ColourAnalysis(SceneCanvas):
 
         if 'gamut_view' in views:
             self.__gamut_view = GamutView(
-                canvas=self,
+                scene_canvas=self,
                 image=self.__image,
                 input_colourspace=self.__input_colourspace,
                 reference_colourspace=self.__reference_colourspace,
@@ -858,7 +860,7 @@ class ColourAnalysis(SceneCanvas):
 
         if 'image_view' in views:
             self.__image_view = ImageView(
-                canvas=self,
+                scene_canvas=self,
                 image=self.__image,
                 input_colourspace=self.__input_colourspace,
                 correlate_colourspace=self.__correlate_colourspace,
@@ -867,7 +869,7 @@ class ColourAnalysis(SceneCanvas):
 
         if 'diagram_view' in views:
             self.__diagram_view = DiagramView(
-                canvas=self,
+                scene_canvas=self,
                 image=self.__image,
                 input_colourspace=self.__input_colourspace,
                 correlate_colourspace=self.__correlate_colourspace,

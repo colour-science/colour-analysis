@@ -1,6 +1,6 @@
 {
-  "canvas": {
-    "canvas_background_colour": [
+  "scene_canvas": {
+    "scene_canvas_background_colour": [
       0.2,
       0.2,
       0.2
