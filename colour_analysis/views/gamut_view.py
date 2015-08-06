@@ -52,6 +52,7 @@ CameraPreset = namedtuple(
      'azimuth',
      'distance',
      'translate_speed',
+     'depth_value',
      'center',
      'up'))
 """
@@ -462,6 +463,7 @@ class GamutView(ViewBox):
                     azimuth=camera['azimuth'],
                     distance=camera['distance'],
                     translate_speed=camera['translate_speed'],
+                    depth_value=camera['depth_value'],
                     center=camera['center'],
                     up=camera['up']))
 
@@ -670,6 +672,8 @@ class GamutView(ViewBox):
             translate_speed=camera_settings.translate_speed * speed_factor,
             center=camera_settings.center,
             up=camera_settings.up)
+
+        self.camera.depth_value = camera_settings.depth_value
 
     def __attach_visuals(self):
         """

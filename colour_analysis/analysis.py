@@ -104,7 +104,7 @@ LayoutPreset : namedtuple
 
 class ColourAnalysis(SceneCanvas):
     """
-    Defines *Colour - Analysis* scene_canvas, a class inheriting from
+    Defines *Colour - Analysis* canvas, a class inheriting from
     :class:`vispy.scene.SceneCanvas`.
 
     Parameters
