@@ -7,8 +7,8 @@ RGB Colourspace Visuals
 
 Defines the *RGB Colourspace Visuals*:
 
--   :def:`RGB_colourspace_volume_visual`
--   :def:`RGB_colourspace_triangle_visual`
+-   :func:`RGB_colourspace_volume_visual`
+-   :func:`RGB_colourspace_triangle_visual`
 """
 
 from __future__ import division, unicode_literals
@@ -212,7 +212,7 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
     Parameters
     ----------
     colourspace : unicode, optional
-        See :def:`RGB_colourspace_volume_visual` argument for possible values.
+        See :func:`RGB_colourspace_volume_visual` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace triangle to draw.

@@ -7,7 +7,7 @@ RGB Scatter Visual
 
 Defines the *RGB Scatter Visual*:
 
--   :def:`RGB_scatter_visual`
+-   :func:`RGB_scatter_visual`
 """
 
 from __future__ import division, unicode_literals

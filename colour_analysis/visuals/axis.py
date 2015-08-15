@@ -7,7 +7,7 @@ Axis Visual
 
 Defines the *Axis Visual*:
 
--   :def:`axis_visual`
+-   :func:`axis_visual`
 """
 
 from __future__ import division, unicode_literals

@@ -7,7 +7,7 @@ Spectral Locus Visual
 
 Defines the *Spectral Locus Visual*:
 
--   :def:`spectral_locus_visual`
+-   :func:`spectral_locus_visual`
 """
 
 from __future__ import division, unicode_literals

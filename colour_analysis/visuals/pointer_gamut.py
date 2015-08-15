@@ -7,9 +7,9 @@ Pointer's Gamut Visuals
 
 Defines the *Pointer's Gamut*:
 
--   :def:`pointer_gamut_visual`
--   :def:`pointer_gamut_boundaries_visual`
--   :def:`pointer_gamut_hull_visual`
+-   :func:`pointer_gamut_visual`
+-   :func:`pointer_gamut_boundaries_visual`
+-   :func:`pointer_gamut_hull_visual`
 """
 
 from __future__ import division, unicode_literals
@@ -129,7 +129,7 @@ def pointer_gamut_boundaries_visual(reference_colourspace='CIE xyY',
     Parameters
     ----------
     reference_colourspace : unicode, optional
-        See :def:`pointer_gamut_visual` argument for possible values.
+        See :func:`pointer_gamut_visual` argument for possible values.
 
         Reference colourspace to use for colour conversions / transformations.
     width : numeric, optional
@@ -181,7 +181,7 @@ def pointer_gamut_hull_visual(reference_colourspace='CIE xyY',
     Parameters
     ----------
     reference_colourspace : unicode, optional
-        See :def:`pointer_gamut_visual` argument for possible values.
+        See :func:`pointer_gamut_visual` argument for possible values.
 
         Reference colourspace to use for colour conversions / transformations.
     width : numeric, optional
