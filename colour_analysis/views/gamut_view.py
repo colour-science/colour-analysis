@@ -15,8 +15,7 @@ from __future__ import division, unicode_literals
 from collections import OrderedDict, namedtuple
 
 import numpy as np
-from vispy.scene.visuals import Text
-from vispy.scene.widgets.viewbox import ViewBox
+from vispy.scene.widgets import Label, ViewBox, Widget
 from colour import RGB_COLOURSPACES
 
 from colour_analysis.cameras import OrbitCamera
@@ -186,7 +185,9 @@ class GamutView(ViewBox):
         self.__visuals_style_presets = OrderedDict()
         self.__axis_presets = {}
 
-        self.__title_overlay_visual = None
+        self.__grid = None
+
+        self.__label = None
 
         self.__colourspace_visual_resolution = 16
         self.__colourspace_visual_resolution_limits = (1, 64)
@@ -215,9 +216,7 @@ class GamutView(ViewBox):
         self.__attach_visuals()
         self.__create_camera()
 
-        self.__create_title_overlay_visual()
-        self.__scene_canvas.events.resize.connect(
-            self.__scene_canvas_resize_event)
+        self.__create_label()
 
         self.__initialised = True
 
@@ -284,7 +283,7 @@ class GamutView(ViewBox):
             self.__create_RGB_scatter_visual(self.__image)
             self.__attach_visuals()
             self.__restore_visuals_visibility()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def input_colourspace(self):
@@ -327,7 +326,7 @@ class GamutView(ViewBox):
                 self.__visuals_style_presets[
                     'input_colourspace_visual'].current_item())
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def reference_colourspace(self):
@@ -371,7 +370,7 @@ class GamutView(ViewBox):
             self.__attach_visuals()
             self.__restore_visuals_visibility()
             self.__create_camera()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def correlate_colourspace(self):
@@ -414,7 +413,7 @@ class GamutView(ViewBox):
                 self.__visuals_style_presets[
                     'correlate_colourspace_visual'].current_item())
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def settings(self):
@@ -717,31 +716,22 @@ class GamutView(ViewBox):
             getattr(self, '_GamutView__{0}'.format(visual)).visible = (
                 visibility[visual])
 
-    def __create_title_overlay_visual(self):
+    def __create_label(self):
         """
-        Creates the title overlay visual.
-        """
-
-        self.__title_overlay_visual = Text(str(),
-                                           anchor_x='center',
-                                           anchor_y='bottom',
-                                           font_size=10,
-                                           color=(0.8, 0.8, 0.8),
-                                           parent=self)
-
-        self.__title_overlay_visual_position()
-        self.__title_overlay_visual_text()
-
-    def __title_overlay_visual_position(self):
-        """
-        Sets the title overlay visual position.
+        Creates the label.
         """
 
-        self.__title_overlay_visual.pos = self.size[0] / 2, 32
+        self.__label = Label(str(), color=(0.8, 0.8, 0.8))
+        self.__label.stretch = (1, 0.1)
+        self.__grid = self.add_grid(margin=16)
+        self.__grid.add_widget(self.__label, row=0, col=0)
+        self.__grid.add_widget(Widget(), row=1, col=0)
 
-    def __title_overlay_visual_text(self):
+        self.__label_text()
+
+    def __label_text(self):
         """
-        Sets the title overlay visual text.
+        Sets the label text.
         """
 
         title = ''
@@ -763,20 +753,7 @@ class GamutView(ViewBox):
             title += ' - '
             title += 'Whites Clamped'
 
-        self.__title_overlay_visual.text = title
-
-    def __scene_canvas_resize_event(self, event=None):
-        """
-        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
-        event.
-
-        Parameters
-        ----------
-        event : Object
-            Event.
-        """
-
-        self.__title_overlay_visual_position()
+        self.__label.text = title
 
     def toggle_input_colourspace_visual_visibility_action(self):
         """
@@ -791,7 +768,7 @@ class GamutView(ViewBox):
 
         self.__input_colourspace_visual.visible = (
             not self.__input_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -827,7 +804,7 @@ class GamutView(ViewBox):
 
         self.__correlate_colourspace_visual.visible = (
             not self.__correlate_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 

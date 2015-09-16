@@ -15,8 +15,7 @@ from __future__ import division, unicode_literals
 import numpy as np
 
 from vispy.scene.cameras import PanZoomCamera
-from vispy.scene.visuals import Text
-from vispy.scene.widgets.viewbox import ViewBox
+from vispy.scene.widgets import Label, ViewBox, Widget
 
 from colour import (
     RGB_COLOURSPACES,
@@ -109,7 +108,9 @@ class ImageView(ViewBox):
         self.__correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
 
-        self.__title_overlay_visual = None
+        self.__grid = None
+
+        self.__label = None
 
         self.__image_visual = None
 
@@ -124,9 +125,7 @@ class ImageView(ViewBox):
         self.__attach_visuals()
         self.__create_camera()
 
-        self.__create_title_overlay_visual()
-        self.__scene_canvas.events.resize.connect(
-            self.__scene_canvas_resize_event)
+        self.__create_label()
 
         self.__initialised = True
 
@@ -191,7 +190,7 @@ class ImageView(ViewBox):
             self.__detach_visuals()
             self.__create_visuals()
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def input_colourspace(self):
@@ -232,7 +231,7 @@ class ImageView(ViewBox):
             self.__detach_visuals()
             self.__create_visuals()
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def correlate_colourspace(self):
@@ -273,7 +272,7 @@ class ImageView(ViewBox):
             self.__detach_visuals()
             self.__create_visuals()
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     def __create_image(self):
         """
@@ -357,64 +356,42 @@ class ImageView(ViewBox):
 
         self.__image_visual.parent = None
 
-    def __create_title_overlay_visual(self):
+    def __create_label(self):
         """
-        Creates the title overlay visual.
-        """
-
-        self.__title_overlay_visual = Text(str(),
-                                           anchor_x='center',
-                                           anchor_y='bottom',
-                                           font_size=10,
-                                           color=(0.8, 0.8, 0.8),
-                                           parent=self)
-
-        self.__title_overlay_visual_position()
-        self.__title_overlay_visual_text()
-
-    def __title_overlay_visual_position(self):
-        """
-        Sets the title overlay visual position.
+        Creates the label.
         """
 
-        self.__title_overlay_visual.pos = self.size[0] / 2, 32
+        self.__label = Label(str(), color=(0.8, 0.8, 0.8))
+        self.__label.stretch = (1, 0.1)
+        self.__grid = self.add_grid(margin=16)
+        self.__grid.add_widget(self.__label, row=0, col=0)
+        self.__grid.add_widget(Widget(), row=1, col=0)
 
-    def __title_overlay_visual_text(self):
+        self.__label_text()
+
+    def __label_text(self):
         """
-        Sets the title overlay visual text.
+        Sets the label text.
         """
 
-        self.__title_overlay_visual.text = str()
+        self.__label.text = str()
 
         if self.__display_input_colourspace_out_of_gamut:
-            self.__title_overlay_visual.text = (
+            self.__label.text = (
                 '{0} - Out of Gamut Colours Display'.format(
                     self.__input_colourspace))
 
         if self.__display_correlate_colourspace_out_of_gamut:
-            self.__title_overlay_visual.text = (
+            self.__label.text = (
                 '{0} - Out of Gamut Colours Display'.format(
                     self.__correlate_colourspace))
 
         if self.__display_out_of_pointer_gamut:
-            self.__title_overlay_visual.text = ('Out of Pointer\'s Gamut '
+            self.__label.text = ('Out of Pointer\'s Gamut '
                                                 'Colours Display')
 
         if self.__display_hdr_colours:
-            self.__title_overlay_visual.text = 'HDR Colours Display'
-
-    def __scene_canvas_resize_event(self, event=None):
-        """
-        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
-        event.
-
-        Parameters
-        ----------
-        event : Object
-            Event.
-        """
-
-        self.__title_overlay_visual_position()
+            self.__label.text = 'HDR Colours Display'
 
     def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
         """
@@ -435,7 +412,7 @@ class ImageView(ViewBox):
             self.__display_hdr_colours = False
         self.__create_visuals()
         self.__attach_visuals()
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -459,7 +436,7 @@ class ImageView(ViewBox):
             self.__display_hdr_colours = False
         self.__create_visuals()
         self.__attach_visuals()
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -483,7 +460,7 @@ class ImageView(ViewBox):
             self.__display_hdr_colours = False
         self.__create_visuals()
         self.__attach_visuals()
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -506,7 +483,7 @@ class ImageView(ViewBox):
             self.__display_out_of_pointer_gamut = False
         self.__create_visuals()
         self.__attach_visuals()
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -525,7 +502,7 @@ class ImageView(ViewBox):
         self.__detach_visuals()
         self.__create_visuals()
         self.__attach_visuals()
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
     def fit_image_visual_image_action(self):
         """

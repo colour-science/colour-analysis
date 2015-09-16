@@ -16,8 +16,8 @@ import numpy as np
 from collections import OrderedDict
 
 from vispy.scene.cameras import PanZoomCamera
-from vispy.scene.visuals import GridLines, Text
-from vispy.scene.widgets.viewbox import ViewBox
+from vispy.scene.visuals import GridLines
+from vispy.scene.widgets import Label, ViewBox, Widget
 
 from colour import RGB_COLOURSPACES
 
@@ -120,7 +120,9 @@ class DiagramView(ViewBox):
 
         self.__diagrams_cycle = Cycle(CHROMATICITY_DIAGRAMS)
 
-        self.__title_overlay_visual = None
+        self.__grid = None
+
+        self.__label = None
 
         self.__chromaticity_diagram_visual = None
         self.__spectral_locus_visual = None
@@ -148,9 +150,7 @@ class DiagramView(ViewBox):
         self.__attach_visuals()
         self.__create_camera()
 
-        self.__create_title_overlay_visual()
-        self.__scene_canvas.events.resize.connect(
-            self.__scene_canvas_resize_event)
+        self.__create_label()
 
         self.__initialised = True
 
@@ -217,7 +217,7 @@ class DiagramView(ViewBox):
             self.__create_RGB_scatter_visual(self.__image)
             self.__attach_visuals()
             self.__restore_visuals_visibility()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def input_colourspace(self):
@@ -258,7 +258,7 @@ class DiagramView(ViewBox):
             self.__detach_visuals()
             self.__create_input_colourspace_visual()
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def correlate_colourspace(self):
@@ -298,7 +298,7 @@ class DiagramView(ViewBox):
             self.__detach_visuals()
             self.__create_correlate_colourspace_visual()
             self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     @property
     def diagram(self):
@@ -343,7 +343,7 @@ class DiagramView(ViewBox):
             self.__create_visuals()
             self.__attach_visuals()
             self.__restore_visuals_visibility()
-            self.__title_overlay_visual_text()
+            self.__label_text()
 
     def __create_chromaticity_diagram_visual(self, diagram=None):
         """
@@ -514,31 +514,22 @@ class DiagramView(ViewBox):
             getattr(self, '_DiagramView__{0}'.format(visual)).visible = (
                 visibility[visual])
 
-    def __create_title_overlay_visual(self):
+    def __create_label(self):
         """
-        Creates the title overlay visual.
-        """
-
-        self.__title_overlay_visual = Text(str(),
-                                           anchor_x='center',
-                                           anchor_y='bottom',
-                                           font_size=10,
-                                           color=(0.8, 0.8, 0.8),
-                                           parent=self)
-
-        self.__title_overlay_visual_position()
-        self.__title_overlay_visual_text()
-
-    def __title_overlay_visual_position(self):
-        """
-        Sets the title overlay visual position.
+        Creates the label.
         """
 
-        self.__title_overlay_visual.pos = self.size[0] / 2, 32
+        self.__label = Label(str(), color=(0.8, 0.8, 0.8))
+        self.__label.stretch = (1, 0.1)
+        self.__grid = self.add_grid(margin=16)
+        self.__grid.add_widget(self.__label, row=0, col=0)
+        self.__grid.add_widget(Widget(), row=1, col=0)
 
-    def __title_overlay_visual_text(self):
+        self.__label_text()
+
+    def __label_text(self):
         """
-        Sets the title overlay visual text.
+        Sets the label text.
         """
 
         title = ''
@@ -560,20 +551,7 @@ class DiagramView(ViewBox):
             title += ' - '
             title += 'Whites Clamped'
 
-        self.__title_overlay_visual.text = title
-
-    def __scene_canvas_resize_event(self, event=None):
-        """
-        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
-        event.
-
-        Parameters
-        ----------
-        event : Object
-            Event.
-        """
-
-        self.__title_overlay_visual_position()
+        self.__label.text = title
 
     def toggle_spectral_locus_visual_visibility_action(self):
         """
@@ -604,7 +582,7 @@ class DiagramView(ViewBox):
 
         self.__input_colourspace_visual.visible = (
             not self.__input_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
@@ -621,7 +599,7 @@ class DiagramView(ViewBox):
 
         self.__correlate_colourspace_visual.visible = (
             not self.__correlate_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self.__label_text()
 
         return True
 
