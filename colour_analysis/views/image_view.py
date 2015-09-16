@@ -341,6 +341,7 @@ class ImageView(ViewBox):
 
         self.camera = PanZoomCamera(aspect=1)
         self.camera.flip = (False, True, False)
+        self.camera.set_range()
 
     def __attach_visuals(self):
         """
