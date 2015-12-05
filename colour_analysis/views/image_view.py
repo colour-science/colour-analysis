@@ -323,7 +323,7 @@ class ImageView(ViewBox):
         if self.__image_overlay and has_overlay:
             image = self.__image + image
 
-        oecf = RGB_COLOURSPACES[DEFAULT_OECF].transfer_function
+        oecf = RGB_COLOURSPACES[DEFAULT_OECF].OECF
 
         return oecf(image)
 
