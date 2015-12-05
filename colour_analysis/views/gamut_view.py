@@ -123,7 +123,7 @@ class GamutView(ViewBox):
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
-    \*\*kwargs : \*\*, optional
+    \**kwargs : dict, optional
         Keywords arguments passed to
         :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.
 
@@ -524,12 +524,12 @@ class GamutView(ViewBox):
             {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
             'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
             'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
-            'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
-            'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
-            'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
-            'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-            'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
-            'adobe1998', 'prophoto', 'sRGB'}
+            'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor',
+            'DRAGONcolor2', 'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5',
+            'Max RGB', 'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor',
+            'REDcolor2', 'REDcolor3', 'REDcolor4', 'Rec. 2020', 'Russell RGB',
+            'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut',
+            'Xtreme RGB', 'aces', 'adobe1998', 'prophoto', 'sRGB'}
 
             :class:`colour.RGB_Colourspace` class instance name defining the
             colourspace the visual will be using.

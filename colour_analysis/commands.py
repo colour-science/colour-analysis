@@ -158,9 +158,9 @@ def system_exit(object):
 
         Parameters
         ----------
-        \*kwargs : \*
+        \*args : list, optional
             Arguments.
-        \*\*kwargs : \*\*
+        \**kwargs : dict, optional
             Keywords arguments.
         """
 

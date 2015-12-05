@@ -34,10 +34,10 @@ class ConsoleView(Console):
     ----------
     scene_canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
-    \*args : \*, optional
+    \*args : list, optional
         Arguments passed to :class:`vispy.scene.widgets.Console` class
         constructor.
-    \*\*kwargs : \*\*, optional
+    \**kwargs : dict, optional
         Keywords arguments passed to :class:`vispy.scene.widgets.Console`
         class constructor.
 

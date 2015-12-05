@@ -64,8 +64,8 @@ class PrimitiveVisual(MeshVisual):
         -----
         -   `vertex_colours` argument takes precedence over `uniform_colour` if
             provided.
-        -   `uniform_opacity` argument will be stacked to `vertex_colours` argument
-            if the latter last dimension is equal to 3.
+        -   `uniform_opacity` argument will be stacked to `vertex_colours`
+            argument if the latter last dimension is equal to 3.
         """
 
         self.__wireframe = wireframe
