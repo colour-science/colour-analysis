@@ -54,7 +54,7 @@ class OrbitCamera(TurntableCamera):
 
         if value is not None:
             assert is_numeric(value), (
-                '"{0}" type is not numeric!'.format('translate_speed', value))
+                '"{0}" is not a numeric!'.format('translate_speed', value))
         self.__translate_speed = value
 
     def _dist_to_trans(self, distance):

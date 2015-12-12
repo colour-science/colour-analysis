@@ -281,9 +281,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
-                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
-                 '"ndarray" or "matrix"!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
+                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                 'or "matrix" instance!').format('image', value))
 
         self.__image = value
 
@@ -319,9 +319,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('image_path', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('image_path', value))
             assert os.path.exists(value), (
                 '"{0}" input image doesn\'t exists!'.format(value))
         self.__image_path = value
@@ -351,9 +351,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
@@ -385,9 +385,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_oecf', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_oecf', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" OECF is not associated with any factory '
                 'RGB colourspaces: "{1}".').format(value, ', '.join(
@@ -419,8 +419,8 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                '"{0}" attribute: "{1}" type is not "bool"!'.format(
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
                     'input_linear', value))
         self.__input_linear = value
 
@@ -449,9 +449,10 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('reference_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
                 'colourspaces: "{1}".').format(
@@ -483,9 +484,10 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('correlate_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
@@ -544,9 +546,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('layout', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('layout', value))
         self.__layout = value
 
     @property
@@ -705,9 +707,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"bool"!').format('clamp_blacks', value))
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
+                    'clamp_blacks', value))
 
         self.__clamp_blacks = value
 
@@ -742,9 +744,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"bool"!').format('clamp_whites', value))
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
+                    'clamp_whites', value))
 
         self.__clamp_whites = value
 

@@ -271,9 +271,9 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
-                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
-                 '"ndarray" or "matrix"!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
+                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                 'or "matrix" instance!').format('image', value))
 
         self.__image = value
 
@@ -310,9 +310,9 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
@@ -353,9 +353,10 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('reference_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
                 'colourspaces: "{1}".').format(
@@ -397,9 +398,10 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('correlate_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
@@ -440,8 +442,8 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) is dict, (
-                '"{0}" attribute: "{1}" type is not "dict:!'.format(
+            assert isinstance(value, dict), (
+                '"{0}" attribute: "{1}" is not a "dict" instance!'.format(
                     'settings', value))
         self.__settings = value
 
