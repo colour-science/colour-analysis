@@ -19,7 +19,7 @@ from scipy.spatial import Delaunay
 
 from colour import (
     XYZ_to_sRGB,
-    normalise,
+    normalise_maximum,
     tstack)
 from colour.plotting import get_cmfs
 
@@ -88,10 +88,10 @@ def chromaticity_diagram_visual(
     ij = tstack((ii, jj))
     ij = np.vstack((ij_c, ij[triangulation.find_simplex(ij) > 0]))
 
-    ij_p = np.hstack((ij, np.full((ij.shape[0], 1), 0)))
+    ij_p = np.hstack((ij, np.full((ij.shape[0], 1, np.float_), 0)))
     triangulation = Delaunay(ij, qhull_options='QJ')
-    RGB = normalise(XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant),
-                    axis=-1)
+    RGB = normalise_maximum(XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant),
+                            axis=-1)
 
     diagram = Primitive(vertices=ij_p,
                         faces=triangulation.simplices,

@@ -16,7 +16,7 @@ import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line
 
-from colour import XYZ_to_sRGB, normalise
+from colour import XYZ_to_sRGB, normalise_maximum
 from colour.plotting import get_cmfs
 from colour.plotting.volume import XYZ_to_reference_colourspace
 
@@ -87,8 +87,9 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     points[np.isnan(points)] = 0
 
     if uniform_colour is None:
-        RGB = normalise(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
-        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity)))
+        RGB = normalise_maximum(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
+        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1, np.float_),
+                                      uniform_opacity)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
