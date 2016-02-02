@@ -321,7 +321,7 @@ def main():
     else:
         image_path = DEFAULT_IMAGE_PATH
 
-    if is_openimageio_installed:
+    try:
         image = read_image(str(image_path))
         if not input_linear:
             colourspace = RGB_COLOURSPACES[arguments.input_oecf]
@@ -332,7 +332,7 @@ def main():
 
         image = image[::int(arguments.input_resample),
                 ::int(arguments.input_resample)]
-    else:
+    except ImportError:
         warning(
             '"OpenImageIO" is not available, image reading is not supported, '
             'falling back to some random noise!')

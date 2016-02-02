@@ -119,8 +119,8 @@ def RGB_scatter_visual(RGB,
         RGB = np.clip(RGB, 0, 1)
 
         if uniform_colour is None:
-            RGB = np.hstack((RGB, np.full((RGB.shape[0], 1, np.float_),
-                                          uniform_opacity)))
+            RGB = np.hstack(
+                (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
         else:
             RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 

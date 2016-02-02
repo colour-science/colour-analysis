@@ -88,8 +88,8 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
 
     if uniform_colour is None:
         RGB = normalise_maximum(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
-        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1, np.float_),
-                                      uniform_opacity)))
+        RGB = np.hstack(
+            (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
