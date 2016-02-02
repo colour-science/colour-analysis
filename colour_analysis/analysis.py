@@ -768,7 +768,7 @@ class ColourAnalysis(SceneCanvas):
             Event.
         """
 
-        key = event.key.name.lower()
+        key = event.text
         modifiers = sorted([modifier.name.lower()
                             for modifier in event.modifiers])
         for action in self.__actions.values():

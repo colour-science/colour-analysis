@@ -224,15 +224,8 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
         Uniform triangle colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
-        Per vertex varying colour.
-    wireframe : bool, optional
-        Use wireframe display.
-        Uniform mesh opacity.
-    wireframe_colour : array_like, optional
-        Wireframe mesh colour.
-    wireframe_opacity : numeric, optional
-        Wireframe mesh opacity.
+    width : numeric, optional
+        Triangle edge width.
     parent : Node, optional
         Parent of the *RGB* colourspace volume visual in the `SceneGraph`.
     """

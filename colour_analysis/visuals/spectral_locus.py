@@ -55,8 +55,6 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
         locus.
     width : numeric, optional
         Line width.
-    edge_size : numeric, optional
-        Symbol edge size.
     uniform_colour : array_like, optional
         Uniform symbol colour.
     uniform_opacity : numeric, optional
