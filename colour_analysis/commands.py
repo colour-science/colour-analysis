@@ -244,7 +244,7 @@ def command_line_arguments():
                         action='store',
                         dest='reference_colourspace',
                         default='CIE xyY',
-                        help='Input image colourspace.')
+                        help='Reference colourspace to perform the analysis.')
 
     parser.add_argument('--correlate-colourspace',
                         '-t',
