@@ -55,7 +55,7 @@ class BoxVisual(PrimitiveVisual):
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
+    vertex_colours : array_like, optional
         Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.

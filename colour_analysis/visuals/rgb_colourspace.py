@@ -52,12 +52,6 @@ def RGB_identity_cube(width_segments=16,
 
     Parameters
     ----------
-    width : numeric, optional
-        Box width.
-    height : numeric, optional
-        Box height.
-    depth : numeric, optional
-        Box depth.
     width_segments : int, optional
         Box segments count along the width.
     height_segments : int, optional
@@ -72,7 +66,7 @@ def RGB_identity_cube(width_segments=16,
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
+    vertex_colours : array_like, optional
         Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.
@@ -139,14 +133,16 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
 
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace volume to draw.
+    reference_colourspace : unicode
+        **{'CIE XYZ', 'CIE xyY', 'CIE xy', 'CIE Lab', 'CIE Luv', 'CIE Luv uv',
+        'CIE UCS', 'CIE UCS uv', 'CIE UVW', 'IPT'}**,
+        Reference colourspace to convert the *CIE XYZ* tristimulus values to.
     segments : int, optional
         Box segments.
     uniform_colour : array_like, optional
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
-        Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.
         Uniform mesh opacity.
