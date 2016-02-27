@@ -35,13 +35,13 @@ __all__ = ['spectral_locus_visual',
 
 
 def spectral_locus_visual(
-    reference_colourspace='CIE xyY',
-    cmfs='CIE 1931 2 Degree Standard Observer',
-    width=2.0,
-    uniform_colour=None,
-    uniform_opacity=1.0,
-    method='gl',
-    parent=None):
+        reference_colourspace='CIE xyY',
+        cmfs='CIE 1931 2 Degree Standard Observer',
+        width=2.0,
+        uniform_colour=None,
+        uniform_opacity=1.0,
+        method='gl',
+        parent=None):
     """
     Returns a :class:`vispy.scene.visuals.Line` class instance representing
     the spectral locus.
@@ -104,12 +104,12 @@ def spectral_locus_visual(
 
 
 def chromaticity_diagram_construction_visual(
-    cmfs='CIE 1931 2 Degree Standard Observer',
-    width=2.0,
-    method='gl',
-    parent=None):
+        cmfs='CIE 1931 2 Degree Standard Observer',
+        width=2.0,
+        method='gl',
+        parent=None):
     """
-    Returns a :class:`vispy.scene.visuals.Line` class instance representing
+    Returns a :class:`vispy.scene.visuals.Node` class instance representing
     the chromaticity diagram construction with the spectral locus.
 
     Parameters
@@ -128,8 +128,8 @@ def chromaticity_diagram_construction_visual(
 
     Returns
     -------
-    Line
-        Spectral locus visual.
+    Node
+        Chromaticity diagram construction visual.
     """
 
     from colour_analysis.visuals import Primitive
@@ -140,19 +140,19 @@ def chromaticity_diagram_construction_visual(
     simplex_f = np.array([(0, 1, 2)])
     simplex_c = np.array([(1, 1, 1), (1, 1, 1), (1, 1, 1)])
 
-    simplex = Primitive(simplex_p,
-                        simplex_f,
-                        uniform_opacity=0.5,
-                        vertex_colours=simplex_c,
-                        parent=node)
+    Primitive(simplex_p,
+              simplex_f,
+              uniform_opacity=0.5,
+              vertex_colours=simplex_c,
+              parent=node)
 
     simplex_f = np.array([(0, 1, 2), (1, 2, 0), (2, 0, 1)])
-    simplex_w = Primitive(simplex_p,
-                          simplex_f,
-                          uniform_opacity=1.0,
-                          vertex_colours=simplex_c,
-                          wireframe=True,
-                          parent=node)
+    Primitive(simplex_p,
+              simplex_f,
+              uniform_opacity=1.0,
+              vertex_colours=simplex_c,
+              wireframe=True,
+              parent=node)
 
     lines = []
     for XYZ in get_cmfs(cmfs).values:
@@ -160,10 +160,10 @@ def chromaticity_diagram_construction_visual(
         lines.append((0, 0, 0))
     lines = np.array(lines)
 
-    line = Line(lines,
-                (0, 0, 0),
-                width=width,
-                method=method,
-                parent=node)
+    Line(lines,
+         (0, 0, 0),
+         width=width,
+         method=method,
+         parent=node)
 
     return node

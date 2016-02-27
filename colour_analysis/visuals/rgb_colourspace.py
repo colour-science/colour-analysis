@@ -33,6 +33,7 @@ __status__ = 'Production'
 
 __all__ = ['RGB_identity_cube',
            'RGB_colourspace_volume_visual',
+           'RGB_colourspace_whitepoint_axis_visual',
            'RGB_colourspace_triangle_visual']
 
 
@@ -193,6 +194,62 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
         RGB_cube_w.mesh_data.set_vertices(value)
 
     return node
+
+
+def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
+                                           reference_colourspace='CIE xyY',
+                                           width=2.0,
+                                           method='gl',
+                                           parent=None):
+    """
+    Returns a :class:`vispy.scene.visuals.Line` class instance representing
+    a given RGB colourspace whitepoint axis.
+
+    Parameters
+    ----------
+    colourspace : unicode, optional
+        See :def:`RGB_colourspace_volume_visual` argument for possible values.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
+        colourspace whitepoint axis to draw.
+    reference_colourspace : unicode, optional
+        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT'}
+
+        Reference colourspace to use for colour conversions / transformations.
+    width : numeric, optional
+        Line width.
+    method : unicode, optional
+        {'gl', 'agg'}
+
+        Line drawing method.
+    parent : Node, optional
+        Parent of the spectral locus visual in the `SceneGraph`.
+
+    Returns
+    -------
+    Line
+        RGB colourspace whitepoint axis.
+    """
+
+    colourspace = get_RGB_colourspace(colourspace)
+    XYZ_o = xy_to_XYZ(colourspace.whitepoint + (0, ))
+    XYZ_f = xy_to_XYZ(colourspace.whitepoint + (1.1, ))
+    XYZ_l = np.vstack((XYZ_o, XYZ_f))
+
+    illuminant = DEFAULT_PLOTTING_ILLUMINANT
+
+    points = XYZ_to_reference_colourspace(XYZ_l,
+                                          illuminant,
+                                          reference_colourspace)
+
+    line = Line(points,
+                (1, 1, 1),
+                width=width,
+                method=method,
+                parent=parent)
+
+    return line
 
 
 def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
