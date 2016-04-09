@@ -15,9 +15,10 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.color.color_array import ColorArray
 
-from colour import RGB_to_XYZ
+from colour import RGB_to_XYZ, XYZ_to_colourspace_model
 from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import XYZ_to_reference_colourspace
+from colour.plotting.volume import (
+    common_colourspace_model_axis_reorder)
 
 from colour_analysis.visuals import Symbol
 
@@ -110,9 +111,10 @@ def RGB_scatter_visual(RGB,
             colourspace.whitepoint,
             colourspace.RGB_to_XYZ_matrix)
 
-        points = XYZ_to_reference_colourspace(XYZ,
-                                              colourspace.whitepoint,
-                                              reference_colourspace)
+        points = common_colourspace_model_axis_reorder(
+            XYZ_to_colourspace_model(
+                XYZ, colourspace.whitepoint, reference_colourspace),
+            reference_colourspace)
 
         points[np.isnan(points)] = 0
 

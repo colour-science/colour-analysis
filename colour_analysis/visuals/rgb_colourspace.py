@@ -16,9 +16,10 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.geometry.generation import create_box
 from vispy.scene.visuals import Node, Line
-from colour import RGB_to_XYZ, xy_to_XYZ
+from colour import RGB_to_XYZ, XYZ_to_colourspace_model, xy_to_XYZ
 from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import XYZ_to_reference_colourspace
+from colour.plotting.volume import (
+    common_colourspace_model_axis_reorder)
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
@@ -174,9 +175,10 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
         colourspace.whitepoint,
         colourspace.whitepoint,
         colourspace.RGB_to_XYZ_matrix)
-    value = XYZ_to_reference_colourspace(XYZ,
-                                         colourspace.whitepoint,
-                                         reference_colourspace)
+    value = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ, colourspace.whitepoint, reference_colourspace),
+        reference_colourspace)
     value[np.isnan(value)] = 0
 
     RGB_cube_f.mesh_data.set_vertices(value)
@@ -239,9 +241,10 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-    points = XYZ_to_reference_colourspace(XYZ_l,
-                                          illuminant,
-                                          reference_colourspace)
+    points = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ_l, illuminant, reference_colourspace),
+        reference_colourspace)
 
     line = Line(points,
                 (1, 1, 1),

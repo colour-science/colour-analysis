@@ -17,9 +17,10 @@ import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line, Node
 
-from colour import XYZ_to_sRGB, normalise_maximum
+from colour import XYZ_to_sRGB, XYZ_to_colourspace_model, normalise_maximum
 from colour.plotting import get_cmfs
-from colour.plotting.volume import XYZ_to_reference_colourspace
+from colour.plotting.volume import (
+    common_colourspace_model_axis_reorder)
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
@@ -82,9 +83,10 @@ def spectral_locus_visual(
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-    points = XYZ_to_reference_colourspace(XYZ,
-                                          illuminant,
-                                          reference_colourspace)
+    points = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ, illuminant, reference_colourspace),
+        reference_colourspace)
     points[np.isnan(points)] = 0
 
     if uniform_colour is None:

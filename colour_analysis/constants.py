@@ -31,7 +31,7 @@ __all__ = ['RESOURCES_DIRECTORY',
            'DEFAULT_OECF',
            'DEFAULT_PLOTTING_ILLUMINANT',
            'REFERENCE_COLOURSPACES',
-           'REFERENCE_COLOURSPACES_TO_LABELS',
+           'REFERENCE_COLOURSPACES_TITLES',
            'CHROMATICITY_DIAGRAMS',
            'CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE',
            'LINEAR_IMAGE_FORMATS']
@@ -115,10 +115,10 @@ REFERENCE_COLOURSPACES : dict
     'IPT', 'CIE LCHab', 'CIE LCHuv'}**
 """
 
-REFERENCE_COLOURSPACES_TO_LABELS = {
+REFERENCE_COLOURSPACES_TITLES = {
     'CIE XYZ': ('X', 'Y', 'Z'),
     'CIE xyY': ('x', 'y', 'Y'),
-    'CIE Lab': ('a', 'b', '$L^*$'),
+    'CIE Lab': ('$a^*$', '$b^*$', '$L^*$'),
     'CIE Luv': ('$u^\prime$', '$v^\prime$', '$L^*$'),
     'CIE UCS': ('U', 'V', 'W'),
     'CIE UVW': ('U', 'V', 'W'),
@@ -128,7 +128,7 @@ REFERENCE_COLOURSPACES_TO_LABELS = {
 """
 Reference colourspaces to labels mapping.
 
-REFERENCE_COLOURSPACES_TO_LABELS : dict
+REFERENCE_COLOURSPACES_TITLES : dict
     **{'CIE XYZ', 'CIE xyY', 'CIE Lab', , 'CIE Luv', 'CIE UCS', 'CIE UVW',
     'IPT', 'CIE LCHab', 'CIE LCHuv'}**
 """
