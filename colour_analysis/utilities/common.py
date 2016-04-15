@@ -83,8 +83,8 @@ class Cycle(object):
     """
 
     def __init__(self, items):
-        self.__items = items
-        self.__index = 0
+        self._items = items
+        self._index = 0
 
     def __iter__(self):
         """
@@ -109,19 +109,19 @@ class Cycle(object):
 
         item = self.current_item()
 
-        self.__increment_index()
+        self._increment_index()
 
         return item
 
-    def __increment_index(self):
+    def _increment_index(self):
         """
         Increments the internal index pointing at the current item.
         """
 
-        self.__index += 1
+        self._index += 1
 
-        if self.__index >= len(self.__items):
-            self.__index = 0
+        if self._index >= len(self._items):
+            self._index = 0
 
     def current_item(self):
         """
@@ -133,7 +133,7 @@ class Cycle(object):
         Object
         """
 
-        return self.__items[self.__index]
+        return self._items[self._index]
 
     def next_item(self):
         """
@@ -144,6 +144,6 @@ class Cycle(object):
         Object
         """
 
-        self.__increment_index()
+        self._increment_index()
 
         return self.current_item()

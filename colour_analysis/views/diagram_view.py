@@ -101,40 +101,40 @@ class DiagramView(ViewBox):
                  correlate_colourspace='ACEScg',
                  diagram='CIE 1931',
                  **kwargs):
-        self.__initialised = False
+        self._initialised = False
 
         ViewBox.__init__(self, **kwargs)
 
         self.unfreeze()
 
-        self.__scene_canvas = scene_canvas
+        self._scene_canvas = scene_canvas
 
-        self.__image = None
+        self._image = None
         self.image = image
-        self.__input_colourspace = None
+        self._input_colourspace = None
         self.input_colourspace = input_colourspace
-        self.__correlate_colourspace = None
+        self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
-        self.__diagram = None
+        self._diagram = None
         self.diagram = diagram
 
-        self.__diagrams_cycle = Cycle(CHROMATICITY_DIAGRAMS)
+        self._diagrams_cycle = Cycle(CHROMATICITY_DIAGRAMS)
 
-        self.__grid = None
+        self._grid = None
 
-        self.__label = None
+        self._label = None
 
-        self.__chromaticity_diagram_visual = None
-        self.__spectral_locus_visual = None
-        self.__RGB_scatter_visual = None
-        self.__input_colourspace_visual = None
-        self.__correlate_colourspace_visual = None
-        self.__pointer_gamut_visual = None
-        self.__pointer_gamut_boundaries_visual = None
-        self.__grid_visual = None
-        self.__axis_visual = None
+        self._chromaticity_diagram_visual = None
+        self._spectral_locus_visual = None
+        self._RGB_scatter_visual = None
+        self._input_colourspace_visual = None
+        self._correlate_colourspace_visual = None
+        self._pointer_gamut_visual = None
+        self._pointer_gamut_boundaries_visual = None
+        self._grid_visual = None
+        self._axis_visual = None
 
-        self.__visuals = ('chromaticity_diagram_visual',
+        self._visuals = ('chromaticity_diagram_visual',
                           'spectral_locus_visual',
                           'RGB_scatter_visual',
                           'input_colourspace_visual',
@@ -144,15 +144,15 @@ class DiagramView(ViewBox):
                           'grid_visual',
                           'axis_visual')
 
-        self.__visuals_visibility = None
+        self._visuals_visibility = None
 
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__create_camera()
+        self._create_visuals()
+        self._attach_visuals()
+        self._create_camera()
 
-        self.__create_label()
+        self._create_label()
 
-        self.__initialised = True
+        self._initialised = True
 
     @property
     def scene_canvas(self):
@@ -164,7 +164,7 @@ class DiagramView(ViewBox):
         SceneCanvas
         """
 
-        return self.__scene_canvas
+        return self._scene_canvas
 
     @scene_canvas.setter
     def scene_canvas(self, value):
@@ -183,20 +183,20 @@ class DiagramView(ViewBox):
     @property
     def image(self):
         """
-        Property for **self.__image** private attribute.
+        Property for **self._image** private attribute.
 
         Returns
         -------
         array_like
-            self.__image.
+            self._image.
         """
 
-        return self.__image
+        return self._image
 
     @image.setter
     def image(self, value):
         """
-        Setter for **self.__image** private attribute.
+        Setter for **self._image** private attribute.
 
         Parameters
         ----------
@@ -209,33 +209,33 @@ class DiagramView(ViewBox):
                 ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
                  'or "matrix" instance!').format('image', value))
 
-        self.__image = value
+        self._image = value
 
-        if self.__initialised:
-            self.__store_visuals_visibility()
-            self.__detach_visuals()
-            self.__create_RGB_scatter_visual(self.__image)
-            self.__attach_visuals()
-            self.__restore_visuals_visibility()
-            self.__label_text()
+        if self._initialised:
+            self._store_visuals_visibility()
+            self._detach_visuals()
+            self._create_RGB_scatter_visual(self._image)
+            self._attach_visuals()
+            self._restore_visuals_visibility()
+            self._label_text()
 
     @property
     def input_colourspace(self):
         """
-        Property for **self.__input_colourspace** private attribute.
+        Property for **self._input_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__input_colourspace.
+            self._input_colourspace.
         """
 
-        return self.__input_colourspace
+        return self._input_colourspace
 
     @input_colourspace.setter
     def input_colourspace(self, value):
         """
-        Setter for **self.__input_colourspace** private attribute.
+        Setter for **self._input_colourspace** private attribute.
 
         Parameters
         ----------
@@ -252,31 +252,31 @@ class DiagramView(ViewBox):
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
 
-        self.__input_colourspace = value
+        self._input_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_input_colourspace_visual()
-            self.__attach_visuals()
-            self.__label_text()
+        if self._initialised:
+            self._detach_visuals()
+            self._create_input_colourspace_visual()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def correlate_colourspace(self):
         """
-        Property for **self.__correlate_colourspace** private attribute.
+        Property for **self._correlate_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__correlate_colourspace.
+            self._correlate_colourspace.
         """
 
-        return self.__correlate_colourspace
+        return self._correlate_colourspace
 
     @correlate_colourspace.setter
     def correlate_colourspace(self, value):
         """
-        Setter for **self.__correlate_colourspace** private attribute.
+        Setter for **self._correlate_colourspace** private attribute.
 
         Parameters
         ----------
@@ -293,31 +293,31 @@ class DiagramView(ViewBox):
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
-        self.__correlate_colourspace = value
+        self._correlate_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_correlate_colourspace_visual()
-            self.__attach_visuals()
-            self.__label_text()
+        if self._initialised:
+            self._detach_visuals()
+            self._create_correlate_colourspace_visual()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def diagram(self):
         """
-        Property for **self.__diagram** private attribute.
+        Property for **self._diagram** private attribute.
 
         Returns
         -------
         unicode
-            self.__diagram.
+            self._diagram.
         """
 
-        return self.__diagram
+        return self._diagram
 
     @diagram.setter
     def diagram(self, value):
         """
-        Setter for **self.__diagram** private attribute.
+        Setter for **self._diagram** private attribute.
 
         Parameters
         ----------
@@ -334,19 +334,19 @@ class DiagramView(ViewBox):
                 '"{1}".').format(value, ', '.join(
                 sorted(CHROMATICITY_DIAGRAMS.keys())))
 
-        if self.__initialised:
-            self.__store_visuals_visibility()
-            self.__detach_visuals()
+        if self._initialised:
+            self._store_visuals_visibility()
+            self._detach_visuals()
 
-        self.__diagram = value
+        self._diagram = value
 
-        if self.__initialised:
-            self.__create_visuals()
-            self.__attach_visuals()
-            self.__restore_visuals_visibility()
-            self.__label_text()
+        if self._initialised:
+            self._create_visuals()
+            self._attach_visuals()
+            self._restore_visuals_visibility()
+            self._label_text()
 
-    def __create_chromaticity_diagram_visual(self, diagram=None):
+    def _create_chromaticity_diagram_visual(self, diagram=None):
         """
         Creates the given chromaticity diagram visual.
 
@@ -358,28 +358,28 @@ class DiagramView(ViewBox):
             Chromaticity diagram to draw.
         """
 
-        diagram = self.__diagram if diagram is None else diagram
+        diagram = self._diagram if diagram is None else diagram
 
         diagrams = {'CIE 1931': CIE_1931_chromaticity_diagram,
                     'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
                     'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram}
 
-        self.__chromaticity_diagram_visual = diagrams[diagram]()
+        self._chromaticity_diagram_visual = diagrams[diagram]()
 
-    def __create_spectral_locus_visual(self):
+    def _create_spectral_locus_visual(self):
         """
         Creates the spectral locus visual according to
         :attr:`DiagramView.diagram` attribute value.
         """
 
-        self.__spectral_locus_visual = spectral_locus_visual(
+        self._spectral_locus_visual = spectral_locus_visual(
             reference_colourspace=(
-                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self._diagram]),
             uniform_colour=(0.0, 0.0, 0.0),
             width=2.0,
             method='agg')
 
-    def __create_RGB_scatter_visual(self, RGB=None):
+    def _create_RGB_scatter_visual(self, RGB=None):
         """
         Creates the *RGB* scatter visual for given *RGB* array according to
         :attr:`DiagramView.diagram` attribute value.
@@ -390,82 +390,82 @@ class DiagramView(ViewBox):
             *RGB* array to draw.
         """
 
-        RGB = self.__image if RGB is None else RGB
+        RGB = self._image if RGB is None else RGB
 
-        self.__RGB_scatter_visual = RGB_scatter_visual(
+        self._RGB_scatter_visual = RGB_scatter_visual(
             RGB,
             reference_colourspace=(
-                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self._diagram]),
             uniform_colour=(0.0, 0.0, 0.0))
 
-    def __create_pointer_gamut_visual(self):
+    def _create_pointer_gamut_visual(self):
         """
         Creates the *Pointer's Gamut* visual according to
         :attr:`DiagramView.diagram` attribute value.
         """
 
-        self.__pointer_gamut_visual = pointer_gamut_visual(
+        self._pointer_gamut_visual = pointer_gamut_visual(
             reference_colourspace=(
-                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self.__diagram]),
+                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[self._diagram]),
             uniform_opacity=0.4)
 
-    def __create_pointer_gamut_boundaries_visual(self):
+    def _create_pointer_gamut_boundaries_visual(self):
         """
         Creates the *Pointer's Gamut* boundaries visual according to
         :attr:`DiagramView.diagram` attribute value.
         """
 
-        self.__pointer_gamut_boundaries_visual = (
+        self._pointer_gamut_boundaries_visual = (
             pointer_gamut_boundaries_visual(reference_colourspace=(
                 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[
-                    self.__diagram])))
+                    self._diagram])))
 
-    def __create_input_colourspace_visual(self):
+    def _create_input_colourspace_visual(self):
         """
         Creates the input colourspace visual according to
         :attr:`DiagramView.input_colourspace` attribute value.
         """
 
-        self.__input_colourspace_visual = RGB_colourspace_triangle_visual(
-            self.__input_colourspace,
-            self.__diagram,
+        self._input_colourspace_visual = RGB_colourspace_triangle_visual(
+            self._input_colourspace,
+            self._diagram,
             uniform_colour=(0.8, 0.0, 0.8))
 
-    def __create_correlate_colourspace_visual(self):
+    def _create_correlate_colourspace_visual(self):
         """
         Creates the correlate colourspace visual according to
         :attr:`DiagramView.correlate_colourspace` attribute value.
         """
 
-        self.__correlate_colourspace_visual = RGB_colourspace_triangle_visual(
-            self.__correlate_colourspace,
-            self.__diagram,
+        self._correlate_colourspace_visual = RGB_colourspace_triangle_visual(
+            self._correlate_colourspace,
+            self._diagram,
             uniform_colour=(0.0, 0.8, 0.8))
 
-    def __create_grid_visual(self):
+    def _create_grid_visual(self):
         """
         Creates the grid visual.
         """
 
-        self.__grid_visual = GridLines()
+        self._grid_visual = GridLines()
 
-    def __create_axis_visual(self):
+    def _create_axis_visual(self):
         """
         Creates the axis visual.
         """
 
-        self.__axis_visual = axis_visual()
+        self._axis_visual = axis_visual()
 
-    def __create_visuals(self):
+    def _create_visuals(self):
         """
         Creates the *Diagram View* visuals.
         """
 
-        for visual in self.__visuals:
-            visual = '_DiagramView__create_{0}'.format(visual)
+        for visual in self._visuals:
+            visual = '_create_{0}'.format(visual)
             getattr(self, visual)()
 
-    def __create_camera(self):
+    def _create_camera(self):
         """
         Creates the *Diagram View* camera.
         """
@@ -473,76 +473,76 @@ class DiagramView(ViewBox):
         self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1),
                                     aspect=1)
 
-    def __attach_visuals(self):
+    def _attach_visuals(self):
         """
         Attaches / parents the visuals to the *Diagram View* scene.
         """
 
-        for visual in self.__visuals:
-            visual = '_DiagramView__{0}'.format(visual)
+        for visual in self._visuals:
+            visual = '_{0}'.format(visual)
             getattr(self, visual).parent = self.scene
 
-    def __detach_visuals(self):
+    def _detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Diagram View* scene.
         """
 
-        for visual in self.__visuals:
-            visual = '_DiagramView__{0}'.format(visual)
+        for visual in self._visuals:
+            visual = '_{0}'.format(visual)
             getattr(self, visual).parent = None
 
-    def __store_visuals_visibility(self):
+    def _store_visuals_visibility(self):
         """
-        Stores visuals visibility in :attr:`DiagramView.__visuals_visibility`
+        Stores visuals visibility in :attr:`DiagramView._visuals_visibility`
         attribute.
         """
 
         visibility = OrderedDict()
-        for visual in self.__visuals:
+        for visual in self._visuals:
             visibility[visual] = (
-                getattr(self, '_DiagramView__{0}'.format(visual)).visible)
+                getattr(self, '_{0}'.format(visual)).visible)
 
-        self.__visuals_visibility = visibility
+        self._visuals_visibility = visibility
 
-    def __restore_visuals_visibility(self):
+    def _restore_visuals_visibility(self):
         """
         Restores visuals visibility from
-        :attr:`DiagramView.__visuals_visibility` attribute.
+        :attr:`DiagramView._visuals_visibility` attribute.
         """
 
-        visibility = self.__visuals_visibility
-        for visual in self.__visuals:
-            getattr(self, '_DiagramView__{0}'.format(visual)).visible = (
+        visibility = self._visuals_visibility
+        for visual in self._visuals:
+            getattr(self, '_{0}'.format(visual)).visible = (
                 visibility[visual])
 
-    def __create_label(self):
+    def _create_label(self):
         """
         Creates the label.
         """
 
-        self.__label = Label(str(), color=(0.8, 0.8, 0.8))
-        self.__label.stretch = (1, 0.1)
-        self.__grid = self.add_grid(margin=16)
-        self.__grid.add_widget(self.__label, row=0, col=0)
-        self.__grid.add_widget(Widget(), row=1, col=0)
+        self._label = Label(str(), color=(0.8, 0.8, 0.8))
+        self._label.stretch = (1, 0.1)
+        self._grid = self.add_grid(margin=16)
+        self._grid.add_widget(self._label, row=0, col=0)
+        self._grid.add_widget(Widget(), row=1, col=0)
 
-        self.__label_text()
+        self._label_text()
 
-    def __label_text(self):
+    def _label_text(self):
         """
         Sets the label text.
         """
 
         title = ''
 
-        if self.__input_colourspace_visual.visible:
-            title += self.__input_colourspace
+        if self._input_colourspace_visual.visible:
+            title += self._input_colourspace
             title += ' - '
-        if self.__correlate_colourspace_visual.visible:
-            title += self.__correlate_colourspace
+        if self._correlate_colourspace_visual.visible:
+            title += self._correlate_colourspace
             title += ' - '
 
-        title += '{0} Chromaticity Diagram'.format(self.__diagram)
+        title += '{0} Chromaticity Diagram'.format(self._diagram)
 
         if self.scene_canvas.clamp_blacks:
             title += ' - '
@@ -552,7 +552,7 @@ class DiagramView(ViewBox):
             title += ' - '
             title += 'Whites Clamped'
 
-        self.__label.text = title
+        self._label.text = title
 
     def toggle_spectral_locus_visual_visibility_action(self):
         """
@@ -565,8 +565,8 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__spectral_locus_visual.visible = (
-            not self.__spectral_locus_visual.visible)
+        self._spectral_locus_visual.visible = (
+            not self._spectral_locus_visual.visible)
 
         return True
 
@@ -581,9 +581,9 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__input_colourspace_visual.visible = (
-            not self.__input_colourspace_visual.visible)
-        self.__label_text()
+        self._input_colourspace_visual.visible = (
+            not self._input_colourspace_visual.visible)
+        self._label_text()
 
         return True
 
@@ -598,9 +598,9 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__correlate_colourspace_visual.visible = (
-            not self.__correlate_colourspace_visual.visible)
-        self.__label_text()
+        self._correlate_colourspace_visual.visible = (
+            not self._correlate_colourspace_visual.visible)
+        self._label_text()
 
         return True
 
@@ -615,8 +615,8 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__RGB_scatter_visual.visible = (
-            not self.__RGB_scatter_visual.visible)
+        self._RGB_scatter_visual.visible = (
+            not self._RGB_scatter_visual.visible)
 
         return True
 
@@ -631,10 +631,10 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__pointer_gamut_visual.visible = (
-            not self.__pointer_gamut_visual.visible)
-        self.__pointer_gamut_boundaries_visual.visible = (
-            not self.__pointer_gamut_boundaries_visual.visible)
+        self._pointer_gamut_visual.visible = (
+            not self._pointer_gamut_visual.visible)
+        self._pointer_gamut_boundaries_visual.visible = (
+            not self._pointer_gamut_boundaries_visual.visible)
 
         return True
 
@@ -649,7 +649,7 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__grid_visual.visible = not self.__grid_visual.visible
+        self._grid_visual.visible = not self._grid_visual.visible
 
         return True
 
@@ -664,8 +664,8 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.__axis_visual.visible = (
-            not self.__axis_visual.visible)
+        self._axis_visual.visible = (
+            not self._axis_visual.visible)
 
         return True
 
@@ -679,6 +679,6 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self.diagram = self.__diagrams_cycle.next_item()
+        self.diagram = self._diagrams_cycle.next_item()
 
         return True

@@ -56,7 +56,7 @@ class ConsoleView(Console):
 
         self.unfreeze()
 
-        self.__scene_canvas = scene_canvas
+        self._scene_canvas = scene_canvas
 
         self.write('Welcome to Colour - Analysis!\n')
 
@@ -70,7 +70,7 @@ class ConsoleView(Console):
         SceneCanvas
         """
 
-        return self.__scene_canvas
+        return self._scene_canvas
 
     @scene_canvas.setter
     def scene_canvas(self, value):

@@ -25,26 +25,26 @@ class OrbitCamera(TurntableCamera):
                                  distance,
                                  **kwargs)
 
-        self.__translate_speed = None
+        self._translate_speed = None
         self.translate_speed = translate_speed
 
     @property
     def translate_speed(self):
         """
-        Property for **self.__translate_speed** private attribute.
+        Property for **self._translate_speed** private attribute.
 
         Returns
         -------
         numeric
-            self.__translate_speed.
+            self._translate_speed.
         """
 
-        return self.__translate_speed
+        return self._translate_speed
 
     @translate_speed.setter
     def translate_speed(self, value):
         """
-        Setter for **self.__translate_speed** private attribute.
+        Setter for **self._translate_speed** private attribute.
 
         Parameters
         ----------
@@ -55,7 +55,7 @@ class OrbitCamera(TurntableCamera):
         if value is not None:
             assert is_numeric(value), (
                 '"{0}" is not a numeric!'.format('translate_speed', value))
-        self.__translate_speed = value
+        self._translate_speed = value
 
     def _dist_to_trans(self, distance):
         """
@@ -68,7 +68,7 @@ class OrbitCamera(TurntableCamera):
         """
 
         translate = np.asarray(TurntableCamera._dist_to_trans(self, distance))
-        translate *= self.__translate_speed
+        translate *= self._translate_speed
 
         return translate
 

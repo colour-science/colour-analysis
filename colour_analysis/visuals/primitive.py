@@ -68,9 +68,9 @@ class PrimitiveVisual(MeshVisual):
             argument if the latter last dimension is equal to 3.
         """
 
-        self.__wireframe = wireframe
-        self.__wireframe_offset = wireframe_offset
-        mode = 'lines' if self.__wireframe else 'triangles'
+        self._wireframe = wireframe
+        self._wireframe_offset = wireframe_offset
+        mode = 'lines' if self._wireframe else 'triangles'
 
         uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
         if vertex_colours is not None:
@@ -94,8 +94,8 @@ class PrimitiveVisual(MeshVisual):
 
     def draw(self):
         MeshVisual.draw(self)
-        if self.__wireframe and self.__wireframe_offset:
-            set_state(polygon_offset=self.__wireframe_offset,
+        if self._wireframe and self._wireframe_offset:
+            set_state(polygon_offset=self._wireframe_offset,
                       polygon_offset_fill=True)
 
 

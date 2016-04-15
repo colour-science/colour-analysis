@@ -93,41 +93,41 @@ class ImageView(ViewBox):
                  input_colourspace='Rec. 709',
                  correlate_colourspace='ACEScg',
                  **kwargs):
-        self.__initialised = False
+        self._initialised = False
 
         ViewBox.__init__(self, **kwargs)
 
         self.unfreeze()
 
-        self.__scene_canvas = scene_canvas
+        self._scene_canvas = scene_canvas
 
-        self.__image = None
+        self._image = None
         self.image = image
-        self.__input_colourspace = None
+        self._input_colourspace = None
         self.input_colourspace = input_colourspace
-        self.__correlate_colourspace = None
+        self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
 
-        self.__grid = None
+        self._grid = None
 
-        self.__label = None
+        self._label = None
 
-        self.__image_visual = None
+        self._image_visual = None
 
-        self.__image_overlay = True
+        self._image_overlay = True
 
-        self.__display_input_colourspace_out_of_gamut = False
-        self.__display_correlate_colourspace_out_of_gamut = False
-        self.__display_out_of_pointer_gamut = False
-        self.__display_hdr_colours = False
+        self._display_input_colourspace_out_of_gamut = False
+        self._display_correlate_colourspace_out_of_gamut = False
+        self._display_out_of_pointer_gamut = False
+        self._display_hdr_colours = False
 
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__create_camera()
+        self._create_visuals()
+        self._attach_visuals()
+        self._create_camera()
 
-        self.__create_label()
+        self._create_label()
 
-        self.__initialised = True
+        self._initialised = True
 
     @property
     def scene_canvas(self):
@@ -139,7 +139,7 @@ class ImageView(ViewBox):
         SceneCanvas
         """
 
-        return self.__scene_canvas
+        return self._scene_canvas
 
     @scene_canvas.setter
     def scene_canvas(self, value):
@@ -158,20 +158,20 @@ class ImageView(ViewBox):
     @property
     def image(self):
         """
-        Property for **self.__image** private attribute.
+        Property for **self._image** private attribute.
 
         Returns
         -------
         array_like
-            self.__image.
+            self._image.
         """
 
-        return self.__image
+        return self._image
 
     @image.setter
     def image(self, value):
         """
-        Setter for **self.__image** private attribute.
+        Setter for **self._image** private attribute.
 
         Parameters
         ----------
@@ -184,31 +184,31 @@ class ImageView(ViewBox):
                 ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
                  'or "matrix" instance!').format('image', value))
 
-        self.__image = value
+        self._image = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_visuals()
-            self.__attach_visuals()
-            self.__label_text()
+        if self._initialised:
+            self._detach_visuals()
+            self._create_visuals()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def input_colourspace(self):
         """
-        Property for **self.__input_colourspace** private attribute.
+        Property for **self._input_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__input_colourspace.
+            self._input_colourspace.
         """
 
-        return self.__input_colourspace
+        return self._input_colourspace
 
     @input_colourspace.setter
     def input_colourspace(self, value):
         """
-        Setter for **self.__input_colourspace** private attribute.
+        Setter for **self._input_colourspace** private attribute.
 
         Parameters
         ----------
@@ -225,31 +225,31 @@ class ImageView(ViewBox):
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
 
-        self.__input_colourspace = value
+        self._input_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_visuals()
-            self.__attach_visuals()
-            self.__label_text()
+        if self._initialised:
+            self._detach_visuals()
+            self._create_visuals()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def correlate_colourspace(self):
         """
-        Property for **self.__correlate_colourspace** private attribute.
+        Property for **self._correlate_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__correlate_colourspace.
+            self._correlate_colourspace.
         """
 
-        return self.__correlate_colourspace
+        return self._correlate_colourspace
 
     @correlate_colourspace.setter
     def correlate_colourspace(self, value):
         """
-        Setter for **self.__correlate_colourspace** private attribute.
+        Setter for **self._correlate_colourspace** private attribute.
 
         Parameters
         ----------
@@ -267,21 +267,21 @@ class ImageView(ViewBox):
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
 
-        self.__correlate_colourspace = value
+        self._correlate_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_visuals()
-            self.__attach_visuals()
-            self.__label_text()
+        if self._initialised:
+            self._detach_visuals()
+            self._create_visuals()
+            self._attach_visuals()
+            self._label_text()
 
-    def __create_image(self):
+    def _create_image(self):
         """
         Creates the image used by the *Image View* according to
-        :attr:`GamutView.__display_input_colourspace_out_of_gamut`,
-        :attr:`GamutView.__display_correlate_colourspace_out_of_gamut`,
-        :attr:`GamutView.__display_out_of_pointer_gamut` and
-        :attr:`GamutView.__display_hdr_colours` attributes values.
+        :attr:`GamutView._display_input_colourspace_out_of_gamut`,
+        :attr:`GamutView._display_correlate_colourspace_out_of_gamut`,
+        :attr:`GamutView._display_out_of_pointer_gamut` and
+        :attr:`GamutView._display_hdr_colours` attributes values.
 
         Returns
         -------
@@ -289,23 +289,23 @@ class ImageView(ViewBox):
             Image
         """
 
-        image = np.copy(self.__image)
+        image = np.copy(self._image)
 
         has_overlay = False
-        if (self.__display_input_colourspace_out_of_gamut or
-                self.__display_correlate_colourspace_out_of_gamut):
+        if (self._display_input_colourspace_out_of_gamut or
+                self._display_correlate_colourspace_out_of_gamut):
             image[image >= 0] = 0
             image[image < 0] = 1
             has_overlay = True
 
-        if self.__display_correlate_colourspace_out_of_gamut:
+        if self._display_correlate_colourspace_out_of_gamut:
             image = RGB_to_RGB(image,
-                               RGB_COLOURSPACES[self.__input_colourspace],
-                               RGB_COLOURSPACES[self.__correlate_colourspace])
+                               RGB_COLOURSPACES[self._input_colourspace],
+                               RGB_COLOURSPACES[self._correlate_colourspace])
             has_overlay = True
 
-        if self.__display_out_of_pointer_gamut:
-            colourspace = RGB_COLOURSPACES[self.__input_colourspace]
+        if self._display_out_of_pointer_gamut:
+            colourspace = RGB_COLOURSPACES[self._input_colourspace]
             image = is_within_pointer_gamut(
                 RGB_to_XYZ(image,
                            colourspace.whitepoint,
@@ -317,25 +317,25 @@ class ImageView(ViewBox):
             image = 1 - tstack((image, image, image))
             has_overlay = True
 
-        if self.__display_hdr_colours:
+        if self._display_hdr_colours:
             image[image <= 1] = 0
             # has_overlay = True
 
-        if self.__image_overlay and has_overlay:
-            image = self.__image + image
+        if self._image_overlay and has_overlay:
+            image = self._image + image
 
         oecf = RGB_COLOURSPACES[DEFAULT_OECF].OECF
 
         return oecf(image)
 
-    def __create_visuals(self):
+    def _create_visuals(self):
         """
         Creates the *Image View* visuals.
         """
 
-        self.__image_visual = image_visual(self.__create_image())
+        self._image_visual = image_visual(self._create_image())
 
-    def __create_camera(self):
+    def _create_camera(self):
         """
         Creates the *Image View* camera.
         """
@@ -344,56 +344,56 @@ class ImageView(ViewBox):
         self.camera.flip = (False, True, False)
         self.camera.set_range()
 
-    def __attach_visuals(self):
+    def _attach_visuals(self):
         """
         Attaches / parents the visuals to the *Image View* scene.
         """
 
-        self.__image_visual.parent = self.scene
+        self._image_visual.parent = self.scene
 
-    def __detach_visuals(self):
+    def _detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Image View* scene.
         """
 
-        self.__image_visual.parent = None
+        self._image_visual.parent = None
 
-    def __create_label(self):
+    def _create_label(self):
         """
         Creates the label.
         """
 
-        self.__label = Label(str(), color=(0.8, 0.8, 0.8))
-        self.__label.stretch = (1, 0.1)
-        self.__grid = self.add_grid(margin=16)
-        self.__grid.add_widget(self.__label, row=0, col=0)
-        self.__grid.add_widget(Widget(), row=1, col=0)
+        self._label = Label(str(), color=(0.8, 0.8, 0.8))
+        self._label.stretch = (1, 0.1)
+        self._grid = self.add_grid(margin=16)
+        self._grid.add_widget(self._label, row=0, col=0)
+        self._grid.add_widget(Widget(), row=1, col=0)
 
-        self.__label_text()
+        self._label_text()
 
-    def __label_text(self):
+    def _label_text(self):
         """
         Sets the label text.
         """
 
-        self.__label.text = str()
+        self._label.text = str()
 
-        if self.__display_input_colourspace_out_of_gamut:
-            self.__label.text = (
+        if self._display_input_colourspace_out_of_gamut:
+            self._label.text = (
                 '{0} - Out of Gamut Colours Display'.format(
-                    self.__input_colourspace))
+                    self._input_colourspace))
 
-        if self.__display_correlate_colourspace_out_of_gamut:
-            self.__label.text = (
+        if self._display_correlate_colourspace_out_of_gamut:
+            self._label.text = (
                 '{0} - Out of Gamut Colours Display'.format(
-                    self.__correlate_colourspace))
+                    self._correlate_colourspace))
 
-        if self.__display_out_of_pointer_gamut:
-            self.__label.text = ('Out of Pointer\'s Gamut '
-                                                'Colours Display')
+        if self._display_out_of_pointer_gamut:
+            self._label.text = ('Out of Pointer\'s Gamut '
+                                'Colours Display')
 
-        if self.__display_hdr_colours:
-            self.__label.text = 'HDR Colours Display'
+        if self._display_hdr_colours:
+            self._label.text = 'HDR Colours Display'
 
     def toggle_input_colourspace_out_of_gamut_colours_display_action(self):
         """
@@ -406,15 +406,15 @@ class ImageView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__display_input_colourspace_out_of_gamut = (
-            not self.__display_input_colourspace_out_of_gamut)
-        if self.__display_input_colourspace_out_of_gamut:
-            self.__display_correlate_colourspace_out_of_gamut = False
-            self.__display_hdr_colours = False
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__label_text()
+        self._detach_visuals()
+        self._display_input_colourspace_out_of_gamut = (
+            not self._display_input_colourspace_out_of_gamut)
+        if self._display_input_colourspace_out_of_gamut:
+            self._display_correlate_colourspace_out_of_gamut = False
+            self._display_hdr_colours = False
+        self._create_visuals()
+        self._attach_visuals()
+        self._label_text()
 
         return True
 
@@ -429,16 +429,16 @@ class ImageView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__display_correlate_colourspace_out_of_gamut = (
-            not self.__display_correlate_colourspace_out_of_gamut)
-        if self.__display_correlate_colourspace_out_of_gamut:
-            self.__display_input_colourspace_out_of_gamut = False
-            self.__display_out_of_pointer_gamut = False
-            self.__display_hdr_colours = False
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__label_text()
+        self._detach_visuals()
+        self._display_correlate_colourspace_out_of_gamut = (
+            not self._display_correlate_colourspace_out_of_gamut)
+        if self._display_correlate_colourspace_out_of_gamut:
+            self._display_input_colourspace_out_of_gamut = False
+            self._display_out_of_pointer_gamut = False
+            self._display_hdr_colours = False
+        self._create_visuals()
+        self._attach_visuals()
+        self._label_text()
 
         return True
 
@@ -453,16 +453,16 @@ class ImageView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__display_out_of_pointer_gamut = (
-            not self.__display_out_of_pointer_gamut)
-        if self.__display_out_of_pointer_gamut:
-            self.__display_input_colourspace_out_of_gamut = False
-            self.__display_correlate_colourspace_out_of_gamut = False
-            self.__display_hdr_colours = False
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__label_text()
+        self._detach_visuals()
+        self._display_out_of_pointer_gamut = (
+            not self._display_out_of_pointer_gamut)
+        if self._display_out_of_pointer_gamut:
+            self._display_input_colourspace_out_of_gamut = False
+            self._display_correlate_colourspace_out_of_gamut = False
+            self._display_hdr_colours = False
+        self._create_visuals()
+        self._attach_visuals()
+        self._label_text()
 
         return True
 
@@ -476,16 +476,16 @@ class ImageView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__display_hdr_colours = (
-            not self.__display_hdr_colours)
-        if self.__display_hdr_colours:
-            self.__display_input_colourspace_out_of_gamut = False
-            self.__display_correlate_colourspace_out_of_gamut = False
-            self.__display_out_of_pointer_gamut = False
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__label_text()
+        self._detach_visuals()
+        self._display_hdr_colours = (
+            not self._display_hdr_colours)
+        if self._display_hdr_colours:
+            self._display_input_colourspace_out_of_gamut = False
+            self._display_correlate_colourspace_out_of_gamut = False
+            self._display_out_of_pointer_gamut = False
+        self._create_visuals()
+        self._attach_visuals()
+        self._label_text()
 
         return True
 
@@ -500,11 +500,11 @@ class ImageView(ViewBox):
             Definition success.
         """
 
-        self.__image_overlay = not self.__image_overlay
-        self.__detach_visuals()
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__label_text()
+        self._image_overlay = not self._image_overlay
+        self._detach_visuals()
+        self._create_visuals()
+        self._attach_visuals()
+        self._label_text()
 
     def fit_image_visual_image_action(self):
         """
