@@ -28,7 +28,7 @@ __all__ = ['RESOURCES_DIRECTORY',
            'IMAGES_DIRECTORY',
            'DEFAULT_IMAGE_PATH',
            'DEFAULT_FAILSAFE_IMAGE',
-           'DEFAULT_OECF',
+           'DEFAULT_ENCODING_CCTF',
            'DEFAULT_PLOTTING_ILLUMINANT',
            'REFERENCE_COLOURSPACES',
            'REFERENCE_COLOURSPACES_TITLES',
@@ -73,13 +73,13 @@ Default failsafe image in case *OpenImageIO* is not available.
 DEFAULT_FAILSAFE_IMAGE : ndarray
 """
 
-DEFAULT_OECF = 'sRGB'
+DEFAULT_ENCODING_CCTF = 'sRGB'
 """
 Default display OECF.
 
-DEFAULT_OECF : unicode
+DEFAULT_ENCODING_CCTF : unicode
     {'sRGB', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-    'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+    'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
     'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
     'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
     'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',

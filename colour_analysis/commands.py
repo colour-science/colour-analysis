@@ -98,7 +98,7 @@ ARGUMENTS
         Image to analyse.
     -c, --input-colourspace
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -325,7 +325,7 @@ def main():
         image = read_image(str(image_path))
         if not input_linear:
             colourspace = RGB_COLOURSPACES[arguments.input_oecf]
-            image = colourspace.EOCF(image)
+            image = colourspace.decoding_cctf(image)
 
         # Keeping RGB channels only.
         image = image[..., 0:3]

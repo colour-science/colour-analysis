@@ -7,7 +7,7 @@ Image Visual
 
 Defines the *Image Visual*:
 
--   :def:`image_visual`
+-   :func:`image_visual`
 """
 
 from __future__ import division, unicode_literals

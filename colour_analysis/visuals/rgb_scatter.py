@@ -7,7 +7,7 @@ RGB Scatter Visual
 
 Defines the *RGB Scatter Visual*:
 
--   :def:`RGB_scatter_visual`
+-   :func:`RGB_scatter_visual`
 """
 
 from __future__ import division, unicode_literals
@@ -54,7 +54,7 @@ def RGB_scatter_visual(RGB,
         *RGB* data to draw.
     colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -101,43 +101,43 @@ def RGB_scatter_visual(RGB,
     RGB = np.asarray(RGB)
 
     if resampling == 'auto':
-        resampling = int((0.0078125 * np.average(RGB.shape[0:1])) // 2)
+        resampling = max(int((0.0078125 * np.average(RGB.shape[0:1])) // 2), 1)
 
         RGB = RGB[::resampling, ::resampling].reshape((-1, 3))
 
-        XYZ = RGB_to_XYZ(
-            RGB,
-            colourspace.whitepoint,
-            colourspace.whitepoint,
-            colourspace.RGB_to_XYZ_matrix)
+    XYZ = RGB_to_XYZ(
+        RGB,
+        colourspace.whitepoint,
+        colourspace.whitepoint,
+        colourspace.RGB_to_XYZ_matrix)
 
-        points = common_colourspace_model_axis_reorder(
-            XYZ_to_colourspace_model(
-                XYZ, colourspace.whitepoint, reference_colourspace),
-            reference_colourspace)
+    points = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ, colourspace.whitepoint, reference_colourspace),
+        reference_colourspace)
 
-        points[np.isnan(points)] = 0
+    points[np.isnan(points)] = 0
 
-        RGB = np.clip(RGB, 0, 1)
+    RGB = np.clip(RGB, 0, 1)
 
-        if uniform_colour is None:
-            RGB = np.hstack(
-                (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
-        else:
-            RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+    if uniform_colour is None:
+        RGB = np.hstack(
+            (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
+    else:
+        RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
-        if uniform_edge_colour is None:
-            RGB_e = RGB
-        else:
-            RGB_e = ColorArray(uniform_edge_colour,
-                               alpha=uniform_edge_opacity).rgba
+    if uniform_edge_colour is None:
+        RGB_e = RGB
+    else:
+        RGB_e = ColorArray(uniform_edge_colour,
+                           alpha=uniform_edge_opacity).rgba
 
-        markers = Symbol(symbol=symbol,
-                         positions=points,
-                         size=size,
-                         edge_size=edge_size,
-                         face_colour=RGB,
-                         edge_colour=RGB_e,
-                         parent=parent)
+    markers = Symbol(symbol=symbol,
+                     positions=points,
+                     size=size,
+                     edge_size=edge_size,
+                     face_colour=RGB,
+                     edge_colour=RGB_e,
+                     parent=parent)
 
-        return markers
+    return markers

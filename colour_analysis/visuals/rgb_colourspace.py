@@ -7,8 +7,8 @@ RGB Colourspace Visuals
 
 Defines the *RGB Colourspace Visuals*:
 
--   :def:`RGB_colourspace_volume_visual`
--   :def:`RGB_colourspace_triangle_visual`
+-   :func:`RGB_colourspace_volume_visual`
+-   :func:`RGB_colourspace_triangle_visual`
 """
 
 from __future__ import division, unicode_literals
@@ -124,7 +124,7 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
     ----------
     colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -210,7 +210,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
     Parameters
     ----------
     colourspace : unicode, optional
-        See :def:`RGB_colourspace_volume_visual` argument for possible values.
+        See :func:`RGB_colourspace_volume_visual` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace whitepoint axis to draw.
@@ -268,7 +268,7 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
     Parameters
     ----------
     colourspace : unicode, optional
-        See :def:`RGB_colourspace_volume_visual` argument for possible values.
+        See :func:`RGB_colourspace_volume_visual` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace triangle to draw.

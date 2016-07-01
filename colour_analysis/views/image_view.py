@@ -24,7 +24,7 @@ from colour import (
     is_within_pointer_gamut,
     tstack)
 
-from colour_analysis.constants import DEFAULT_OECF
+from colour_analysis.constants import DEFAULT_ENCODING_CCTF
 from colour_analysis.visuals import image_visual
 
 __author__ = 'Colour Developers'
@@ -49,7 +49,7 @@ class ImageView(ViewBox):
         Image to use in the view interactions.
     input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -324,7 +324,7 @@ class ImageView(ViewBox):
         if self._image_overlay and has_overlay:
             image = self._image + image
 
-        oecf = RGB_COLOURSPACES[DEFAULT_OECF].OECF
+        oecf = RGB_COLOURSPACES[DEFAULT_ENCODING_CCTF].encoding_cctf
 
         return oecf(image)
 

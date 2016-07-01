@@ -7,9 +7,9 @@ Chromaticity Diagram Visuals
 
 Defines the *Chromaticity Diagram Visuals*:
 
--   :def:`CIE_1931_chromaticity_diagram`
--   :def:`CIE_1960_UCS_chromaticity_diagram`
--   :def:`CIE_1976_UCS_chromaticity_diagram`
+-   :func:`CIE_1931_chromaticity_diagram`
+-   :func:`CIE_1960_UCS_chromaticity_diagram`
+-   :func:`CIE_1976_UCS_chromaticity_diagram`
 """
 
 from __future__ import division, unicode_literals

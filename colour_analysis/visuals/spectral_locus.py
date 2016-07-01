@@ -7,8 +7,8 @@ Spectral Locus Visual
 
 Defines the *Spectral Locus Visual* and related visuals:
 
--   :def:`spectral_locus_visual`
--   :def:`chromaticity_diagram_construction_visual`
+-   :func:`spectral_locus_visual`
+-   :func:`chromaticity_diagram_construction_visual`
 """
 
 from __future__ import division, unicode_literals

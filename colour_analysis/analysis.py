@@ -115,7 +115,7 @@ class ColourAnalysis(SceneCanvas):
         Image path.
     input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -130,7 +130,7 @@ class ColourAnalysis(SceneCanvas):
         See `input_colourspace` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the image
-        opto-electronic conversion function.
+        opto-electronic transfer function.
     input_linear : bool, optional
         Is input image linear.
     reference_colourspace : unicode, optional
