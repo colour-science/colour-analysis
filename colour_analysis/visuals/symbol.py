@@ -47,7 +47,7 @@ class Symbol(Markers):
                       face_color=face_colour,
                       edge_color=edge_colour,
                       scaling=scaling)
-        self.set_symbol(symbol)
+        self.symbol = symbol
 
         if parent is not None:
             parent.add(self)

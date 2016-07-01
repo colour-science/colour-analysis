@@ -17,7 +17,7 @@ from vispy.scene.widgets import Console
 from colour import message_box
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -32,18 +32,18 @@ class ConsoleView(Console):
 
     Parameters
     ----------
-    canvas : SceneCanvas, optional
+    scene_canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
-    \*args : \*, optional
+    \*args : list, optional
         Arguments passed to :class:`vispy.scene.widgets.Console` class
         constructor.
-    \*\*kwargs : \*\*, optional
+    \**kwargs : dict, optional
         Keywords arguments passed to :class:`vispy.scene.widgets.Console`
         class constructor.
 
     Attributes
     ----------
-    canvas
+    scene_canvas
 
     Methods
     -------
@@ -51,29 +51,31 @@ class ConsoleView(Console):
     describe_analysis_state_action
     """
 
-    def __init__(self, canvas=None, *args, **kwargs):
+    def __init__(self, scene_canvas=None, *args, **kwargs):
         Console.__init__(self, *args, **kwargs)
 
-        self.__canvas = canvas
+        self.unfreeze()
+
+        self._scene_canvas = scene_canvas
 
         self.write('Welcome to Colour - Analysis!\n')
 
     @property
-    def canvas(self):
+    def scene_canvas(self):
         """
-        Property for **self.canvas** attribute.
+        Property for **self.scene_canvas** attribute.
 
         Returns
         -------
         SceneCanvas
         """
 
-        return self.__canvas
+        return self._scene_canvas
 
-    @canvas.setter
-    def canvas(self, value):
+    @scene_canvas.setter
+    def scene_canvas(self, value):
         """
-        Setter for **self.canvas** attribute.
+        Setter for **self.scene_canvas** attribute.
 
         Parameters
         ----------
@@ -81,7 +83,8 @@ class ConsoleView(Console):
             Attribute value.
         """
 
-        raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
+        raise AttributeError(
+            '"{0}" attribute is read only!'.format('scene_canvas'))
 
     def describe_actions_action(self):
         """

@@ -16,16 +16,17 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.geometry.generation import create_box
 from vispy.scene.visuals import Node, Line
-from colour import RGB_to_XYZ, xy_to_XYZ
+from colour import RGB_to_XYZ, XYZ_to_colourspace_model, xy_to_XYZ
 from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import XYZ_to_reference_colourspace
+from colour.plotting.volume import (
+    common_colourspace_model_axis_reorder)
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.visuals import Box
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -33,6 +34,7 @@ __status__ = 'Production'
 
 __all__ = ['RGB_identity_cube',
            'RGB_colourspace_volume_visual',
+           'RGB_colourspace_whitepoint_axis_visual',
            'RGB_colourspace_triangle_visual']
 
 
@@ -52,12 +54,6 @@ def RGB_identity_cube(width_segments=16,
 
     Parameters
     ----------
-    width : numeric, optional
-        Box width.
-    height : numeric, optional
-        Box height.
-    depth : numeric, optional
-        Box depth.
     width_segments : int, optional
         Box segments count along the width.
     height_segments : int, optional
@@ -72,14 +68,14 @@ def RGB_identity_cube(width_segments=16,
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
+    vertex_colours : array_like, optional
         Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.
-    \*args : \*, optional
+    \*args : list, optional
         Arguments passed to :class:`colour_analysis.visuals.Box` class
         constructor.
-    \*\*kwargs : \*\*, optional
+    \**kwargs : dict, optional
         Keywords arguments passed to :class:`colour_analysis.visuals.Box` class
         constructor.
     """
@@ -128,7 +124,7 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
     ----------
     colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -139,14 +135,16 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
 
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace volume to draw.
+    reference_colourspace : unicode
+        **{'CIE XYZ', 'CIE xyY', 'CIE xy', 'CIE Lab', 'CIE Luv', 'CIE Luv uv',
+        'CIE UCS', 'CIE UCS uv', 'CIE UVW', 'IPT'}**,
+        Reference colourspace to convert the *CIE XYZ* tristimulus values to.
     segments : int, optional
         Box segments.
     uniform_colour : array_like, optional
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
-        Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.
         Uniform mesh opacity.
@@ -177,9 +175,10 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
         colourspace.whitepoint,
         colourspace.whitepoint,
         colourspace.RGB_to_XYZ_matrix)
-    value = XYZ_to_reference_colourspace(XYZ,
-                                         colourspace.whitepoint,
-                                         reference_colourspace)
+    value = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ, colourspace.whitepoint, reference_colourspace),
+        reference_colourspace)
     value[np.isnan(value)] = 0
 
     RGB_cube_f.mesh_data.set_vertices(value)
@@ -197,6 +196,63 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
         RGB_cube_w.mesh_data.set_vertices(value)
 
     return node
+
+
+def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
+                                           reference_colourspace='CIE xyY',
+                                           width=2.0,
+                                           method='gl',
+                                           parent=None):
+    """
+    Returns a :class:`vispy.scene.visuals.Line` class instance representing
+    a given RGB colourspace whitepoint axis.
+
+    Parameters
+    ----------
+    colourspace : unicode, optional
+        See :func:`RGB_colourspace_volume_visual` argument for possible values.
+
+        :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
+        colourspace whitepoint axis to draw.
+    reference_colourspace : unicode, optional
+        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT'}
+
+        Reference colourspace to use for colour conversions / transformations.
+    width : numeric, optional
+        Line width.
+    method : unicode, optional
+        {'gl', 'agg'}
+
+        Line drawing method.
+    parent : Node, optional
+        Parent of the spectral locus visual in the `SceneGraph`.
+
+    Returns
+    -------
+    Line
+        RGB colourspace whitepoint axis.
+    """
+
+    colourspace = get_RGB_colourspace(colourspace)
+    XYZ_o = xy_to_XYZ(colourspace.whitepoint + (0, ))
+    XYZ_f = xy_to_XYZ(colourspace.whitepoint + (1.1, ))
+    XYZ_l = np.vstack((XYZ_o, XYZ_f))
+
+    illuminant = DEFAULT_PLOTTING_ILLUMINANT
+
+    points = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ_l, illuminant, reference_colourspace),
+        reference_colourspace)
+
+    line = Line(points,
+                (1, 1, 1),
+                width=width,
+                method=method,
+                parent=parent)
+
+    return line
 
 
 def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
@@ -224,15 +280,8 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
         Uniform triangle colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
-        Per vertex varying colour.
-    wireframe : bool, optional
-        Use wireframe display.
-        Uniform mesh opacity.
-    wireframe_colour : array_like, optional
-        Wireframe mesh colour.
-    wireframe_opacity : numeric, optional
-        Wireframe mesh opacity.
+    width : numeric, optional
+        Triangle edge width.
     parent : Node, optional
         Parent of the *RGB* colourspace volume visual in the `SceneGraph`.
     """

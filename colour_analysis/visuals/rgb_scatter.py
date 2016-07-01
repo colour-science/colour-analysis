@@ -15,14 +15,15 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.color.color_array import ColorArray
 
-from colour import RGB_to_XYZ
+from colour import RGB_to_XYZ, XYZ_to_colourspace_model
 from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import XYZ_to_reference_colourspace
+from colour.plotting.volume import (
+    common_colourspace_model_axis_reorder)
 
 from colour_analysis.visuals import Symbol
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -53,7 +54,7 @@ def RGB_scatter_visual(RGB,
         *RGB* data to draw.
     colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -100,41 +101,43 @@ def RGB_scatter_visual(RGB,
     RGB = np.asarray(RGB)
 
     if resampling == 'auto':
-        resampling = int((0.0078125 * np.average(RGB.shape[0:1])) // 2)
+        resampling = max(int((0.0078125 * np.average(RGB.shape[0:1])) // 2), 1)
 
         RGB = RGB[::resampling, ::resampling].reshape((-1, 3))
 
-        XYZ = RGB_to_XYZ(
-            RGB,
-            colourspace.whitepoint,
-            colourspace.whitepoint,
-            colourspace.RGB_to_XYZ_matrix)
+    XYZ = RGB_to_XYZ(
+        RGB,
+        colourspace.whitepoint,
+        colourspace.whitepoint,
+        colourspace.RGB_to_XYZ_matrix)
 
-        points = XYZ_to_reference_colourspace(XYZ,
-                                              colourspace.whitepoint,
-                                              reference_colourspace)
+    points = common_colourspace_model_axis_reorder(
+        XYZ_to_colourspace_model(
+            XYZ, colourspace.whitepoint, reference_colourspace),
+        reference_colourspace)
 
-        points[np.isnan(points)] = 0
+    points[np.isnan(points)] = 0
 
-        RGB = np.clip(RGB, 0, 1)
+    RGB = np.clip(RGB, 0, 1)
 
-        if uniform_colour is None:
-            RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity)))
-        else:
-            RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
+    if uniform_colour is None:
+        RGB = np.hstack(
+            (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
+    else:
+        RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
-        if uniform_edge_colour is None:
-            RGB_e = RGB
-        else:
-            RGB_e = ColorArray(uniform_edge_colour,
-                               alpha=uniform_edge_opacity).rgba
+    if uniform_edge_colour is None:
+        RGB_e = RGB
+    else:
+        RGB_e = ColorArray(uniform_edge_colour,
+                           alpha=uniform_edge_opacity).rgba
 
-        markers = Symbol(symbol=symbol,
-                         positions=points,
-                         size=size,
-                         edge_size=edge_size,
-                         face_colour=RGB,
-                         edge_colour=RGB_e,
-                         parent=parent)
+    markers = Symbol(symbol=symbol,
+                     positions=points,
+                     size=size,
+                     edge_size=edge_size,
+                     face_colour=RGB,
+                     edge_colour=RGB_e,
+                     parent=parent)
 
-        return markers
+    return markers

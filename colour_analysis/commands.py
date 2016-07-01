@@ -33,7 +33,7 @@ from colour_analysis.constants import (
     SETTINGS_FILE)
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -98,7 +98,7 @@ ARGUMENTS
         Image to analyse.
     -c, --input-colourspace
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -158,9 +158,9 @@ def system_exit(object):
 
         Parameters
         ----------
-        \*kwargs : \*
+        \*args : list, optional
             Arguments.
-        \*\*kwargs : \*\*
+        \**kwargs : dict, optional
             Keywords arguments.
         """
 
@@ -244,7 +244,7 @@ def command_line_arguments():
                         action='store',
                         dest='reference_colourspace',
                         default='CIE xyY',
-                        help='Input image colourspace.')
+                        help='Reference colourspace to perform the analysis.')
 
     parser.add_argument('--correlate-colourspace',
                         '-t',
@@ -321,18 +321,18 @@ def main():
     else:
         image_path = DEFAULT_IMAGE_PATH
 
-    if is_openimageio_installed:
+    try:
         image = read_image(str(image_path))
         if not input_linear:
             colourspace = RGB_COLOURSPACES[arguments.input_oecf]
-            image = colourspace.inverse_transfer_function(image)
+            image = colourspace.decoding_cctf(image)
 
         # Keeping RGB channels only.
         image = image[..., 0:3]
 
         image = image[::int(arguments.input_resample),
                 ::int(arguments.input_resample)]
-    else:
+    except ImportError:
         warning(
             '"OpenImageIO" is not available, image reading is not supported, '
             'falling back to some random noise!')

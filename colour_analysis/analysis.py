@@ -34,7 +34,7 @@ from colour_analysis.views import (
     ImageView)
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -115,7 +115,7 @@ class ColourAnalysis(SceneCanvas):
         Image path.
     input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -130,7 +130,7 @@ class ColourAnalysis(SceneCanvas):
         See `input_colourspace` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the image
-        opto-electronic conversion function.
+        opto-electronic transfer function.
     input_linear : bool, optional
         Is input image linear.
     reference_colourspace : unicode, optional
@@ -187,7 +187,7 @@ class ColourAnalysis(SceneCanvas):
                  correlate_colourspace='ACEScg',
                  settings=None,
                  layout='layout_1'):
-        self.__initialised = False
+        self._initialised = False
 
         title = '{0} - {1}'.format(__application_name__, __version__)
 
@@ -197,80 +197,82 @@ class ColourAnalysis(SceneCanvas):
             title=('{0} - {1}'.format(title, image_path)
                    if image_path is not None
                    else title),
-            size=settings['canvas']['size'],
-            bgcolor=settings['canvas']['canvas_background_colour'],
-            config={'samples': settings['canvas']['samples']})
+            size=settings['scene_canvas']['size'],
+            bgcolor=settings['scene_canvas']['scene_canvas_background_colour'],
+            config={'samples': settings['scene_canvas']['samples']})
 
-        self.__image = None
+        self.unfreeze()
+
+        self._image = None
         self.image = image if image is not None else DEFAULT_FAILSAFE_IMAGE
-        self.__image_path = None
+        self._image_path = None
         self.image_path = image_path
-        self.__input_colourspace = None
+        self._input_colourspace = None
         self.input_colourspace = input_colourspace
-        self.__input_oecf = None
+        self._input_oecf = None
         self.input_oecf = input_oecf
-        self.__input_linear = None
+        self._input_linear = None
         self.input_linear = input_linear
-        self.__reference_colourspace = None
+        self._reference_colourspace = None
         self.reference_colourspace = reference_colourspace
-        self.__correlate_colourspace = None
+        self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
-        self.__settings = (json.load(open(SETTINGS_FILE))
-                           if settings is None else
-                           settings)
-        self.__layout = None
+        self._settings = (json.load(open(SETTINGS_FILE))
+                          if settings is None else
+                          settings)
+        self._layout = None
         self.layout = layout
 
-        self.__clamp_blacks = False
-        self.__clamp_whites = False
+        self._clamp_blacks = False
+        self._clamp_whites = False
 
-        self.__layout_presets = OrderedDict()
-        self.__actions = {}
+        self._layout_presets = OrderedDict()
+        self._actions = {}
 
-        self.__console_view = None
-        self.__gamut_view = None
-        self.__image_view = None
-        self.__diagram_view = None
-        self.__views = None
+        self._console_view = None
+        self._gamut_view = None
+        self._image_view = None
+        self._diagram_view = None
+        self._views = None
 
-        self.__grid = None
+        self._grid = None
 
-        self.__RGB_colourspaces_cycle = cycle(
+        self._RGB_colourspaces_cycle = cycle(
             [c for c in sorted(RGB_COLOURSPACES)
              if c not in ('aces', 'adobe1998', 'prophoto')])
 
         reference_colourspaces_deque = deque(REFERENCE_COLOURSPACES)
         reference_colourspaces_deque.rotate(-REFERENCE_COLOURSPACES.index(
-            self.__reference_colourspace) - 1)
-        self.__reference_colourspaces_cycle = cycle(
+            self._reference_colourspace) - 1)
+        self._reference_colourspaces_cycle = cycle(
             reference_colourspaces_deque)
 
-        self.__create_layout_presets()
-        self.__create_actions()
-        self.__create_views()
-        self.__layout_views()
+        self._create_layout_presets()
+        self._create_actions()
+        self._create_views()
+        self._layout_views()
 
         self.show()
 
-        self.__initialised = True
+        self._initialised = True
 
     @property
     def image(self):
         """
-        Property for **self.__image** private attribute.
+        Property for **self._image** private attribute.
 
         Returns
         -------
         array_like
-            self.__image.
+            self._image.
         """
 
-        return self.__image
+        return self._image
 
     @image.setter
     def image(self, value):
         """
-        Setter for **self.__image** private attribute.
+        Setter for **self._image** private attribute.
 
         Parameters
         ----------
@@ -279,36 +281,36 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
-                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
-                 '"ndarray" or "matrix"!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
+                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                 'or "matrix" instance!').format('image', value))
 
-        self.__image = value
+        self._image = value
 
-        if self.__initialised:
-            image = self.__create_image()
+        if self._initialised:
+            image = self._create_image()
 
-            for view in self.__views:
+            for view in self._views:
                 if hasattr(view, 'image'):
                     view.image = image
 
     @property
     def image_path(self):
         """
-        Property for **self.__image_path** private attribute.
+        Property for **self._image_path** private attribute.
 
         Returns
         -------
         unicode
-            self.__image_path.
+            self._image_path.
         """
 
-        return self.__image_path
+        return self._image_path
 
     @image_path.setter
     def image_path(self, value):
         """
-        Setter for **self.__image_path** private attribute.
+        Setter for **self._image_path** private attribute.
 
         Parameters
         ----------
@@ -317,30 +319,30 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('image_path', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('image_path', value))
             assert os.path.exists(value), (
                 '"{0}" input image doesn\'t exists!'.format(value))
-        self.__image_path = value
+        self._image_path = value
 
     @property
     def input_colourspace(self):
         """
-        Property for **self.__input_colourspace** private attribute.
+        Property for **self._input_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__input_colourspace.
+            self._input_colourspace.
         """
 
-        return self.__input_colourspace
+        return self._input_colourspace
 
     @input_colourspace.setter
     def input_colourspace(self, value):
         """
-        Setter for **self.__input_colourspace** private attribute.
+        Setter for **self._input_colourspace** private attribute.
 
         Parameters
         ----------
@@ -349,32 +351,32 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
-        self.__input_colourspace = value
+        self._input_colourspace = value
 
     @property
     def input_oecf(self):
         """
-        Property for **self.__input_oecf** private attribute.
+        Property for **self._input_oecf** private attribute.
 
         Returns
         -------
         unicode
-            self.__input_oecf.
+            self._input_oecf.
         """
 
-        return self.__input_oecf
+        return self._input_oecf
 
     @input_oecf.setter
     def input_oecf(self, value):
         """
-        Setter for **self.__input_oecf** private attribute.
+        Setter for **self._input_oecf** private attribute.
 
         Parameters
         ----------
@@ -383,32 +385,32 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_oecf', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_oecf', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" OECF is not associated with any factory '
                 'RGB colourspaces: "{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
-        self.__input_oecf = value
+        self._input_oecf = value
 
     @property
     def input_linear(self):
         """
-        Property for **self.__input_linear** private attribute.
+        Property for **self._input_linear** private attribute.
 
         Returns
         -------
         bool
-            self.__input_linear.
+            self._input_linear.
         """
 
-        return self.__input_linear
+        return self._input_linear
 
     @input_linear.setter
     def input_linear(self, value):
         """
-        Setter for **self.__input_linear** private attribute.
+        Setter for **self._input_linear** private attribute.
 
         Parameters
         ----------
@@ -417,28 +419,28 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                '"{0}" attribute: "{1}" type is not "bool"!'.format(
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
                     'input_linear', value))
-        self.__input_linear = value
+        self._input_linear = value
 
     @property
     def reference_colourspace(self):
         """
-        Property for **self.__reference_colourspace** private attribute.
+        Property for **self._reference_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__reference_colourspace.
+            self._reference_colourspace.
         """
 
-        return self.__reference_colourspace
+        return self._reference_colourspace
 
     @reference_colourspace.setter
     def reference_colourspace(self, value):
         """
-        Setter for **self.__reference_colourspace** private attribute.
+        Setter for **self._reference_colourspace** private attribute.
 
         Parameters
         ----------
@@ -447,32 +449,33 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('reference_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
                 'colourspaces: "{1}".').format(
                 value, ', '.join(sorted(REFERENCE_COLOURSPACES.keys())))
-        self.__reference_colourspace = value
+        self._reference_colourspace = value
 
     @property
     def correlate_colourspace(self):
         """
-        Property for **self.__correlate_colourspace** private attribute.
+        Property for **self._correlate_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__correlate_colourspace.
+            self._correlate_colourspace.
         """
 
-        return self.__correlate_colourspace
+        return self._correlate_colourspace
 
     @correlate_colourspace.setter
     def correlate_colourspace(self, value):
         """
-        Setter for **self.__correlate_colourspace** private attribute.
+        Setter for **self._correlate_colourspace** private attribute.
 
         Parameters
         ----------
@@ -481,32 +484,33 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('correlate_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
-        self.__correlate_colourspace = value
+        self._correlate_colourspace = value
 
     @property
     def settings(self):
         """
-        Property for **self.__settings** private attribute.
+        Property for **self._settings** private attribute.
 
         Returns
         -------
         dict
-            self.__settings.
+            self._settings.
         """
 
-        return self.__settings
+        return self._settings
 
     @settings.setter
     def settings(self, value):
         """
-        Setter for **self.__settings** private attribute.
+        Setter for **self._settings** private attribute.
 
         Parameters
         ----------
@@ -520,20 +524,20 @@ class ColourAnalysis(SceneCanvas):
     @property
     def layout(self):
         """
-        Property for **self.__layout** private attribute.
+        Property for **self._layout** private attribute.
 
         Returns
         -------
         unicode
-            self.__layout.
+            self._layout.
         """
 
-        return self.__layout
+        return self._layout
 
     @layout.setter
     def layout(self, value):
         """
-        Setter for **self.__layout** private attribute.
+        Setter for **self._layout** private attribute.
 
         Parameters
         ----------
@@ -542,28 +546,28 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('layout', value))
-        self.__layout = value
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('layout', value))
+        self._layout = value
 
     @property
     def actions(self):
         """
-        Property for **self.__actions** private attribute.
+        Property for **self._actions** private attribute.
 
         Returns
         -------
         dict
-            self.__actions.
+            self._actions.
         """
 
-        return self.__actions
+        return self._actions
 
     @actions.setter
     def actions(self, value):
         """
-        Setter for **self.__actions** private attribute.
+        Setter for **self._actions** private attribute.
 
         Parameters
         ----------
@@ -584,7 +588,7 @@ class ColourAnalysis(SceneCanvas):
         ViewBox
         """
 
-        return self.__console_view
+        return self._console_view
 
     @console_view.setter
     def console_view(self, value):
@@ -610,7 +614,7 @@ class ColourAnalysis(SceneCanvas):
         ViewBox
         """
 
-        return self.__gamut_view
+        return self._gamut_view
 
     @gamut_view.setter
     def gamut_view(self, value):
@@ -636,7 +640,7 @@ class ColourAnalysis(SceneCanvas):
         ViewBox
         """
 
-        return self.__image_view
+        return self._image_view
 
     @image_view.setter
     def image_view(self, value):
@@ -662,7 +666,7 @@ class ColourAnalysis(SceneCanvas):
         ViewBox
         """
 
-        return self.__diagram_view
+        return self._diagram_view
 
     @diagram_view.setter
     def diagram_view(self, value):
@@ -681,20 +685,20 @@ class ColourAnalysis(SceneCanvas):
     @property
     def clamp_blacks(self):
         """
-        Property for **self.__clamp_blacks** private attribute.
+        Property for **self._clamp_blacks** private attribute.
 
         Returns
         -------
         unicode
-            self.__clamp_blacks.
+            self._clamp_blacks.
         """
 
-        return self.__clamp_blacks
+        return self._clamp_blacks
 
     @clamp_blacks.setter
     def clamp_blacks(self, value):
         """
-        Setter for **self.__clamp_blacks** private attribute.
+        Setter for **self._clamp_blacks** private attribute.
 
         Parameters
         ----------
@@ -703,35 +707,35 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"bool"!').format('clamp_blacks', value))
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
+                    'clamp_blacks', value))
 
-        self.__clamp_blacks = value
+        self._clamp_blacks = value
 
-        image = self.__create_image()
+        image = self._create_image()
 
-        for view in self.__views:
+        for view in self._views:
             if hasattr(view, 'image'):
                 view.image = image
 
     @property
     def clamp_whites(self):
         """
-        Property for **self.__clamp_whites** private attribute.
+        Property for **self._clamp_whites** private attribute.
 
         Returns
         -------
         unicode
-            self.__clamp_whites.
+            self._clamp_whites.
         """
 
-        return self.__clamp_whites
+        return self._clamp_whites
 
     @clamp_whites.setter
     def clamp_whites(self, value):
         """
-        Setter for **self.__clamp_whites** private attribute.
+        Setter for **self._clamp_whites** private attribute.
 
         Parameters
         ----------
@@ -740,15 +744,15 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert type(value) is bool, (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"bool"!').format('clamp_whites', value))
+            assert isinstance(value, bool), (
+                '"{0}" attribute: "{1}" is not a "bool" instance!'.format(
+                    'clamp_whites', value))
 
-        self.__clamp_whites = value
+        self._clamp_whites = value
 
-        image = self.__create_image()
+        image = self._create_image()
 
-        for view in self.__views:
+        for view in self._views:
             if hasattr(view, 'image'):
                 view.image = image
 
@@ -767,17 +771,17 @@ class ColourAnalysis(SceneCanvas):
         key = event.key.name.lower()
         modifiers = sorted([modifier.name.lower()
                             for modifier in event.modifiers])
-        for action in self.__actions.values():
+        for action in self._actions.values():
             if (key == action.sequence.key and
                         modifiers == sorted(action.sequence.modifiers)):
                 method = '{0}_action'.format(action.name)
 
                 hasattr(self, method) and getattr(self, method)()
 
-                for view in self.__views:
+                for view in self._views:
                     hasattr(view, method) and getattr(view, method)()
 
-    def __create_layout_presets(self):
+    def _create_layout_presets(self):
         """
         Creates the layout presets from :attr:`ColourAnalysis.settings`
         attribute *layout* key value.
@@ -787,7 +791,7 @@ class ColourAnalysis(SceneCanvas):
         -   There is no way to change the current layout at the moment.
         """
 
-        layouts = self.__settings['layouts']
+        layouts = self._settings['layouts']
         for layout in layouts:
             views = {}
             for name, view in layout['views'].items():
@@ -800,20 +804,20 @@ class ColourAnalysis(SceneCanvas):
                     row_span=view['row_span'],
                     column_span=view['column_span'])
 
-            self.__layout_presets[layout['name']] = LayoutPreset(
+            self._layout_presets[layout['name']] = LayoutPreset(
                 name=layout['name'],
                 description=layout['description'],
                 views=views)
 
-    def __create_actions(self):
+    def _create_actions(self):
         """
         Creates the actions from :attr:`ColourAnalysis.settings` attribute
         *actions* key value.
         """
 
-        self.__actions = {}
+        self._actions = {}
 
-        for name, action in self.__settings.get('actions', ()).items():
+        for name, action in self._settings.get('actions', ()).items():
             if action.get('sequence') is not None:
                 sequence = Sequence(
                     modifiers=action.get('sequence').get('modifiers', ()),
@@ -821,86 +825,86 @@ class ColourAnalysis(SceneCanvas):
             else:
                 sequence = Sequence(modifiers=(), key=None)
 
-            self.__actions[name] = Action(
+            self._actions[name] = Action(
                 name=action.get('name'),
                 description=action.get('description'),
                 sequence=sequence)
 
-    def __create_views(self):
+    def _create_views(self):
         """
         Creates the views from :attr:`ColourAnalysis.settings` attribute value.
         """
 
         background_colour = (
-            self.__settings['canvas']['views_background_colour'])
-        border_colour = self.__settings['canvas']['views_border_colour']
+            self._settings['scene_canvas']['views_background_colour'])
+        border_colour = self._settings['scene_canvas']['views_border_colour']
 
-        self.__console_view = ConsoleView(
-            canvas=self,
+        self._console_view = ConsoleView(
+            scene_canvas=self,
             text_color=(0.8, 0.8, 0.8),
             font_size=10.0,
             bgcolor=background_colour,
             border_color=border_colour)
 
-        views = self.__layout_presets.get(self.__layout).views.values()
+        views = self._layout_presets.get(self._layout).views.values()
         views = [view.view for view in views]
 
         if 'gamut_view' in views:
-            self.__gamut_view = GamutView(
-                canvas=self,
-                image=self.__image,
-                input_colourspace=self.__input_colourspace,
-                reference_colourspace=self.__reference_colourspace,
-                correlate_colourspace=self.__correlate_colourspace,
-                settings=self.__settings,
+            self._gamut_view = GamutView(
+                scene_canvas=self,
+                image=self._image,
+                input_colourspace=self._input_colourspace,
+                reference_colourspace=self._reference_colourspace,
+                correlate_colourspace=self._correlate_colourspace,
+                settings=self._settings,
                 bgcolor=background_colour,
                 border_color=border_colour)
 
         if 'image_view' in views:
-            self.__image_view = ImageView(
-                canvas=self,
-                image=self.__image,
-                input_colourspace=self.__input_colourspace,
-                correlate_colourspace=self.__correlate_colourspace,
+            self._image_view = ImageView(
+                scene_canvas=self,
+                image=self._image,
+                input_colourspace=self._input_colourspace,
+                correlate_colourspace=self._correlate_colourspace,
                 bgcolor=background_colour,
                 border_color=border_colour)
 
         if 'diagram_view' in views:
-            self.__diagram_view = DiagramView(
-                canvas=self,
-                image=self.__image,
-                input_colourspace=self.__input_colourspace,
-                correlate_colourspace=self.__correlate_colourspace,
+            self._diagram_view = DiagramView(
+                scene_canvas=self,
+                image=self._image,
+                input_colourspace=self._input_colourspace,
+                correlate_colourspace=self._correlate_colourspace,
                 bgcolor=background_colour,
                 border_color=border_colour)
 
-        self.__views = (self.__console_view,
-                        self.__gamut_view,
-                        self.__image_view,
-                        self.__diagram_view)
+        self._views = (self._console_view,
+                       self._gamut_view,
+                       self._image_view,
+                       self._diagram_view)
 
-    def __layout_views(self):
+    def _layout_views(self):
         """
         Layout the views according to :attr:`ColourAnalysis.layout` attribute
         value.
         """
 
-        self.__grid = self.central_widget.add_grid()
-        layout = self.__layout_presets.get(self.__layout)
+        self._grid = self.central_widget.add_grid()
+        layout = self._layout_presets.get(self._layout)
 
         for view_preset in layout.views.values():
             view = getattr(self, '{0}'.format(view_preset.view))
             if view is None:
                 continue
 
-            self.__grid.add_widget(
+            self._grid.add_widget(
                 view,
                 row=view_preset.row,
                 col=view_preset.column,
                 row_span=view_preset.row_span,
                 col_span=view_preset.column_span)
 
-    def __create_image(self):
+    def _create_image(self):
         """
         Creates the image used by the *Diagram View* according to
         :attr:`ColourAnalysis.clamp_blacks` and
@@ -912,12 +916,12 @@ class ColourAnalysis(SceneCanvas):
             Image
         """
 
-        image = self.__image
+        image = self._image
 
-        if self.__clamp_blacks:
+        if self._clamp_blacks:
             image = np.clip(image, 0, np.inf)
 
-        if self.__clamp_whites:
+        if self._clamp_whites:
             image = np.clip(image, -np.inf, 1)
 
         return image
@@ -932,11 +936,11 @@ class ColourAnalysis(SceneCanvas):
             Definition success.
         """
 
-        self.__correlate_colourspace = next(self.__RGB_colourspaces_cycle)
+        self._correlate_colourspace = next(self._RGB_colourspaces_cycle)
 
-        for view in self.__views:
+        for view in self._views:
             if hasattr(view, 'correlate_colourspace'):
-                view.correlate_colourspace = self.__correlate_colourspace
+                view.correlate_colourspace = self._correlate_colourspace
 
         return True
 
@@ -950,12 +954,12 @@ class ColourAnalysis(SceneCanvas):
             Definition success.
         """
 
-        self.__reference_colourspace = next(
-            self.__reference_colourspaces_cycle)
+        self._reference_colourspace = next(
+            self._reference_colourspaces_cycle)
 
-        for view in self.__views:
+        for view in self._views:
             if hasattr(view, 'reference_colourspace'):
-                view.reference_colourspace = self.__reference_colourspace
+                view.reference_colourspace = self._reference_colourspace
 
         return True
 

@@ -13,10 +13,10 @@ Defines the *Axis Visual*:
 from __future__ import division, unicode_literals
 
 from vispy.scene.visuals import XYZAxis
-from vispy.visuals.transforms import AffineTransform
+from vispy.visuals.transforms import MatrixTransform
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -45,7 +45,7 @@ def axis_visual(scale=1.0, parent=None):
 
     axis = XYZAxis(parent=parent)
 
-    transform = AffineTransform()
+    transform = MatrixTransform()
     transform.scale((scale, scale, scale))
     axis.transform = transform
 

@@ -17,7 +17,7 @@ import scipy.ndimage
 from colour import ILLUMINANTS
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -28,10 +28,10 @@ __all__ = ['RESOURCES_DIRECTORY',
            'IMAGES_DIRECTORY',
            'DEFAULT_IMAGE_PATH',
            'DEFAULT_FAILSAFE_IMAGE',
-           'DEFAULT_OECF',
+           'DEFAULT_ENCODING_CCTF',
            'DEFAULT_PLOTTING_ILLUMINANT',
            'REFERENCE_COLOURSPACES',
-           'REFERENCE_COLOURSPACES_TO_LABELS',
+           'REFERENCE_COLOURSPACES_TITLES',
            'CHROMATICITY_DIAGRAMS',
            'CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE',
            'LINEAR_IMAGE_FORMATS']
@@ -73,13 +73,13 @@ Default failsafe image in case *OpenImageIO* is not available.
 DEFAULT_FAILSAFE_IMAGE : ndarray
 """
 
-DEFAULT_OECF = 'sRGB'
+DEFAULT_ENCODING_CCTF = 'sRGB'
 """
 Default display OECF.
 
-DEFAULT_OECF : unicode
+DEFAULT_ENCODING_CCTF : unicode
     {'sRGB', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-    'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+    'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
     'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
     'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
     'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -115,10 +115,10 @@ REFERENCE_COLOURSPACES : dict
     'IPT', 'CIE LCHab', 'CIE LCHuv'}**
 """
 
-REFERENCE_COLOURSPACES_TO_LABELS = {
+REFERENCE_COLOURSPACES_TITLES = {
     'CIE XYZ': ('X', 'Y', 'Z'),
     'CIE xyY': ('x', 'y', 'Y'),
-    'CIE Lab': ('a', 'b', '$L^*$'),
+    'CIE Lab': ('$a^*$', '$b^*$', '$L^*$'),
     'CIE Luv': ('$u^\prime$', '$v^\prime$', '$L^*$'),
     'CIE UCS': ('U', 'V', 'W'),
     'CIE UVW': ('U', 'V', 'W'),
@@ -128,7 +128,7 @@ REFERENCE_COLOURSPACES_TO_LABELS = {
 """
 Reference colourspaces to labels mapping.
 
-REFERENCE_COLOURSPACES_TO_LABELS : dict
+REFERENCE_COLOURSPACES_TITLES : dict
     **{'CIE XYZ', 'CIE xyY', 'CIE Lab', , 'CIE Luv', 'CIE UCS', 'CIE UVW',
     'IPT', 'CIE LCHab', 'CIE LCHuv'}**
 """

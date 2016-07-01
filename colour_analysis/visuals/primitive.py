@@ -20,7 +20,7 @@ from vispy.scene.visuals import create_visual_node
 from vispy.visuals.mesh import MeshVisual
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -53,7 +53,7 @@ class PrimitiveVisual(MeshVisual):
             Uniform mesh colour.
         uniform_opacity : numeric, optional
             Uniform mesh opacity.
-        vertex_colour : array_like, optional
+        vertex_colours : array_like, optional
             Per vertex varying colour.
         wireframe : bool, optional
             Use wireframe display.
@@ -64,20 +64,22 @@ class PrimitiveVisual(MeshVisual):
         -----
         -   `vertex_colours` argument takes precedence over `uniform_colour` if
             provided.
-        -   `uniform_opacity` argument will be stacked to `vertex_colours` argument
-            if the latter last dimension is equal to 3.
+        -   `uniform_opacity` argument will be stacked to `vertex_colours`
+            argument if the latter last dimension is equal to 3.
         """
 
-        self.__wireframe = wireframe
-        self.__wireframe_offset = wireframe_offset
-        mode = 'lines' if self.__wireframe else 'triangles'
+        self._wireframe = wireframe
+        self._wireframe_offset = wireframe_offset
+        mode = 'lines' if self._wireframe else 'triangles'
 
         uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
         if vertex_colours is not None:
             if vertex_colours.shape[-1] == 3:
                 vertex_colours = np.hstack(
                     (vertex_colours,
-                     np.full((vertex_colours.shape[0], 1), uniform_opacity)))
+                     np.full((vertex_colours.shape[0], 1),
+                             uniform_opacity,
+                             np.float_)))
             else:
                 vertex_colours[..., 3] = uniform_opacity
 
@@ -90,10 +92,10 @@ class PrimitiveVisual(MeshVisual):
             uniform_colour,
             mode=mode)
 
-    def draw(self, transforms):
-        MeshVisual.draw(self, transforms)
-        if self.__wireframe and self.__wireframe_offset:
-            set_state(polygon_offset=self.__wireframe_offset,
+    def draw(self):
+        MeshVisual.draw(self)
+        if self._wireframe and self._wireframe_offset:
+            set_state(polygon_offset=self._wireframe_offset,
                       polygon_offset_fill=True)
 
 

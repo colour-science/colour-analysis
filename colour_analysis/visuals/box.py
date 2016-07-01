@@ -18,7 +18,7 @@ from vispy.scene.visuals import create_visual_node
 from colour_analysis.visuals import PrimitiveVisual
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -55,7 +55,7 @@ class BoxVisual(PrimitiveVisual):
         Uniform mesh colour.
     uniform_opacity : numeric, optional
         Uniform mesh opacity.
-    vertex_colour : array_like, optional
+    vertex_colours : array_like, optional
         Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.

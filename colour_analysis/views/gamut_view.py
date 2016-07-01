@@ -15,8 +15,7 @@ from __future__ import division, unicode_literals
 from collections import OrderedDict, namedtuple
 
 import numpy as np
-from vispy.scene.visuals import Text
-from vispy.scene.widgets.viewbox import ViewBox
+from vispy.scene.widgets import Label, ViewBox, Widget
 from colour import RGB_COLOURSPACES
 
 from colour_analysis.cameras import OrbitCamera
@@ -31,7 +30,7 @@ from colour_analysis.visuals import (
     pointer_gamut_hull_visual)
 
 __author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013 - 2015 - Colour Developers'
+__copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
 __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
@@ -52,6 +51,7 @@ CameraPreset = namedtuple(
      'azimuth',
      'distance',
      'translate_speed',
+     'depth_value',
      'center',
      'up'))
 """
@@ -95,13 +95,13 @@ class GamutView(ViewBox):
 
     Parameters
     ----------
-    canvas : SceneCanvas, optional
+    scene_canvas : SceneCanvas, optional
         Current `vispy.scene.SceneCanvas` instance.
     image : array_like, optional
         Image to use in the view interactions.
     input_colourspace : unicode, optional
         {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
@@ -123,13 +123,13 @@ class GamutView(ViewBox):
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
-    \*\*kwargs : \*\*, optional
+    \**kwargs : dict, optional
         Keywords arguments passed to
         :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.
 
     Attributes
     ----------
-    canvas
+    scene_canvas
     image
     input_colourspace
     reference_colourspace
@@ -154,85 +154,88 @@ class GamutView(ViewBox):
     """
 
     def __init__(self,
-                 canvas=None,
+                 scene_canvas=None,
                  image=None,
                  input_colourspace='Rec. 709',
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
                  settings=None,
                  **kwargs):
-        self.__initialised = False
+        self._initialised = False
 
         ViewBox.__init__(self, **kwargs)
 
-        self.__canvas = canvas
+        self.unfreeze()
 
-        self.__image = None
+        self._scene_canvas = scene_canvas
+
+        self._image = None
         self.image = image
-        self.__input_colourspace = None
+        self._input_colourspace = None
         self.input_colourspace = input_colourspace
-        self.__reference_colourspace = None
+        self._reference_colourspace = None
         self.reference_colourspace = reference_colourspace
-        self.__correlate_colourspace = None
+        self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
 
-        self.__settings = None
+        self._settings = None
         self.settings = settings
 
-        self.__camera_presets = {}
-        self.__visuals_style_presets = OrderedDict()
-        self.__axis_presets = {}
+        self._camera_presets = {}
+        self._visuals_style_presets = OrderedDict()
+        self._axis_presets = {}
 
-        self.__title_overlay_visual = None
+        self._grid = None
 
-        self.__colourspace_visual_resolution = 16
-        self.__colourspace_visual_resolution_limits = (1, 64)
+        self._label = None
 
-        self.__input_colourspace_visual = None
-        self.__correlate_colourspace_visual = None
-        self.__RGB_scatter_visual = None
-        self.__pointer_gamut_visual = None
-        self.__pointer_gamut_hull_visual = None
-        self.__spectral_locus_visual = None
-        self.__axis_visual = None
+        self._colourspace_visual_resolution = 16
+        self._colourspace_visual_resolution_limits = (1, 64)
 
-        self.__visuals = ('RGB_scatter_visual',
-                          'input_colourspace_visual',
-                          'correlate_colourspace_visual',
-                          'pointer_gamut_visual',
-                          'pointer_gamut_hull_visual',
-                          'spectral_locus_visual',
-                          'axis_visual')
+        self._input_colourspace_visual = None
+        self._correlate_colourspace_visual = None
+        self._RGB_scatter_visual = None
+        self._pointer_gamut_visual = None
+        self._pointer_gamut_hull_visual = None
+        self._spectral_locus_visual = None
+        self._axis_visual = None
 
-        self.__visuals_visibility = None
+        self._visuals = ('RGB_scatter_visual',
+                         'input_colourspace_visual',
+                         'correlate_colourspace_visual',
+                         'pointer_gamut_visual',
+                         'pointer_gamut_hull_visual',
+                         'spectral_locus_visual',
+                         'axis_visual')
 
-        self.__create_presets()
+        self._visuals_visibility = None
 
-        self.__create_visuals()
-        self.__attach_visuals()
-        self.__create_camera()
+        self._create_presets()
 
-        self.__create_title_overlay_visual()
-        self.__canvas.events.resize.connect(self.__canvas_resize_event)
+        self._create_visuals()
+        self._attach_visuals()
+        self._create_camera()
 
-        self.__initialised = True
+        self._create_label()
+
+        self._initialised = True
 
     @property
-    def canvas(self):
+    def scene_canvas(self):
         """
-        Property for **self.canvas** attribute.
+        Property for **self.scene_canvas** attribute.
 
         Returns
         -------
         SceneCanvas
         """
 
-        return self.__canvas
+        return self._scene_canvas
 
-    @canvas.setter
-    def canvas(self, value):
+    @scene_canvas.setter
+    def scene_canvas(self, value):
         """
-        Setter for **self.canvas** attribute.
+        Setter for **self.scene_canvas** attribute.
 
         Parameters
         ----------
@@ -240,25 +243,26 @@ class GamutView(ViewBox):
             Attribute value.
         """
 
-        raise AttributeError('"{0}" attribute is read only!'.format('canvas'))
+        raise AttributeError('"{0}" attribute is read only!'.format(
+            'scene_canvas'))
 
     @property
     def image(self):
         """
-        Property for **self.__image** private attribute.
+        Property for **self._image** private attribute.
 
         Returns
         -------
         array_like
-            self.__image.
+            self._image.
         """
 
-        return self.__image
+        return self._image
 
     @image.setter
     def image(self, value):
         """
-        Setter for **self.__image** private attribute.
+        Setter for **self._image** private attribute.
 
         Parameters
         ----------
@@ -267,37 +271,37 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (tuple, list, np.ndarray, np.matrix), (
-                ('"{0}" attribute: "{1}" type is not "tuple", "list", '
-                 '"ndarray" or "matrix"!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
+                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                 'or "matrix" instance!').format('image', value))
 
-        self.__image = value
+        self._image = value
 
-        if self.__initialised:
-            self.__store_visuals_visibility()
-            self.__detach_visuals()
-            self.__create_RGB_scatter_visual(self.__image)
-            self.__attach_visuals()
-            self.__restore_visuals_visibility()
-            self.__title_overlay_visual_text()
+        if self._initialised:
+            self._store_visuals_visibility()
+            self._detach_visuals()
+            self._create_RGB_scatter_visual(self._image)
+            self._attach_visuals()
+            self._restore_visuals_visibility()
+            self._label_text()
 
     @property
     def input_colourspace(self):
         """
-        Property for **self.__input_colourspace** private attribute.
+        Property for **self._input_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__input_colourspace.
+            self._input_colourspace.
         """
 
-        return self.__input_colourspace
+        return self._input_colourspace
 
     @input_colourspace.setter
     def input_colourspace(self, value):
         """
-        Setter for **self.__input_colourspace** private attribute.
+        Setter for **self._input_colourspace** private attribute.
 
         Parameters
         ----------
@@ -306,41 +310,41 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('input_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
                 value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
 
-        self.__input_colourspace = value
+        self._input_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_input_colourspace_visual(
-                self.__visuals_style_presets[
+        if self._initialised:
+            self._detach_visuals()
+            self._create_input_colourspace_visual(
+                self._visuals_style_presets[
                     'input_colourspace_visual'].current_item())
-            self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def reference_colourspace(self):
         """
-        Property for **self.__reference_colourspace** private attribute.
+        Property for **self._reference_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__reference_colourspace.
+            self._reference_colourspace.
         """
 
-        return self.__reference_colourspace
+        return self._reference_colourspace
 
     @reference_colourspace.setter
     def reference_colourspace(self, value):
         """
-        Setter for **self.__reference_colourspace** private attribute.
+        Setter for **self._reference_colourspace** private attribute.
 
         Parameters
         ----------
@@ -349,42 +353,43 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('reference_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
                 'colourspaces: "{1}".').format(
                 value, ', '.join(sorted(REFERENCE_COLOURSPACES.keys())))
 
-        self.__reference_colourspace = value
+        self._reference_colourspace = value
 
-        if self.__initialised:
-            self.__store_visuals_visibility()
-            self.__detach_visuals()
-            self.__create_visuals()
-            self.__attach_visuals()
-            self.__restore_visuals_visibility()
-            self.__create_camera()
-            self.__title_overlay_visual_text()
+        if self._initialised:
+            self._store_visuals_visibility()
+            self._detach_visuals()
+            self._create_visuals()
+            self._attach_visuals()
+            self._restore_visuals_visibility()
+            self._create_camera()
+            self._label_text()
 
     @property
     def correlate_colourspace(self):
         """
-        Property for **self.__correlate_colourspace** private attribute.
+        Property for **self._correlate_colourspace** private attribute.
 
         Returns
         -------
         unicode
-            self.__correlate_colourspace.
+            self._correlate_colourspace.
         """
 
-        return self.__correlate_colourspace
+        return self._correlate_colourspace
 
     @correlate_colourspace.setter
     def correlate_colourspace(self, value):
         """
-        Setter for **self.__correlate_colourspace** private attribute.
+        Setter for **self._correlate_colourspace** private attribute.
 
         Parameters
         ----------
@@ -393,41 +398,42 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) in (str, unicode), (
-                ('"{0}" attribute: "{1}" type is not '
-                 '"str" or "unicode"!').format('correlate_colourspace', value))
+            assert isinstance(value, basestring), (  # noqa
+                ('"{0}" attribute: "{1}" is not a '
+                 '"basestring" instance!').format(
+                    'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
                 sorted(RGB_COLOURSPACES.keys())))
 
-        self.__correlate_colourspace = value
+        self._correlate_colourspace = value
 
-        if self.__initialised:
-            self.__detach_visuals()
-            self.__create_correlate_colourspace_visual(
-                self.__visuals_style_presets[
+        if self._initialised:
+            self._detach_visuals()
+            self._create_correlate_colourspace_visual(
+                self._visuals_style_presets[
                     'correlate_colourspace_visual'].current_item())
-            self.__attach_visuals()
-            self.__title_overlay_visual_text()
+            self._attach_visuals()
+            self._label_text()
 
     @property
     def settings(self):
         """
-        Property for **self.__settings** private attribute.
+        Property for **self._settings** private attribute.
 
         Returns
         -------
         dict
-            self.__settings.
+            self._settings.
         """
 
-        return self.__settings
+        return self._settings
 
     @settings.setter
     def settings(self, value):
         """
-        Setter for **self.__settings** private attribute.
+        Setter for **self._settings** private attribute.
 
         Parameters
         ----------
@@ -436,19 +442,19 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert type(value) is dict, (
-                '"{0}" attribute: "{1}" type is not "dict:!'.format(
+            assert isinstance(value, dict), (
+                '"{0}" attribute: "{1}" is not a "dict" instance!'.format(
                     'settings', value))
-        self.__settings = value
+        self._settings = value
 
-    def __create_camera_presets(self):
+    def _create_camera_presets(self):
         """
         Creates the camera presets using :attr:`GamutView.settings` attribute
         value.
         """
 
-        for camera in self.__settings['cameras']['gamut_view'].values():
-            self.__camera_presets[camera['reference_colourspace']] = (
+        for camera in self._settings['cameras']['gamut_view'].values():
+            self._camera_presets[camera['reference_colourspace']] = (
                 CameraPreset(
                     name=camera['name'],
                     description=camera['description'],
@@ -458,20 +464,21 @@ class GamutView(ViewBox):
                     azimuth=camera['azimuth'],
                     distance=camera['distance'],
                     translate_speed=camera['translate_speed'],
+                    depth_value=camera['depth_value'],
                     center=camera['center'],
                     up=camera['up']))
 
-    def __create_visuals_style_presets(self):
+    def _create_visuals_style_presets(self):
         """
         Creates the visuals style presets using :attr:`GamutView.settings`
         attribute value.
         """
 
-        for visual, styles in self.__settings['styles']['gamut_view'].items():
-            self.__visuals_style_presets[visual] = []
+        for visual, styles in self._settings['styles']['gamut_view'].items():
+            self._visuals_style_presets[visual] = []
 
             for style in styles:
-                self.__visuals_style_presets[style['visual']].append(
+                self._visuals_style_presets[style['visual']].append(
                     RGB_colourspaceVisualPreset(
                         name=style['name'],
                         description=style['description'],
@@ -482,33 +489,33 @@ class GamutView(ViewBox):
                         wireframe_colour=style['wireframe_colour'],
                         wireframe_opacity=style['wireframe_opacity']))
 
-            self.__visuals_style_presets[visual] = Cycle(
-                self.__visuals_style_presets[visual])
+            self._visuals_style_presets[visual] = Cycle(
+                self._visuals_style_presets[visual])
 
-    def __create_axis_presets(self):
+    def _create_axis_presets(self):
         """
         Creates the axis style presets using :attr:`GamutView.settings`
         attribute value.
         """
 
-        for axis in self.__settings['axis'].values():
-            self.__axis_presets[axis['reference_colourspace']] = (
+        for axis in self._settings['axis'].values():
+            self._axis_presets[axis['reference_colourspace']] = (
                 AxisPreset(
                     name=axis['name'],
                     description=axis['description'],
                     reference_colourspace=axis['reference_colourspace'],
                     scale=axis['scale']))
 
-    def __create_presets(self):
+    def _create_presets(self):
         """
         Creates the view presets.
         """
 
-        self.__create_camera_presets()
-        self.__create_visuals_style_presets()
-        self.__create_axis_presets()
+        self._create_camera_presets()
+        self._create_visuals_style_presets()
+        self._create_axis_presets()
 
-    def __create_RGB_colourspace_visual(self, colourspace, style):
+    def _create_RGB_colourspace_visual(self, colourspace, style):
         """
         Creates a *RGB* colourspace volume visual with given colourspace and
         style.
@@ -517,14 +524,14 @@ class GamutView(ViewBox):
         ----------
         colourspace : unicode
             {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-            'ALEXA Wide Gamut RGB', 'Adobe RGB 1998', 'Adobe Wide Gamut RGB',
+            'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
             'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
-            'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
-            'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
-            'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
-            'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-            'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
-            'adobe1998', 'prophoto', 'sRGB'}
+            'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor',
+            'DRAGONcolor2', 'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5',
+            'Max RGB', 'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor',
+            'REDcolor2', 'REDcolor3', 'REDcolor4', 'Rec. 2020', 'Russell RGB',
+            'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut',
+            'Xtreme RGB', 'aces', 'adobe1998', 'prophoto', 'sRGB'}
 
             :class:`colour.RGB_Colourspace` class instance name defining the
             colourspace the visual will be using.
@@ -539,15 +546,15 @@ class GamutView(ViewBox):
 
         return RGB_colourspace_volume_visual(
             colourspace=colourspace,
-            reference_colourspace=self.__reference_colourspace,
-            segments=self.__colourspace_visual_resolution,
+            reference_colourspace=self._reference_colourspace,
+            segments=self._colourspace_visual_resolution,
             uniform_colour=style.uniform_colour,
             uniform_opacity=style.uniform_opacity,
             wireframe=style.wireframe,
             wireframe_colour=style.wireframe_colour,
             wireframe_opacity=style.wireframe_opacity)
 
-    def __create_input_colourspace_visual(self, style=None):
+    def _create_input_colourspace_visual(self, style=None):
         """
         Creates the input colourspace visual according to
         :attr:`DiagramView.input_colourspace` attribute value and given style.
@@ -558,16 +565,16 @@ class GamutView(ViewBox):
             *RGB* colourspace volume visual style.
         """
 
-        style = (self.__visuals_style_presets[
+        style = (self._visuals_style_presets[
                      'input_colourspace_visual'].current_item()
                  if style is None else
                  style)
 
-        self.__input_colourspace_visual = (
-            self.__create_RGB_colourspace_visual(
-                self.__input_colourspace, style))
+        self._input_colourspace_visual = (
+            self._create_RGB_colourspace_visual(
+                self._input_colourspace, style))
 
-    def __create_correlate_colourspace_visual(self, style=None):
+    def _create_correlate_colourspace_visual(self, style=None):
         """
         Creates the correlate colourspace visual according to
         :attr:`DiagramView.correlate_colourspace` attribute value and given
@@ -579,19 +586,19 @@ class GamutView(ViewBox):
             *RGB* colourspace volume visual style.
         """
 
-        style = (self.__visuals_style_presets[
+        style = (self._visuals_style_presets[
                      'correlate_colourspace_visual'].current_item()
                  if style is None else
                  style)
 
-        self.__correlate_colourspace_visual = (
-            self.__create_RGB_colourspace_visual(
-                self.__correlate_colourspace, style))
+        self._correlate_colourspace_visual = (
+            self._create_RGB_colourspace_visual(
+                self._correlate_colourspace, style))
 
-    def __create_RGB_scatter_visual(self, RGB=None):
+    def _create_RGB_scatter_visual(self, RGB=None):
         """
         Creates the *RGB* scatter visual for given *RGB* array according to
-        :attr:`GamutView.__reference_colourspace` attribute value.
+        :attr:`GamutView._reference_colourspace` attribute value.
 
         Parameters
         ----------
@@ -599,64 +606,64 @@ class GamutView(ViewBox):
             *RGB* array to draw.
         """
 
-        RGB = self.__image if RGB is None else RGB
+        RGB = self._image if RGB is None else RGB
 
-        self.__RGB_scatter_visual = RGB_scatter_visual(
-            RGB, reference_colourspace=self.__reference_colourspace)
+        self._RGB_scatter_visual = RGB_scatter_visual(
+            RGB, reference_colourspace=self._reference_colourspace)
 
-    def __create_pointer_gamut_visual(self):
+    def _create_pointer_gamut_visual(self):
         """
         Creates the *Pointer's Gamut* visual according to
-        :attr:`GamutView.__reference_colourspace` attribute value.
+        :attr:`GamutView._reference_colourspace` attribute value.
         """
 
-        self.__pointer_gamut_visual = pointer_gamut_visual(
-            reference_colourspace=self.__reference_colourspace)
+        self._pointer_gamut_visual = pointer_gamut_visual(
+            reference_colourspace=self._reference_colourspace)
 
-    def __create_pointer_gamut_hull_visual(self):
+    def _create_pointer_gamut_hull_visual(self):
         """
         Creates the *Pointer's Gamut* hull visual according to
-        :attr:`GamutView.__reference_colourspace` attribute value.
+        :attr:`GamutView._reference_colourspace` attribute value.
         """
 
-        self.__pointer_gamut_hull_visual = pointer_gamut_hull_visual(
-            reference_colourspace=self.__reference_colourspace)
+        self._pointer_gamut_hull_visual = pointer_gamut_hull_visual(
+            reference_colourspace=self._reference_colourspace)
 
-    def __create_spectral_locus_visual(self):
+    def _create_spectral_locus_visual(self):
         """
         Creates the spectral locus visual according to
-        :attr:`GamutView.__reference_colourspace` attribute value.
+        :attr:`GamutView._reference_colourspace` attribute value.
         """
 
-        self.__spectral_locus_visual = spectral_locus_visual(
-            reference_colourspace=self.__reference_colourspace)
+        self._spectral_locus_visual = spectral_locus_visual(
+            reference_colourspace=self._reference_colourspace)
 
-    def __create_axis_visual(self):
+    def _create_axis_visual(self):
         """
         Creates the axis visual.
         """
 
-        self.__axis_visual = axis_visual(
-            scale=self.__axis_presets[self.__reference_colourspace].scale)
+        self._axis_visual = axis_visual(
+            scale=self._axis_presets[self._reference_colourspace].scale)
 
-    def __create_visuals(self):
+    def _create_visuals(self):
         """
         Creates the *Gamut View* visuals.
         """
 
-        for visual in self.__visuals:
-            visual = '_GamutView__create_{0}'.format(visual)
+        for visual in self._visuals:
+            visual = '_create_{0}'.format(visual)
             getattr(self, visual)()
 
-    def __create_camera(self):
+    def _create_camera(self):
         """
         Creates the *Gamut View* camera.
         """
 
         speed_factor = 10 / np.max(np.abs(
-            self.__RGB_scatter_visual._data['a_position']))
+            self._RGB_scatter_visual._data['a_position']))
 
-        camera_settings = self.__camera_presets[self.__reference_colourspace]
+        camera_settings = self._camera_presets[self._reference_colourspace]
 
         self.camera = OrbitCamera(
             fov=camera_settings.fov,
@@ -667,108 +674,88 @@ class GamutView(ViewBox):
             center=camera_settings.center,
             up=camera_settings.up)
 
-    def __attach_visuals(self):
+        self.camera.depth_value = camera_settings.depth_value
+
+    def _attach_visuals(self):
         """
         Attaches / parents the visuals to the *Gamut View* scene.
         """
 
-        for visual in self.__visuals:
-            visual = '_GamutView__{0}'.format(visual)
-            getattr(self, visual).add_parent(self.scene)
+        for visual in self._visuals:
+            visual = '_{0}'.format(visual)
+            getattr(self, visual).parent = self.scene
 
-    def __detach_visuals(self):
+    def _detach_visuals(self):
         """
         Detaches / un-parents the visuals from the *Gamut View* scene.
         """
 
-        for visual in self.__visuals:
-            visual = '_GamutView__{0}'.format(visual)
-            getattr(self, visual).remove_parent(self.scene)
+        for visual in self._visuals:
+            visual = '_{0}'.format(visual)
+            getattr(self, visual).parent = None
 
-    def __store_visuals_visibility(self):
+    def _store_visuals_visibility(self):
         """
-        Stores visuals visibility in :attr:`GamutView.__visuals_visibility`
+        Stores visuals visibility in :attr:`GamutView._visuals_visibility`
         attribute.
         """
 
         visibility = OrderedDict()
-        for visual in self.__visuals:
+        for visual in self._visuals:
             visibility[visual] = (
-                getattr(self, '_GamutView__{0}'.format(visual)).visible)
+                getattr(self, '_{0}'.format(visual)).visible)
 
-        self.__visuals_visibility = visibility
+        self._visuals_visibility = visibility
 
-    def __restore_visuals_visibility(self):
+    def _restore_visuals_visibility(self):
         """
-        Restores visuals visibility from :attr:`GamutView.__visuals_visibility`
+        Restores visuals visibility from :attr:`GamutView._visuals_visibility`
         attribute.
         """
 
-        visibility = self.__visuals_visibility
-        for visual in self.__visuals:
-            getattr(self, '_GamutView__{0}'.format(visual)).visible = (
+        visibility = self._visuals_visibility
+        for visual in self._visuals:
+            getattr(self, '_{0}'.format(visual)).visible = (
                 visibility[visual])
 
-    def __create_title_overlay_visual(self):
+    def _create_label(self):
         """
-        Creates the title overlay visual.
-        """
-
-        self.__title_overlay_visual = Text(str(),
-                                           anchor_x='center',
-                                           anchor_y='bottom',
-                                           font_size=10,
-                                           color=(0.8, 0.8, 0.8),
-                                           parent=self)
-
-        self.__title_overlay_visual_position()
-        self.__title_overlay_visual_text()
-
-    def __title_overlay_visual_position(self):
-        """
-        Sets the title overlay visual position.
+        Creates the label.
         """
 
-        self.__title_overlay_visual.pos = self.size[0] / 2, 32
+        self._label = Label(str(), color=(0.8, 0.8, 0.8))
+        self._label.stretch = (1, 0.1)
+        self._grid = self.add_grid(margin=16)
+        self._grid.add_widget(self._label, row=0, col=0)
+        self._grid.add_widget(Widget(), row=1, col=0)
 
-    def __title_overlay_visual_text(self):
+        self._label_text()
+
+    def _label_text(self):
         """
-        Sets the title overlay visual text.
+        Sets the label text.
         """
 
         title = ''
 
-        if self.__input_colourspace_visual.children[0].visible:
-            title += self.__input_colourspace
+        if self._input_colourspace_visual.children[0].visible:
+            title += self._input_colourspace
             title += ' - '
-        if self.__correlate_colourspace_visual.children[0].visible:
-            title += self.__correlate_colourspace
+        if self._correlate_colourspace_visual.children[0].visible:
+            title += self._correlate_colourspace
             title += ' - '
 
-        title += self.__reference_colourspace
+        title += self._reference_colourspace
 
-        if self.__canvas.clamp_blacks:
+        if self._scene_canvas.clamp_blacks:
             title += ' - '
             title += 'Blacks Clamped'
 
-        if self.__canvas.clamp_whites:
+        if self._scene_canvas.clamp_whites:
             title += ' - '
             title += 'Whites Clamped'
 
-        self.__title_overlay_visual.text = title
-
-    def __canvas_resize_event(self, event=None):
-        """
-        Slot for current :class:`vispy.scene.SceneCanvas` instance resize
-        event.
-
-        Parameters
-        ----------
-        event : Object
-            Event.
-        """
-
-        self.__title_overlay_visual_position()
+        self._label.text = title
 
     def toggle_input_colourspace_visual_visibility_action(self):
         """
@@ -781,9 +768,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__input_colourspace_visual.visible = (
-            not self.__input_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self._input_colourspace_visual.visible = (
+            not self._input_colourspace_visual.visible)
+        self._label_text()
 
         return True
 
@@ -798,11 +785,11 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__create_input_colourspace_visual(
-            self.__visuals_style_presets[
+        self._detach_visuals()
+        self._create_input_colourspace_visual(
+            self._visuals_style_presets[
                 'input_colourspace_visual'].next_item())
-        self.__attach_visuals()
+        self._attach_visuals()
 
         return True
 
@@ -817,10 +804,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-
-        self.__correlate_colourspace_visual.visible = (
-            not self.__correlate_colourspace_visual.visible)
-        self.__title_overlay_visual_text()
+        self._correlate_colourspace_visual.visible = (
+            not self._correlate_colourspace_visual.visible)
+        self._label_text()
 
         return True
 
@@ -835,11 +821,11 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__create_correlate_colourspace_visual(
-            self.__visuals_style_presets[
+        self._detach_visuals()
+        self._create_correlate_colourspace_visual(
+            self._visuals_style_presets[
                 'correlate_colourspace_visual'].next_item())
-        self.__attach_visuals()
+        self._attach_visuals()
 
         return True
 
@@ -854,8 +840,8 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__RGB_scatter_visual.visible = (
-            not self.__RGB_scatter_visual.visible)
+        self._RGB_scatter_visual.visible = (
+            not self._RGB_scatter_visual.visible)
 
         return True
 
@@ -870,9 +856,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__create_RGB_scatter_visual(self.__image)
-        self.__attach_visuals()
+        self._detach_visuals()
+        self._create_RGB_scatter_visual(self._image)
+        self._attach_visuals()
 
         return True
 
@@ -887,10 +873,10 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__pointer_gamut_visual.visible = (
-            not self.__pointer_gamut_visual.visible)
-        self.__pointer_gamut_hull_visual.visible = (
-            not self.__pointer_gamut_hull_visual.visible)
+        self._pointer_gamut_visual.visible = (
+            not self._pointer_gamut_visual.visible)
+        self._pointer_gamut_hull_visual.visible = (
+            not self._pointer_gamut_hull_visual.visible)
 
         return True
 
@@ -905,9 +891,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__create_pointer_gamut_visual()
-        self.__attach_visuals()
+        self._detach_visuals()
+        self._create_pointer_gamut_visual()
+        self._attach_visuals()
 
         return True
 
@@ -922,8 +908,8 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__spectral_locus_visual.visible = (
-            not self.__spectral_locus_visual.visible)
+        self._spectral_locus_visual.visible = (
+            not self._spectral_locus_visual.visible)
 
         return True
 
@@ -938,9 +924,9 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__detach_visuals()
-        self.__create_spectral_locus_visual()
-        self.__attach_visuals()
+        self._detach_visuals()
+        self._create_spectral_locus_visual()
+        self._attach_visuals()
 
         return True
 
@@ -955,8 +941,8 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__axis_visual.visible = (
-            not self.__axis_visual.visible)
+        self._axis_visual.visible = (
+            not self._axis_visual.visible)
 
         return True
 
@@ -972,16 +958,16 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__colourspace_visual_resolution -= 2
-        self.__colourspace_visual_resolution = max(
-            self.__colourspace_visual_resolution_limits[0],
-            self.__colourspace_visual_resolution)
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_input_colourspace_visual()
-        self.__create_correlate_colourspace_visual()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
+        self._colourspace_visual_resolution -= 2
+        self._colourspace_visual_resolution = max(
+            self._colourspace_visual_resolution_limits[0],
+            self._colourspace_visual_resolution)
+        self._store_visuals_visibility()
+        self._detach_visuals()
+        self._create_input_colourspace_visual()
+        self._create_correlate_colourspace_visual()
+        self._attach_visuals()
+        self._restore_visuals_visibility()
 
     def increase_colourspace_visual_resolution_action(self):
         """
@@ -995,13 +981,13 @@ class GamutView(ViewBox):
             Definition success.
         """
 
-        self.__colourspace_visual_resolution += 2
-        self.__colourspace_visual_resolution = min(
-            self.__colourspace_visual_resolution_limits[1],
-            self.__colourspace_visual_resolution)
-        self.__store_visuals_visibility()
-        self.__detach_visuals()
-        self.__create_input_colourspace_visual()
-        self.__create_correlate_colourspace_visual()
-        self.__attach_visuals()
-        self.__restore_visuals_visibility()
+        self._colourspace_visual_resolution += 2
+        self._colourspace_visual_resolution = min(
+            self._colourspace_visual_resolution_limits[1],
+            self._colourspace_visual_resolution)
+        self._store_visuals_visibility()
+        self._detach_visuals()
+        self._create_input_colourspace_visual()
+        self._create_correlate_colourspace_visual()
+        self._attach_visuals()
+        self._restore_visuals_visibility()

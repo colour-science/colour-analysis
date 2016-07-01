@@ -20,9 +20,12 @@ from .pointer_gamut import (
 from .rgb_colourspace import (
     RGB_identity_cube,
     RGB_colourspace_volume_visual,
+    RGB_colourspace_whitepoint_axis_visual,
     RGB_colourspace_triangle_visual)
 from .rgb_scatter import RGB_scatter_visual
-from .spectral_locus import spectral_locus_visual
+from .spectral_locus import (
+    spectral_locus_visual,
+    chromaticity_diagram_construction_visual)
 
 __all__ = []
 __all__ += ['Primitive', 'PrimitiveVisual']
@@ -39,6 +42,8 @@ __all__ += ['pointer_gamut_boundaries_visual',
             'pointer_gamut_visual']
 __all__ += ['RGB_identity_cube',
             'RGB_colourspace_volume_visual',
+            'RGB_colourspace_whitepoint_axis_visual',
             'RGB_colourspace_triangle_visual']
 __all__ += ['RGB_scatter_visual']
-__all__ += ['spectral_locus_visual']
+__all__ += ['spectral_locus_visual',
+            'chromaticity_diagram_construction_visual']
