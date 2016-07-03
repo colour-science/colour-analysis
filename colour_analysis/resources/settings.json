@@ -666,6 +666,40 @@
           50.0
         ],
         "up": "+z"
+      },
+      "Hunter Lab": {
+        "name": "gamut_view_camera_Hunter_Lab",
+        "description": "Gamut View Camera - Hunter Lab",
+        "reference_colourspace": "Hunter Lab",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 250.0,
+        "translate_speed": 8.0,
+        "depth_value": 1000,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
+      },
+      "Hunter Rdab": {
+        "name": "gamut_view_camera_Hunter_Rdab",
+        "description": "Gamut View Camera - Hunter Rdab",
+        "reference_colourspace": "Hunter Rdab",
+        "fov": 45,
+        "elevation": 30,
+        "azimuth": 30,
+        "distance": 250.0,
+        "translate_speed": 8.0,
+        "depth_value": 1000,
+        "center": [
+          0.0,
+          0.0,
+          50.0
+        ],
+        "up": "+z"
       }
     }
   },
@@ -722,6 +756,18 @@
       "name": "axis_CIE_LCHuv",
       "description": "Axis - CIE LCHuv",
       "reference_colourspace": "CIE LCHuv",
+      "scale": 100.0
+    },
+    "Hunter Lab": {
+      "name": "axis_Hunter_Lab",
+      "description": "Axis - Hunter Lab",
+      "reference_colourspace": "Hunter Lab",
+      "scale": 100.0
+    },
+    "Hunter Rdab": {
+      "name": "axis_Hunter_Rdab",
+      "description": "Axis - Hunter Rdab",
+      "reference_colourspace": "Hunter Rdab",
       "scale": 100.0
     }
   }

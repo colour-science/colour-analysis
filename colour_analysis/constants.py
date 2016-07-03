@@ -14,7 +14,7 @@ import numpy as np
 import os
 import scipy.ndimage
 
-from colour import ILLUMINANTS
+from colour import COLOURSPACE_MODELS_LABELS, ILLUMINANTS
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2016 - Colour Developers'
@@ -101,36 +101,29 @@ REFERENCE_COLOURSPACES = (
     'CIE XYZ',
     'CIE xyY',
     'CIE Lab',
+# 'CIE LCHab',
     'CIE Luv',
+# 'CIE LCHuv',
     'CIE UCS',
     'CIE UVW',
-    'IPT')
-# 'CIE LCHab',
-# 'CIE LCHuv',)
+    'IPT',
+    'Hunter Lab',
+    'Hunter Rdab')
 """
 Reference colourspaces defining available colour transformations.
 
 REFERENCE_COLOURSPACES : dict
-    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', , 'CIE Luv', 'CIE UCS', 'CIE UVW',
-    'IPT', 'CIE LCHab', 'CIE LCHuv'}**
+    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+    'IPT', 'Hunter Lab', 'Hunter Rdab'}**
 """
 
-REFERENCE_COLOURSPACES_TITLES = {
-    'CIE XYZ': ('X', 'Y', 'Z'),
-    'CIE xyY': ('x', 'y', 'Y'),
-    'CIE Lab': ('$a^*$', '$b^*$', '$L^*$'),
-    'CIE Luv': ('$u^\prime$', '$v^\prime$', '$L^*$'),
-    'CIE UCS': ('U', 'V', 'W'),
-    'CIE UVW': ('U', 'V', 'W'),
-    'IPT': ('P', 'T', 'I'),
-    'CIE LCHab': ('CH', 'ab', '$L^*$'),
-    'CIE LCHuv': ('CH', 'uv', '$L^*$')}
+REFERENCE_COLOURSPACES_TITLES = COLOURSPACE_MODELS_LABELS
 """
 Reference colourspaces to labels mapping.
 
 REFERENCE_COLOURSPACES_TITLES : dict
-    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', , 'CIE Luv', 'CIE UCS', 'CIE UVW',
-    'IPT', 'CIE LCHab', 'CIE LCHuv'}**
+    **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE LCHab, 'CIE Luv', 'CIE LCHuv',
+    'CIE UCS', 'CIE UVW', 'IPT', 'Hunter Lab', 'Hunter Rdab'}**
 """
 
 CHROMATICITY_DIAGRAMS = ('CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS')

@@ -76,9 +76,8 @@ def pointer_gamut_visual(reference_colourspace='CIE xyY',
     Parameters
     ----------
     reference_colourspace : unicode, optional
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to use for colour conversions / transformations.
     size : numeric, optional
         Cross size.

@@ -104,29 +104,25 @@ ARGUMENTS
         'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
         'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
         'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'sRGB'}
-
+        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'sRGB'},
         Input image colourspace.
     -f, --input-oecf, None
         Input image OECF, see *input-colourspace* for possible values.
     -l, --input-linearity
-        {'auto', 'linear', 'oecf'}
-
+        {'auto', 'linear', 'oecf'},
         Input image linearity.
     -z, --input-resample
         Input will be resampled by given factor.
     -r, --reference-colourspace
-        {'CIE xyY', 'CIE XYZ', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'},
         Input image colourspace.
     -t, --correlate-colourspace
         Correlate colourspace, see *input-colourspace* for possible values.
     -s, --settings-file
         Settings file.
     -y, --layout
-        {'layout_1', 'layout_2', 'layout_3', ..., 'layout_n'}
-
+        {'layout_1', 'layout_2', 'layout_3', ..., 'layout_n'},
         Application layout.
     -w, --enable-warnings
         Enable warnings.

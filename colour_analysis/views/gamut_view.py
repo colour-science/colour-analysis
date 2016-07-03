@@ -113,9 +113,8 @@ class GamutView(ViewBox):
         :class:`colour.RGB_Colourspace` class instance name defining `image`
         argument colourspace.
     reference_colourspace : unicode, optional
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to use for colour conversions / transformations.
     correlate_colourspace : unicode, optional
         See `input_colourspace` argument for possible values, default value is

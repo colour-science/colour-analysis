@@ -66,9 +66,8 @@ def RGB_scatter_visual(RGB,
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace of the data to draw.
     reference_colourspace : unicode, optional
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to use for colour conversions / transformations.
     symbol : unicode, optional
         Symbol type to draw.

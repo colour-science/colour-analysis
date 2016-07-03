@@ -50,9 +50,8 @@ def spectral_locus_visual(
     Parameters
     ----------
     reference_colourspace : unicode, optional
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to use for colour conversions / transformations.
     cmfs : unicode, optional
         Standard observer colour matching functions used to draw the spectral

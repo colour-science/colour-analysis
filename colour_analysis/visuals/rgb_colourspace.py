@@ -136,8 +136,8 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace volume to draw.
     reference_colourspace : unicode
-        **{'CIE XYZ', 'CIE xyY', 'CIE xy', 'CIE Lab', 'CIE Luv', 'CIE Luv uv',
-        'CIE UCS', 'CIE UCS uv', 'CIE UVW', 'IPT'}**,
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to convert the *CIE XYZ* tristimulus values to.
     segments : int, optional
         Box segments.
@@ -215,9 +215,8 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace whitepoint axis to draw.
     reference_colourspace : unicode, optional
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT'}
-
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Reference colourspace to use for colour conversions / transformations.
     width : numeric, optional
         Line width.
