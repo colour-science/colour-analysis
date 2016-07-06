@@ -97,32 +97,33 @@ ARGUMENTS
     -i, --input-image
         Image to analyse.
     -c, --input-colourspace
-        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
-        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
-        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
-        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'sRGB'},
+        'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB', 'Ekta Space PS 5', 'Max RGB',
+        'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
+        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'Rec. 2020',
+        'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
+        'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         Input image colourspace.
     -f, --input-oecf, None
         Input image OECF, see *input-colourspace* for possible values.
     -l, --input-linearity
-        {'auto', 'linear', 'oecf'},
+        **{'auto', 'linear', 'oecf'}**,
         Input image linearity.
     -z, --input-resample
         Input will be resampled by given factor.
     -r, --reference-colourspace
-        {'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
-        'IPT', 'Hunter Lab', 'Hunter Rdab'},
+        **{'CIE XYZ', 'CIE xyY', 'CIE Lab', 'CIE Luv', 'CIE UCS', 'CIE UVW',
+        'IPT', 'Hunter Lab', 'Hunter Rdab'}**,
         Input image colourspace.
     -t, --correlate-colourspace
         Correlate colourspace, see *input-colourspace* for possible values.
     -s, --settings-file
         Settings file.
     -y, --layout
-        {'layout_1', 'layout_2', 'layout_3', ..., 'layout_n'},
+        **{'layout_1', 'layout_2', 'layout_3', ..., 'layout_n'}**,
         Application layout.
     -w, --enable-warnings
         Enable warnings.

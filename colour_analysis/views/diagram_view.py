@@ -67,8 +67,7 @@ class DiagramView(ViewBox):
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
     diagram : unicode, optional
-        {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
-
+        **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
         Chromaticity diagram to draw.
     \**kwargs : dict, optional
         Keywords arguments passed to
@@ -353,8 +352,7 @@ class DiagramView(ViewBox):
         Parameters
         ----------
         diagram : unicode, optional
-            {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
-
+            **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
             Chromaticity diagram to draw.
         """
 

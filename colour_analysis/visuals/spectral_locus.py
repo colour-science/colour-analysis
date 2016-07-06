@@ -63,8 +63,7 @@ def spectral_locus_visual(
     uniform_opacity : numeric, optional
         Uniform symbol opacity.
     method : unicode, optional
-        {'gl', 'agg'}
-
+        **{'gl', 'agg'}**,
         Line drawing method.
     parent : Node, optional
         Parent of the spectral locus visual in the `SceneGraph`.
@@ -121,8 +120,7 @@ def chromaticity_diagram_construction_visual(
     width : numeric, optional
         Line width.
     method : unicode, optional
-        {'gl', 'agg'}
-
+        **{'gl', 'agg'}**,
         Line drawing method.
     parent : Node, optional
         Parent of the spectral locus visual in the `SceneGraph`.

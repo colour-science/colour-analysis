@@ -41,7 +41,7 @@ CHROMATICITY_DIAGRAM_TRANSFORMATIONS = {
 Chromaticity diagram specific helper conversion objects.
 
 CHROMATICITY_DIAGRAM_TRANSFORMATIONS : dict
-    {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
+    **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**
 """
 
 

@@ -59,8 +59,7 @@ def chromaticity_diagram_visual(
         Standard observer colour matching functions used for the chromaticity
         diagram boundaries.
     transformation : unicode, optional
-        {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
-
+        **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
         Chromaticity diagram transformation.
     parent : Node, optional
         Parent of the chromaticity diagram in the `SceneGraph`.

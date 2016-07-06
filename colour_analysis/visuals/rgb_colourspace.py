@@ -123,16 +123,15 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
     Parameters
     ----------
     colourspace : unicode, optional
-        {'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
         'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
-        'Don RGB 4', 'ECI RGB v2', 'Ekta Space PS 5', 'Max RGB', 'NTSC RGB',
-        'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3',
-        'REDcolor4', 'Rec. 2020', 'Russell RGB', 'S-Gamut', 'S-Gamut3',
-        'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut', 'Xtreme RGB', 'aces',
-        'adobe1998', 'prophoto', 'sRGB'}
-
+        'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB', 'Ekta Space PS 5', 'Max RGB',
+        'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
+        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'Rec. 2020',
+        'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
+        'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace volume to draw.
     reference_colourspace : unicode
@@ -221,8 +220,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
     width : numeric, optional
         Line width.
     method : unicode, optional
-        {'gl', 'agg'}
-
+        **{'gl', 'agg'}**,
         Line drawing method.
     parent : Node, optional
         Parent of the spectral locus visual in the `SceneGraph`.
@@ -272,8 +270,7 @@ def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
         colourspace triangle to draw.
     diagram : unicode, optional
-        {'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}
-
+        **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
         Chromaticity diagram to use.
     uniform_colour : array_like, optional
         Uniform triangle colour.
