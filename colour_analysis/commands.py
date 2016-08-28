@@ -153,8 +153,8 @@ def system_exit(object):
         """
         Handles proper system exit in case of critical exception.
 
-        Parameters
-        ----------
+        Other Parameters
+        ----------------
         \*args : list, optional
             Arguments.
         \**kwargs : dict, optional

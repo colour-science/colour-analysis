@@ -69,6 +69,9 @@ class DiagramView(ViewBox):
     diagram : unicode, optional
         **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
         Chromaticity diagram to draw.
+
+    Other Parameters
+    ----------------
     \**kwargs : dict, optional
         Keywords arguments passed to
         :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.

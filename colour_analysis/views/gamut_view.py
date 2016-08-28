@@ -122,6 +122,9 @@ class GamutView(ViewBox):
 
         :class:`colour.RGB_Colourspace` class instance name defining the
         comparison / correlate colourspace.
+
+    Other Parameters
+    ----------------
     \**kwargs : dict, optional
         Keywords arguments passed to
         :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.

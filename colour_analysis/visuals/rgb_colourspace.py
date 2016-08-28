@@ -72,6 +72,9 @@ def RGB_identity_cube(width_segments=16,
         Per vertex varying colour.
     wireframe : bool, optional
         Use wireframe display.
+
+    Other Parameters
+    ----------------
     \*args : list, optional
         Arguments passed to :class:`colour_analysis.visuals.Box` class
         constructor.
