@@ -22,6 +22,7 @@ from colour import (
     RGB_to_RGB,
     RGB_to_XYZ,
     is_within_pointer_gamut,
+    is_string,
     tstack)
 
 from colour_analysis.constants import DEFAULT_ENCODING_CCTF
@@ -216,9 +217,9 @@ class ImageView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format('input_colourspace', value))
+                 '"string" like object!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
@@ -257,9 +258,9 @@ class ImageView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format(
+                 '"string" like object!').format(
                     'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '

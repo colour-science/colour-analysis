@@ -19,7 +19,7 @@ from vispy.scene.cameras import PanZoomCamera
 from vispy.scene.visuals import GridLines
 from vispy.scene.widgets import Label, ViewBox, Widget
 
-from colour import RGB_COLOURSPACES
+from colour import RGB_COLOURSPACES, is_string
 
 from colour_analysis.constants import (
     CHROMATICITY_DIAGRAMS,
@@ -243,9 +243,9 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format('input_colourspace', value))
+                 '"string" like object!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
@@ -284,9 +284,9 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format(
+                 '"string" like object!').format(
                     'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
@@ -325,9 +325,9 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format('input_colourspace', value))
+                 '"string" like object!').format('input_colourspace', value))
             assert value in CHROMATICITY_DIAGRAMS, (
                 '"{0}" diagram not found in factory chromaticity diagrams: '
                 '"{1}".').format(value, ', '.join(

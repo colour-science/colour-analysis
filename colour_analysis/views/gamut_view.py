@@ -16,7 +16,8 @@ from collections import OrderedDict, namedtuple
 
 import numpy as np
 from vispy.scene.widgets import Label, ViewBox, Widget
-from colour import RGB_COLOURSPACES
+
+from colour import RGB_COLOURSPACES, is_string
 
 from colour_analysis.cameras import OrbitCamera
 from colour_analysis.constants import REFERENCE_COLOURSPACES
@@ -308,9 +309,9 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format('input_colourspace', value))
+                 '"string" like object!').format('input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(
@@ -351,9 +352,9 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format(
+                 '"string" like object!').format(
                     'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
@@ -396,9 +397,9 @@ class GamutView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, basestring), (  # noqa
+            assert is_string(value), (
                 ('"{0}" attribute: "{1}" is not a '
-                 '"basestring" instance!').format(
+                 '"string" like object!').format(
                     'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
