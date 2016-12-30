@@ -1,5 +1,5 @@
 Colour - Analysis
-==============
+=================
 
 ..  image:: https://raw.githubusercontent.com/colour-science/colour-analysis/master/docs/_static/Colour_Analysis.png
 
