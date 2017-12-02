@@ -101,13 +101,13 @@ class GamutView(ViewBox):
     image : array_like, optional
         Image to use in the view interactions.
     input_colourspace : unicode, optional
-        **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
+        **{'ITU-R BT.709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB', 'Ekta Space PS 5', 'Max RGB',
-        'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
-        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'Rec. 2020',
+        'NTSC', 'Pal/Secam', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
+        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'ITU-R BT.2020',
         'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
         'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         :class:`colour.RGB_Colourspace` class instance name defining `image`
@@ -158,7 +158,7 @@ class GamutView(ViewBox):
     def __init__(self,
                  scene_canvas=None,
                  image=None,
-                 input_colourspace='Rec. 709',
+                 input_colourspace='ITU-R BT.709',
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
                  settings=None,
@@ -525,14 +525,14 @@ class GamutView(ViewBox):
         Parameters
         ----------
         colourspace : unicode
-            **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-            'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
+            **{'ITU-R BT.709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+            'ALEXA Wide Gamut', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
             'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
             'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor',
             'DRAGONcolor2', 'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB',
-            'Ekta Space PS 5', 'Max RGB', 'NTSC RGB', 'Pal/Secam RGB',
+            'Ekta Space PS 5', 'Max RGB', 'NTSC', 'Pal/Secam',
             'ProPhoto RGB', 'REDcolor', 'REDcolor2', 'REDcolor3', 'REDcolor4',
-            'RIMM RGB', 'ROMM RGB', 'Rec. 2020', 'Russell RGB', 'S-Gamut',
+            'RIMM RGB', 'ROMM RGB', 'ITU-R BT.2020', 'Russell RGB', 'S-Gamut',
             'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB', 'V-Gamut',
             'Xtreme RGB', 'sRGB'}**,
             :class:`colour.RGB_Colourspace` class instance name defining the

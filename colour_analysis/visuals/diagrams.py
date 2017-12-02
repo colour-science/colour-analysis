@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Chromaticity Diagram Visuals
 ============================
@@ -17,16 +16,13 @@ from __future__ import division, unicode_literals
 import numpy as np
 from scipy.spatial import Delaunay
 
-from colour import (
-    XYZ_to_sRGB,
-    normalise_maximum,
-    tstack)
+from colour import (XYZ_to_sRGB, DEFAULT_FLOAT_DTYPE, normalise_maximum,
+                    tstack)
 from colour.plotting import get_cmfs
 
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Primitive
-
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2017 - Colour Developers'
@@ -35,17 +31,16 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['chromaticity_diagram_visual',
-           'CIE_1931_chromaticity_diagram',
-           'CIE_1960_UCS_chromaticity_diagram',
-           'CIE_1976_UCS_chromaticity_diagram']
+__all__ = [
+    'chromaticity_diagram_visual', 'CIE_1931_chromaticity_diagram',
+    'CIE_1960_UCS_chromaticity_diagram', 'CIE_1976_UCS_chromaticity_diagram'
+]
 
 
-def chromaticity_diagram_visual(
-        samples=256,
-        cmfs='CIE 1931 2 Degree Standard Observer',
-        transformation='CIE 1931',
-        parent=None):
+def chromaticity_diagram_visual(samples=256,
+                                cmfs='CIE 1931 2 Degree Standard Observer',
+                                transformation='CIE 1931',
+                                parent=None):
     """
     Creates a chromaticity diagram visual based on
     :class:`colour_analysis.visuals.Primitive` class.
@@ -87,23 +82,23 @@ def chromaticity_diagram_visual(
     ij = tstack((ii, jj))
     ij = np.vstack((ij_c, ij[triangulation.find_simplex(ij) > 0]))
 
-    ij_p = np.hstack((ij, np.full((ij.shape[0], 1), 0, np.float_)))
+    ij_p = np.hstack((ij, np.full((ij.shape[0], 1), 0, DEFAULT_FLOAT_DTYPE)))
     triangulation = Delaunay(ij, qhull_options='QJ')
-    RGB = normalise_maximum(XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant),
-                            axis=-1)
+    RGB = normalise_maximum(
+        XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant), axis=-1)
 
-    diagram = Primitive(vertices=ij_p,
-                        faces=triangulation.simplices,
-                        vertex_colours=RGB,
-                        parent=parent)
+    diagram = Primitive(
+        vertices=ij_p,
+        faces=triangulation.simplices,
+        vertex_colours=RGB,
+        parent=parent)
 
     return diagram
 
 
-def CIE_1931_chromaticity_diagram(
-        samples=256,
-        cmfs='CIE 1931 2 Degree Standard Observer',
-        parent=None):
+def CIE_1931_chromaticity_diagram(samples=256,
+                                  cmfs='CIE 1931 2 Degree Standard Observer',
+                                  parent=None):
     """
     Creates the *CIE 1931* chromaticity diagram visual based on
     :class:`colour_analysis.visuals.Primitive` class.
@@ -129,9 +124,7 @@ def CIE_1931_chromaticity_diagram(
 
 
 def CIE_1960_UCS_chromaticity_diagram(
-        samples=256,
-        cmfs='CIE 1931 2 Degree Standard Observer',
-        parent=None):
+        samples=256, cmfs='CIE 1931 2 Degree Standard Observer', parent=None):
     """
     Creates the *CIE 1960 UCS* chromaticity diagram visual based on
     :class:`colour_analysis.visuals.Primitive` class.
@@ -157,9 +150,7 @@ def CIE_1960_UCS_chromaticity_diagram(
 
 
 def CIE_1976_UCS_chromaticity_diagram(
-        samples=256,
-        cmfs='CIE 1931 2 Degree Standard Observer',
-        parent=None):
+        samples=256, cmfs='CIE 1931 2 Degree Standard Observer', parent=None):
     """
     Creates the *CIE 1976 UCS* chromaticity diagram visual based on
     :class:`colour_analysis.visuals.Primitive` class.

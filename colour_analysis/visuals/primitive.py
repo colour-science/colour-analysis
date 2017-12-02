@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Primitive Visual
 ================
@@ -19,6 +18,8 @@ from vispy.gloo import set_state
 from vispy.scene.visuals import create_visual_node
 from vispy.visuals.mesh import MeshVisual
 
+from colour import DEFAULT_FLOAT_DTYPE
+
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2017 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
@@ -26,8 +27,7 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['PrimitiveVisual',
-           'Primitive']
+__all__ = ['PrimitiveVisual', 'Primitive']
 
 
 class PrimitiveVisual(MeshVisual):
@@ -75,11 +75,9 @@ class PrimitiveVisual(MeshVisual):
         uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
         if vertex_colours is not None:
             if vertex_colours.shape[-1] == 3:
-                vertex_colours = np.hstack(
-                    (vertex_colours,
-                     np.full((vertex_colours.shape[0], 1),
-                             uniform_opacity,
-                             np.float_)))
+                vertex_colours = np.hstack((vertex_colours, np.full(
+                    (vertex_colours.shape[0],
+                     1), uniform_opacity, DEFAULT_FLOAT_DTYPE)))
             else:
                 vertex_colours[..., 3] = uniform_opacity
 
@@ -95,8 +93,9 @@ class PrimitiveVisual(MeshVisual):
     def draw(self):
         MeshVisual.draw(self)
         if self._wireframe and self._wireframe_offset:
-            set_state(polygon_offset=self._wireframe_offset,
-                      polygon_offset_fill=True)
+            set_state(
+                polygon_offset=self._wireframe_offset,
+                polygon_offset_fill=True)
 
 
 Primitive = create_visual_node(PrimitiveVisual)

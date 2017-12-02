@@ -109,7 +109,7 @@ def RGB_identity_cube(width_segments=16,
     return RGB_box
 
 
-def RGB_colourspace_volume_visual(colourspace='Rec. 709',
+def RGB_colourspace_volume_visual(colourspace='ITU-R BT.709',
                                   reference_colourspace='CIE xyY',
                                   segments=16,
                                   uniform_colour=None,
@@ -126,13 +126,13 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
     Parameters
     ----------
     colourspace : unicode, optional
-        **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
+        **{'ITU-R BT.709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB', 'Ekta Space PS 5', 'Max RGB',
-        'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
-        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'Rec. 2020',
+        'NTSC', 'Pal/Secam', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
+        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'ITU-R BT.2020',
         'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
         'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
@@ -200,7 +200,7 @@ def RGB_colourspace_volume_visual(colourspace='Rec. 709',
     return node
 
 
-def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
+def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
                                            reference_colourspace='CIE xyY',
                                            width=2.0,
                                            method='gl',
@@ -255,7 +255,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='Rec. 709',
     return line
 
 
-def RGB_colourspace_triangle_visual(colourspace='Rec. 709',
+def RGB_colourspace_triangle_visual(colourspace='ITU-R BT.709',
                                     diagram='CIE 1931',
                                     uniform_colour=None,
                                     uniform_opacity=1.0,

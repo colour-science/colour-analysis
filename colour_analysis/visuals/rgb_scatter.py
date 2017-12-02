@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 RGB Scatter Visual
 ==================
@@ -15,10 +14,9 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.color.color_array import ColorArray
 
-from colour import RGB_to_XYZ, XYZ_to_colourspace_model
+from colour import DEFAULT_FLOAT_DTYPE, RGB_to_XYZ, XYZ_to_colourspace_model
 from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import (
-    common_colourspace_model_axis_reorder)
+from colour.plotting.volume import (common_colourspace_model_axis_reorder)
 
 from colour_analysis.visuals import Symbol
 
@@ -33,7 +31,7 @@ __all__ = ['RGB_scatter_visual']
 
 
 def RGB_scatter_visual(RGB,
-                       colourspace='Rec. 709',
+                       colourspace='ITU-R BT.709',
                        reference_colourspace='CIE xyY',
                        symbol='disc',
                        size=4.0,
@@ -53,13 +51,13 @@ def RGB_scatter_visual(RGB,
     RGB : array_like
         *RGB* data to draw.
     colourspace : unicode, optional
-        **{'Rec. 709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
-        'ALEXA Wide Gamut RGB', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
+        **{'ITU-R BT.709', 'ACES2065-1', 'ACEScc', 'ACEScg', 'ACESproxy',
+        'ALEXA Wide Gamut', 'Adobe RGB (1998)', 'Adobe Wide Gamut RGB',
         'Apple RGB', 'Best RGB', 'Beta RGB', 'CIE RGB', 'Cinema Gamut',
         'ColorMatch RGB', 'DCI-P3', 'DCI-P3+', 'DRAGONcolor', 'DRAGONcolor2',
         'Don RGB 4', 'ECI RGB v2', 'ERIMM RGB', 'Ekta Space PS 5', 'Max RGB',
-        'NTSC RGB', 'Pal/Secam RGB', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
-        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'Rec. 2020',
+        'NTSC', 'Pal/Secam', 'ProPhoto RGB', 'REDcolor', 'REDcolor2',
+        'REDcolor3', 'REDcolor4', 'RIMM RGB', 'ROMM RGB', 'ITU-R BT.2020',
         'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
         'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         :class:`colour.RGB_Colourspace` class instance name defining the *RGB*
@@ -103,39 +101,36 @@ def RGB_scatter_visual(RGB,
 
         RGB = RGB[::resampling, ::resampling].reshape((-1, 3))
 
-    XYZ = RGB_to_XYZ(
-        RGB,
-        colourspace.whitepoint,
-        colourspace.whitepoint,
-        colourspace.RGB_to_XYZ_matrix)
+    XYZ = RGB_to_XYZ(RGB, colourspace.whitepoint, colourspace.whitepoint,
+                     colourspace.RGB_to_XYZ_matrix)
 
     points = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            XYZ, colourspace.whitepoint, reference_colourspace),
-        reference_colourspace)
+        XYZ_to_colourspace_model(XYZ, colourspace.whitepoint,
+                                 reference_colourspace), reference_colourspace)
 
     points[np.isnan(points)] = 0
 
     RGB = np.clip(RGB, 0, 1)
 
     if uniform_colour is None:
-        RGB = np.hstack(
-            (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
+        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity,
+                                      DEFAULT_FLOAT_DTYPE)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
     if uniform_edge_colour is None:
         RGB_e = RGB
     else:
-        RGB_e = ColorArray(uniform_edge_colour,
-                           alpha=uniform_edge_opacity).rgba
+        RGB_e = ColorArray(
+            uniform_edge_colour, alpha=uniform_edge_opacity).rgba
 
-    markers = Symbol(symbol=symbol,
-                     positions=points,
-                     size=size,
-                     edge_size=edge_size,
-                     face_colour=RGB,
-                     edge_colour=RGB_e,
-                     parent=parent)
+    markers = Symbol(
+        symbol=symbol,
+        positions=points,
+        size=size,
+        edge_size=edge_size,
+        face_colour=RGB,
+        edge_colour=RGB_e,
+        parent=parent)
 
     return markers

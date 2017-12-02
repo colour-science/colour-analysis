@@ -99,7 +99,7 @@ class DiagramView(ViewBox):
     def __init__(self,
                  scene_canvas=None,
                  image=None,
-                 input_colourspace='Rec. 709',
+                 input_colourspace='ITU-R BT.709',
                  correlate_colourspace='ACEScg',
                  diagram='CIE 1931',
                  **kwargs):

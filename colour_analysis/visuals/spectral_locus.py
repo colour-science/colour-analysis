@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Spectral Locus Visual
 =====================
@@ -17,10 +16,10 @@ import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line, Node
 
-from colour import XYZ_to_sRGB, XYZ_to_colourspace_model, normalise_maximum
+from colour import (DEFAULT_FLOAT_DTYPE, XYZ_to_sRGB, XYZ_to_colourspace_model,
+                    normalise_maximum)
 from colour.plotting import get_cmfs
-from colour.plotting.volume import (
-    common_colourspace_model_axis_reorder)
+from colour.plotting.volume import (common_colourspace_model_axis_reorder)
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
@@ -31,18 +30,16 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['spectral_locus_visual',
-           'chromaticity_diagram_construction_visual']
+__all__ = ['spectral_locus_visual', 'chromaticity_diagram_construction_visual']
 
 
-def spectral_locus_visual(
-        reference_colourspace='CIE xyY',
-        cmfs='CIE 1931 2 Degree Standard Observer',
-        width=2.0,
-        uniform_colour=None,
-        uniform_opacity=1.0,
-        method='gl',
-        parent=None):
+def spectral_locus_visual(reference_colourspace='CIE xyY',
+                          cmfs='CIE 1931 2 Degree Standard Observer',
+                          width=2.0,
+                          uniform_colour=None,
+                          uniform_opacity=1.0,
+                          method='gl',
+                          parent=None):
     """
     Returns a :class:`vispy.scene.visuals.Line` class instance representing
     the spectral locus.
@@ -82,23 +79,19 @@ def spectral_locus_visual(
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
     points = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            XYZ, illuminant, reference_colourspace),
+        XYZ_to_colourspace_model(XYZ, illuminant, reference_colourspace),
         reference_colourspace)
     points[np.isnan(points)] = 0
 
     if uniform_colour is None:
         RGB = normalise_maximum(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
-        RGB = np.hstack(
-            (RGB, np.full((RGB.shape[0], 1), uniform_opacity, np.float_)))
+        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity,
+                                      DEFAULT_FLOAT_DTYPE)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
-    line = Line(points,
-                np.clip(RGB, 0, 1),
-                width=width,
-                method=method,
-                parent=parent)
+    line = Line(
+        points, np.clip(RGB, 0, 1), width=width, method=method, parent=parent)
 
     return line
 
@@ -139,19 +132,21 @@ def chromaticity_diagram_construction_visual(
     simplex_f = np.array([(0, 1, 2)])
     simplex_c = np.array([(1, 1, 1), (1, 1, 1), (1, 1, 1)])
 
-    Primitive(simplex_p,
-              simplex_f,
-              uniform_opacity=0.5,
-              vertex_colours=simplex_c,
-              parent=node)
+    Primitive(
+        simplex_p,
+        simplex_f,
+        uniform_opacity=0.5,
+        vertex_colours=simplex_c,
+        parent=node)
 
     simplex_f = np.array([(0, 1, 2), (1, 2, 0), (2, 0, 1)])
-    Primitive(simplex_p,
-              simplex_f,
-              uniform_opacity=1.0,
-              vertex_colours=simplex_c,
-              wireframe=True,
-              parent=node)
+    Primitive(
+        simplex_p,
+        simplex_f,
+        uniform_opacity=1.0,
+        vertex_colours=simplex_c,
+        wireframe=True,
+        parent=node)
 
     lines = []
     for XYZ in get_cmfs(cmfs).values:
@@ -159,10 +154,6 @@ def chromaticity_diagram_construction_visual(
         lines.append((0, 0, 0))
     lines = np.array(lines)
 
-    Line(lines,
-         (0, 0, 0),
-         width=width,
-         method=method,
-         parent=node)
+    Line(lines, (0, 0, 0), width=width, method=method, parent=node)
 
     return node
