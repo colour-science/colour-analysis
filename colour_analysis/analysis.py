@@ -193,8 +193,8 @@ class ColourAnalysis(SceneCanvas):
             self,
             keys='interactive',
             title=('{0} - {1}'.format(title, image_path)
-                   if image_path is not None
-                   else title),
+            if image_path is not None
+            else title),
             size=settings['scene_canvas']['size'],
             bgcolor=settings['scene_canvas']['scene_canvas_background_colour'],
             config={'samples': settings['scene_canvas']['samples']})
@@ -216,8 +216,8 @@ class ColourAnalysis(SceneCanvas):
         self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
         self._settings = (json.load(open(SETTINGS_FILE))
-                          if settings is None else
-                          settings)
+        if settings is None else
+        settings)
         self._layout = None
         self.layout = layout
 
@@ -505,20 +505,6 @@ class ColourAnalysis(SceneCanvas):
 
         return self._settings
 
-    @settings.setter
-    def settings(self, value):
-        """
-        Setter for **self._settings** private attribute.
-
-        Parameters
-        ----------
-        value : dict
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('settings'))
-
     @property
     def layout(self):
         """
@@ -562,20 +548,6 @@ class ColourAnalysis(SceneCanvas):
 
         return self._actions
 
-    @actions.setter
-    def actions(self, value):
-        """
-        Setter for **self._actions** private attribute.
-
-        Parameters
-        ----------
-        value : dict
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('actions'))
-
     @property
     def console_view(self):
         """
@@ -587,20 +559,6 @@ class ColourAnalysis(SceneCanvas):
         """
 
         return self._console_view
-
-    @console_view.setter
-    def console_view(self, value):
-        """
-        Setter for **self.console_view** attribute.
-
-        Parameters
-        ----------
-        value : ViewBox
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('console_view'))
 
     @property
     def gamut_view(self):
@@ -614,20 +572,6 @@ class ColourAnalysis(SceneCanvas):
 
         return self._gamut_view
 
-    @gamut_view.setter
-    def gamut_view(self, value):
-        """
-        Setter for **self.gamut_view** attribute.
-
-        Parameters
-        ----------
-        value : ViewBox
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('gamut_view'))
-
     @property
     def image_view(self):
         """
@@ -640,20 +584,6 @@ class ColourAnalysis(SceneCanvas):
 
         return self._image_view
 
-    @image_view.setter
-    def image_view(self, value):
-        """
-        Setter for **self.image_view** attribute.
-
-        Parameters
-        ----------
-        value : ViewBox
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('image_view'))
-
     @property
     def diagram_view(self):
         """
@@ -665,20 +595,6 @@ class ColourAnalysis(SceneCanvas):
         """
 
         return self._diagram_view
-
-    @diagram_view.setter
-    def diagram_view(self, value):
-        """
-        Setter for **self.diagram_view** attribute.
-
-        Parameters
-        ----------
-        value : ViewBox
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('diagram_view'))
 
     @property
     def clamp_blacks(self):
@@ -771,7 +687,7 @@ class ColourAnalysis(SceneCanvas):
                             for modifier in event.modifiers])
         for action in self._actions.values():
             if (key == action.sequence.key and
-                        modifiers == sorted(action.sequence.modifiers)):
+                    modifiers == sorted(action.sequence.modifiers)):
                 method = '{0}_action'.format(action.name)
 
                 hasattr(self, method) and getattr(self, method)()

@@ -137,14 +137,14 @@ class DiagramView(ViewBox):
         self._axis_visual = None
 
         self._visuals = ('chromaticity_diagram_visual',
-                          'spectral_locus_visual',
-                          'RGB_scatter_visual',
-                          'input_colourspace_visual',
-                          'correlate_colourspace_visual',
-                          'pointer_gamut_visual',
-                          'pointer_gamut_boundaries_visual',
-                          'grid_visual',
-                          'axis_visual')
+                         'spectral_locus_visual',
+                         'RGB_scatter_visual',
+                         'input_colourspace_visual',
+                         'correlate_colourspace_visual',
+                         'pointer_gamut_visual',
+                         'pointer_gamut_boundaries_visual',
+                         'grid_visual',
+                         'axis_visual')
 
         self._visuals_visibility = None
 
@@ -167,20 +167,6 @@ class DiagramView(ViewBox):
         """
 
         return self._scene_canvas
-
-    @scene_canvas.setter
-    def scene_canvas(self, value):
-        """
-        Setter for **self.scene_canvas** attribute.
-
-        Parameters
-        ----------
-        value : SceneCanvas
-            Attribute value.
-        """
-
-        raise AttributeError('"{0}" attribute is read only!'.format(
-            'scene_canvas'))
 
     @property
     def image(self):

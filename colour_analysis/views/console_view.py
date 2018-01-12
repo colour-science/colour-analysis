@@ -75,20 +75,6 @@ class ConsoleView(Console):
 
         return self._scene_canvas
 
-    @scene_canvas.setter
-    def scene_canvas(self, value):
-        """
-        Setter for **self.scene_canvas** attribute.
-
-        Parameters
-        ----------
-        value : SceneCanvas
-            Attribute value.
-        """
-
-        raise AttributeError(
-            '"{0}" attribute is read only!'.format('scene_canvas'))
-
     def describe_actions_action(self):
         """
         Defines the slot triggered by the *describe_actions* action.

@@ -234,20 +234,6 @@ class GamutView(ViewBox):
 
         return self._scene_canvas
 
-    @scene_canvas.setter
-    def scene_canvas(self, value):
-        """
-        Setter for **self.scene_canvas** attribute.
-
-        Parameters
-        ----------
-        value : SceneCanvas
-            Attribute value.
-        """
-
-        raise AttributeError('"{0}" attribute is read only!'.format(
-            'scene_canvas'))
-
     @property
     def image(self):
         """
