@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Image View
 ==========
@@ -16,13 +15,9 @@ import numpy as np
 from vispy.scene.cameras import PanZoomCamera
 from vispy.scene.widgets import Label, ViewBox, Widget
 
-from colour import (
-    RGB_COLOURSPACES,
-    RGB_to_RGB,
-    RGB_to_XYZ,
-    is_within_pointer_gamut,
-    is_string,
-    tstack)
+from colour import (RGB_COLOURSPACES, RGB_to_RGB, RGB_to_XYZ,
+                    is_within_pointer_gamut)
+from colour.utilities import is_string, tstack
 
 from colour_analysis.constants import DEFAULT_ENCODING_CCTF
 from colour_analysis.visuals import image_visual
@@ -168,9 +163,9 @@ class ImageView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
-                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
-                 'or "matrix" instance!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), ((
+                '"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                'or "matrix" instance!').format('image', value))
 
         self._image = value
 
@@ -205,13 +200,13 @@ class ImageView(ViewBox):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('input_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
-                '"{1}".').format(
-                value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+                '"{1}".').format(value, ', '.join(
+                    sorted(RGB_COLOURSPACES.keys())))
 
         self._input_colourspace = value
 
@@ -246,14 +241,13 @@ class ImageView(ViewBox):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format(
-                    'correlate_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
+                    sorted(RGB_COLOURSPACES.keys())))
 
         self._correlate_colourspace = value
 
@@ -280,8 +274,8 @@ class ImageView(ViewBox):
         image = np.copy(self._image)
 
         has_overlay = False
-        if (self._display_input_colourspace_out_of_gamut or
-                self._display_correlate_colourspace_out_of_gamut):
+        if (self._display_input_colourspace_out_of_gamut
+                or self._display_correlate_colourspace_out_of_gamut):
             image[image >= 0] = 0
             image[image < 0] = 1
             has_overlay = True
@@ -295,8 +289,7 @@ class ImageView(ViewBox):
         if self._display_out_of_pointer_gamut:
             colourspace = RGB_COLOURSPACES[self._input_colourspace]
             image = is_within_pointer_gamut(
-                RGB_to_XYZ(image,
-                           colourspace.whitepoint,
+                RGB_to_XYZ(image, colourspace.whitepoint,
                            colourspace.whitepoint,
                            colourspace.RGB_to_XYZ_matrix)).astype(int)
 
@@ -367,18 +360,15 @@ class ImageView(ViewBox):
         self._label.text = str()
 
         if self._display_input_colourspace_out_of_gamut:
-            self._label.text = (
-                '{0} - Out of Gamut Colours Display'.format(
-                    self._input_colourspace))
+            self._label.text = ('{0} - Out of Gamut Colours Display'.format(
+                self._input_colourspace))
 
         if self._display_correlate_colourspace_out_of_gamut:
-            self._label.text = (
-                '{0} - Out of Gamut Colours Display'.format(
-                    self._correlate_colourspace))
+            self._label.text = ('{0} - Out of Gamut Colours Display'.format(
+                self._correlate_colourspace))
 
         if self._display_out_of_pointer_gamut:
-            self._label.text = ('Out of Pointer\'s Gamut '
-                                'Colours Display')
+            self._label.text = ('Out of Pointer\'s Gamut ' 'Colours Display')
 
         if self._display_hdr_colours:
             self._label.text = 'HDR Colours Display'
@@ -465,8 +455,7 @@ class ImageView(ViewBox):
         """
 
         self._detach_visuals()
-        self._display_hdr_colours = (
-            not self._display_hdr_colours)
+        self._display_hdr_colours = (not self._display_hdr_colours)
         if self._display_hdr_colours:
             self._display_input_colourspace_out_of_gamut = False
             self._display_correlate_colourspace_out_of_gamut = False

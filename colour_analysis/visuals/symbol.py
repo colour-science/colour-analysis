@@ -41,12 +41,13 @@ class Symbol(Markers):
 
         Markers.__init__(self)
 
-        self.set_data(positions,
-                      size=size,
-                      edge_width=edge_size,
-                      face_color=face_colour,
-                      edge_color=edge_colour,
-                      scaling=scaling)
+        self.set_data(
+            positions,
+            size=size,
+            edge_width=edge_size,
+            face_color=face_colour,
+            edge_color=edge_colour,
+            scaling=scaling)
         self.symbol = symbol
 
         if parent is not None:

@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Colour Analysis
 ===============
@@ -20,18 +19,14 @@ from itertools import cycle
 import numpy as np
 from vispy.scene import SceneCanvas
 
-from colour import RGB_COLOURSPACES, is_string
+from colour import RGB_COLOURSPACES
+from colour.utilities import is_string
 
 from colour_analysis import __application_name__, __version__
-from colour_analysis.constants import (
-    DEFAULT_FAILSAFE_IMAGE,
-    SETTINGS_FILE,
-    REFERENCE_COLOURSPACES)
-from colour_analysis.views import (
-    ConsoleView,
-    DiagramView,
-    GamutView,
-    ImageView)
+from colour_analysis.constants import (DEFAULT_FAILSAFE_IMAGE, SETTINGS_FILE,
+                                       REFERENCE_COLOURSPACES)
+from colour_analysis.views import (ConsoleView, DiagramView, GamutView,
+                                   ImageView)
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -40,27 +35,18 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['Sequence',
-           'Action',
-           'ViewPreset',
-           'LayoutPreset',
-           'ColourAnalysis']
+__all__ = [
+    'Sequence', 'Action', 'ViewPreset', 'LayoutPreset', 'ColourAnalysis'
+]
 
-Sequence = namedtuple(
-    'Sequence',
-    ('modifiers',
-     'key'))
+Sequence = namedtuple('Sequence', ('modifiers', 'key'))
 """
 Defines a modifier and key keyboard sequence.
 
 Sequence : namedtuple
 """
 
-Action = namedtuple(
-    'Action',
-    ('name',
-     'description',
-     'sequence'))
+Action = namedtuple('Action', ('name', 'description', 'sequence'))
 """
 Defines a user action / interaction associated with a :class:`Sequence`.
 
@@ -73,15 +59,8 @@ views.
 Action : namedtuple
 """
 
-ViewPreset = namedtuple(
-    'ViewPreset',
-    ('name',
-     'description',
-     'view',
-     'row',
-     'column',
-     'row_span',
-     'column_span'))
+ViewPreset = namedtuple('ViewPreset', ('name', 'description', 'view', 'row',
+                                       'column', 'row_span', 'column_span'))
 """
 Defines a view preset used with :class:`LayoutPreset` describing the location
 of the view in the layout grid.
@@ -89,11 +68,7 @@ of the view in the layout grid.
 ViewPreset : namedtuple
 """
 
-LayoutPreset = namedtuple(
-    'LayoutPreset',
-    ('name',
-     'description',
-     'views'))
+LayoutPreset = namedtuple('LayoutPreset', ('name', 'description', 'views'))
 """
 Defines a layout preset describing which views are added to the
 :class:`ColourAnalysis` class.
@@ -104,7 +79,7 @@ LayoutPreset : namedtuple
 
 class ColourAnalysis(SceneCanvas):
     """
-    Defines *Colour - Analysis* canvas, a class inheriting from
+    Defines *Colour - Analysis* artist, a class inheriting from
     :class:`vispy.scene.SceneCanvas`.
 
     Parameters
@@ -193,8 +168,7 @@ class ColourAnalysis(SceneCanvas):
             self,
             keys='interactive',
             title=('{0} - {1}'.format(title, image_path)
-            if image_path is not None
-            else title),
+                   if image_path is not None else title),
             size=settings['scene_canvas']['size'],
             bgcolor=settings['scene_canvas']['scene_canvas_background_colour'],
             config={'samples': settings['scene_canvas']['samples']})
@@ -216,8 +190,7 @@ class ColourAnalysis(SceneCanvas):
         self._correlate_colourspace = None
         self.correlate_colourspace = correlate_colourspace
         self._settings = (json.load(open(SETTINGS_FILE))
-        if settings is None else
-        settings)
+                          if settings is None else settings)
         self._layout = None
         self.layout = layout
 
@@ -235,13 +208,14 @@ class ColourAnalysis(SceneCanvas):
 
         self._grid = None
 
-        self._RGB_colourspaces_cycle = cycle(
-            [c for c in sorted(RGB_COLOURSPACES)
-             if c not in ('aces', 'adobe1998', 'prophoto')])
+        self._RGB_colourspaces_cycle = cycle([
+            c for c in sorted(RGB_COLOURSPACES)
+            if c not in ('aces', 'adobe1998', 'prophoto')
+        ])
 
         reference_colourspaces_deque = deque(REFERENCE_COLOURSPACES)
-        reference_colourspaces_deque.rotate(-REFERENCE_COLOURSPACES.index(
-            self._reference_colourspace) - 1)
+        reference_colourspaces_deque.rotate(
+            -REFERENCE_COLOURSPACES.index(self._reference_colourspace) - 1)
         self._reference_colourspaces_cycle = cycle(
             reference_colourspaces_deque)
 
@@ -279,9 +253,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
-                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
-                 'or "matrix" instance!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), ((
+                '"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                'or "matrix" instance!').format('image', value))
 
         self._image = value
 
@@ -317,9 +291,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('image_path', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'image_path', value))
             assert os.path.exists(value), (
                 '"{0}" input image doesn\'t exists!'.format(value))
         self._image_path = value
@@ -349,13 +323,13 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('input_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
-                '"{1}".').format(
-                value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+                '"{1}".').format(value, ', '.join(
+                    sorted(RGB_COLOURSPACES.keys())))
         self._input_colourspace = value
 
     @property
@@ -383,13 +357,13 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('input_oecf', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'input_oecf', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" OECF is not associated with any factory '
                 'RGB colourspaces: "{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
+                    sorted(RGB_COLOURSPACES.keys())))
         self._input_oecf = value
 
     @property
@@ -447,14 +421,13 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format(
-                    'reference_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'reference_colourspace', value))
             assert value in REFERENCE_COLOURSPACES, (
                 '"{0}" reference colourspace not found in factory reference '
-                'colourspaces: "{1}".').format(
-                value, ', '.join(sorted(REFERENCE_COLOURSPACES.keys())))
+                'colourspaces: "{1}".').format(value, ', '.join(
+                    sorted(REFERENCE_COLOURSPACES.keys())))
         self._reference_colourspace = value
 
     @property
@@ -482,14 +455,13 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format(
-                    'correlate_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
+                    sorted(RGB_COLOURSPACES.keys())))
         self._correlate_colourspace = value
 
     @property
@@ -530,9 +502,9 @@ class ColourAnalysis(SceneCanvas):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('layout', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'layout', value))
         self._layout = value
 
     @property
@@ -683,11 +655,11 @@ class ColourAnalysis(SceneCanvas):
         """
 
         key = event.key.name.lower()
-        modifiers = sorted([modifier.name.lower()
-                            for modifier in event.modifiers])
+        modifiers = sorted(
+            [modifier.name.lower() for modifier in event.modifiers])
         for action in self._actions.values():
-            if (key == action.sequence.key and
-                    modifiers == sorted(action.sequence.modifiers)):
+            if (key == action.sequence.key
+                    and modifiers == sorted(action.sequence.modifiers)):
                 method = '{0}_action'.format(action.name)
 
                 hasattr(self, method) and getattr(self, method)()
@@ -792,9 +764,7 @@ class ColourAnalysis(SceneCanvas):
                 bgcolor=background_colour,
                 border_color=border_colour)
 
-        self._views = (self._console_view,
-                       self._gamut_view,
-                       self._image_view,
+        self._views = (self._console_view, self._gamut_view, self._image_view,
                        self._diagram_view)
 
     def _layout_views(self):
@@ -868,8 +838,7 @@ class ColourAnalysis(SceneCanvas):
             Definition success.
         """
 
-        self._reference_colourspace = next(
-            self._reference_colourspaces_cycle)
+        self._reference_colourspace = next(self._reference_colourspaces_cycle)
 
         for view in self._views:
             if hasattr(view, 'reference_colourspace'):

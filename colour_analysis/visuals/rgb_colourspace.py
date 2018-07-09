@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 RGB Colourspace Visuals
 =======================
@@ -16,10 +15,12 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.geometry.generation import create_box
 from vispy.scene.visuals import Node, Line
-from colour import RGB_to_XYZ, XYZ_to_colourspace_model, xy_to_XYZ
-from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import (
-    common_colourspace_model_axis_reorder)
+
+from colour import RGB_to_XYZ, xy_to_XYZ
+from colour.models import XYZ_to_colourspace_model
+from colour.plotting import filter_RGB_colourspaces
+from colour.plotting.volume import (common_colourspace_model_axis_reorder)
+from colour.utilities import first_item
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
@@ -32,10 +33,10 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['RGB_identity_cube',
-           'RGB_colourspace_volume_visual',
-           'RGB_colourspace_whitepoint_axis_visual',
-           'RGB_colourspace_triangle_visual']
+__all__ = [
+    'RGB_identity_cube', 'RGB_colourspace_volume_visual',
+    'RGB_colourspace_whitepoint_axis_visual', 'RGB_colourspace_triangle_visual'
+]
 
 
 def RGB_identity_cube(width_segments=16,
@@ -83,24 +84,26 @@ def RGB_identity_cube(width_segments=16,
         constructor.
     """
 
-    vertices, _faces, _outline = create_box(width_segments=width_segments,
-                                            height_segments=height_segments,
-                                            depth_segments=depth_segments,
-                                            planes=planes)
+    vertices, _faces, _outline = create_box(
+        width_segments=width_segments,
+        height_segments=height_segments,
+        depth_segments=depth_segments,
+        planes=planes)
 
     vertex_colours = vertices['color'] if vertex_colours else None
 
-    RGB_box = Box(width_segments=width_segments,
-                  height_segments=height_segments,
-                  depth_segments=depth_segments,
-                  planes=planes,
-                  uniform_colour=uniform_colour,
-                  uniform_opacity=uniform_opacity,
-                  vertex_colours=vertex_colours,
-                  wireframe=wireframe,
-                  wireframe_offset=(1, 1),
-                  *args,
-                  **kwargs)
+    RGB_box = Box(
+        width_segments=width_segments,
+        height_segments=height_segments,
+        depth_segments=depth_segments,
+        planes=planes,
+        uniform_colour=uniform_colour,
+        uniform_opacity=uniform_opacity,
+        vertex_colours=vertex_colours,
+        wireframe=wireframe,
+        wireframe_offset=(1, 1),
+        *args,
+        **kwargs)
 
     vertices = RGB_box.mesh_data.get_vertices()
     vertices += 0.5
@@ -160,7 +163,7 @@ def RGB_colourspace_volume_visual(colourspace='ITU-R BT.709',
 
     node = Node(parent)
 
-    colourspace = get_RGB_colourspace(colourspace)
+    colourspace = first_item(filter_RGB_colourspaces(colourspace))
 
     RGB_cube_f = RGB_identity_cube(
         width_segments=segments,
@@ -172,15 +175,11 @@ def RGB_colourspace_volume_visual(colourspace='ITU-R BT.709',
         parent=node)
 
     vertices = RGB_cube_f.mesh_data.get_vertices()
-    XYZ = RGB_to_XYZ(
-        vertices,
-        colourspace.whitepoint,
-        colourspace.whitepoint,
-        colourspace.RGB_to_XYZ_matrix)
+    XYZ = RGB_to_XYZ(vertices, colourspace.whitepoint, colourspace.whitepoint,
+                     colourspace.RGB_to_XYZ_matrix)
     value = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            XYZ, colourspace.whitepoint, reference_colourspace),
-        reference_colourspace)
+        XYZ_to_colourspace_model(XYZ, colourspace.whitepoint,
+                                 reference_colourspace), reference_colourspace)
     value[np.isnan(value)] = 0
 
     RGB_cube_f.mesh_data.set_vertices(value)
@@ -234,7 +233,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
         RGB colourspace whitepoint axis.
     """
 
-    colourspace = get_RGB_colourspace(colourspace)
+    colourspace = first_item(filter_RGB_colourspaces(colourspace))
     XYZ_o = xy_to_XYZ(colourspace.whitepoint + (0, ))
     XYZ_f = xy_to_XYZ(colourspace.whitepoint + (1.1, ))
     XYZ_l = np.vstack((XYZ_o, XYZ_f))
@@ -242,15 +241,10 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
     points = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            XYZ_l, illuminant, reference_colourspace),
+        XYZ_to_colourspace_model(XYZ_l, illuminant, reference_colourspace),
         reference_colourspace)
 
-    line = Line(points,
-                (1, 1, 1),
-                width=width,
-                method=method,
-                parent=parent)
+    line = Line(points, (1, 1, 1), width=width, method=method, parent=parent)
 
     return line
 
@@ -288,7 +282,7 @@ def RGB_colourspace_triangle_visual(colourspace='ITU-R BT.709',
     if uniform_colour is None:
         uniform_colour = (0.8, 0.8, 0.8)
 
-    colourspace = get_RGB_colourspace(colourspace)
+    colourspace = first_item(filter_RGB_colourspaces(colourspace))
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
@@ -302,10 +296,6 @@ def RGB_colourspace_triangle_visual(colourspace='ITU-R BT.709',
 
     RGB = np.hstack((uniform_colour, uniform_opacity)),
 
-    line = Line(ij,
-                RGB,
-                width=width,
-                method='agg',
-                parent=parent)
+    line = Line(ij, RGB, width=width, method='agg', parent=parent)
 
     return line

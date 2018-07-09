@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Box Visual
 ==========
@@ -24,8 +23,7 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['BoxVisual',
-           'Box']
+__all__ = ['BoxVisual', 'Box']
 
 
 class BoxVisual(PrimitiveVisual):
@@ -84,20 +82,13 @@ class BoxVisual(PrimitiveVisual):
                  wireframe=False,
                  wireframe_offset=None):
         vertices, faces, outline = create_box(width, height, depth,
-                                              width_segments,
-                                              height_segments,
-                                              depth_segments,
-                                              planes)
+                                              width_segments, height_segments,
+                                              depth_segments, planes)
 
-        PrimitiveVisual.__init__(
-            self,
-            vertices['position'],
-            outline if wireframe else faces,
-            uniform_colour,
-            uniform_opacity,
-            vertex_colours,
-            wireframe,
-            wireframe_offset)
+        PrimitiveVisual.__init__(self, vertices['position'], outline
+                                 if wireframe else faces, uniform_colour,
+                                 uniform_opacity, vertex_colours, wireframe,
+                                 wireframe_offset)
 
 
 Box = create_visual_node(BoxVisual)

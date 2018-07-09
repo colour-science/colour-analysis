@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Pointer's Gamut Visuals
 =======================
@@ -18,16 +17,10 @@ import numpy as np
 from vispy.color.color_array import ColorArray
 from vispy.scene.visuals import Line, Node
 
-from colour import (
-    Lab_to_XYZ,
-    LCHab_to_Lab,
-    POINTER_GAMUT_BOUNDARIES,
-    POINTER_GAMUT_DATA,
-    POINTER_GAMUT_ILLUMINANT,
-    XYZ_to_colourspace_model,
-    xy_to_XYZ)
-from colour.plotting.volume import (
-    common_colourspace_model_axis_reorder)
+from colour import (Lab_to_XYZ, LCHab_to_Lab, POINTER_GAMUT_BOUNDARIES,
+                    POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT, xy_to_XYZ)
+from colour.models import XYZ_to_colourspace_model
+from colour.plotting.volume import (common_colourspace_model_axis_reorder)
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Symbol
@@ -39,14 +32,13 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['POINTER_GAMUT_DATA',
-           'POINTER_GAMUT_BOUNDARIES',
-           'pointer_gamut_visual',
-           'pointer_gamut_boundaries_visual',
-           'pointer_gamut_hull_visual']
+__all__ = [
+    'POINTER_GAMUT_DATA', 'POINTER_GAMUT_BOUNDARIES', 'pointer_gamut_visual',
+    'pointer_gamut_boundaries_visual', 'pointer_gamut_hull_visual'
+]
 
-POINTER_GAMUT_DATA = Lab_to_XYZ(LCHab_to_Lab(POINTER_GAMUT_DATA),
-                                POINTER_GAMUT_ILLUMINANT)
+POINTER_GAMUT_DATA = Lab_to_XYZ(
+    LCHab_to_Lab(POINTER_GAMUT_DATA), POINTER_GAMUT_ILLUMINANT)
 """
 Pointer's Gamut data converted to *CIE XYZ* tristimulus values.
 
@@ -101,22 +93,20 @@ def pointer_gamut_visual(reference_colourspace='CIE xyY',
     """
 
     points = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            POINTER_GAMUT_DATA,
-            POINTER_GAMUT_ILLUMINANT,
-            reference_colourspace),
-        reference_colourspace)
+        XYZ_to_colourspace_model(POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT,
+                                 reference_colourspace), reference_colourspace)
 
     RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
     RGB_e = ColorArray(uniform_edge_colour, alpha=uniform_edge_opacity).rgba
 
-    markers = Symbol(symbol='cross',
-                     positions=points,
-                     size=size,
-                     edge_size=edge_size,
-                     face_colour=RGB,
-                     edge_colour=RGB_e,
-                     parent=parent)
+    markers = Symbol(
+        symbol='cross',
+        positions=points,
+        size=size,
+        edge_size=edge_size,
+        face_colour=RGB,
+        edge_colour=RGB_e,
+        parent=parent)
 
     return markers
 
@@ -157,18 +147,13 @@ def pointer_gamut_boundaries_visual(reference_colourspace='CIE xyY',
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
     points = common_colourspace_model_axis_reorder(
-        XYZ_to_colourspace_model(
-            XYZ, illuminant, reference_colourspace),
+        XYZ_to_colourspace_model(XYZ, illuminant, reference_colourspace),
         reference_colourspace)
     points[np.isnan(points)] = 0
 
     RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
-    line = Line(points,
-                RGB,
-                width=width,
-                method='agg',
-                parent=parent)
+    line = Line(points, RGB, width=width, method='agg', parent=parent)
 
     return line
 
@@ -212,8 +197,7 @@ def pointer_gamut_hull_visual(reference_colourspace='CIE xyY',
             XYZ_to_colourspace_model(
                 np.vstack((pointer_gamut_data[i],
                            pointer_gamut_data[i][0, ...])),
-                POINTER_GAMUT_ILLUMINANT,
-                reference_colourspace),
+                POINTER_GAMUT_ILLUMINANT, reference_colourspace),
             reference_colourspace)
 
         points[np.isnan(points)] = 0

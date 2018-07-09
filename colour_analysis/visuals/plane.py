@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Plane Visual
 ============
@@ -24,8 +23,7 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['PlaneVisual',
-           'Plane']
+__all__ = ['PlaneVisual', 'Plane']
 
 
 class PlaneVisual(PrimitiveVisual):
@@ -77,20 +75,13 @@ class PlaneVisual(PrimitiveVisual):
                  vertex_colours=None,
                  wireframe=False,
                  wireframe_offset=None):
-        vertices, faces, outline = create_plane(width, height,
-                                                width_segments,
-                                                height_segments,
-                                                direction)
+        vertices, faces, outline = create_plane(width, height, width_segments,
+                                                height_segments, direction)
 
-        PrimitiveVisual.__init__(
-            self,
-            vertices['position'],
-            outline if wireframe else faces,
-            uniform_colour,
-            uniform_opacity,
-            vertex_colours,
-            wireframe,
-            wireframe_offset)
+        PrimitiveVisual.__init__(self, vertices['position'], outline
+                                 if wireframe else faces, uniform_colour,
+                                 uniform_opacity, vertex_colours, wireframe,
+                                 wireframe_offset)
 
 
 Plane = create_visual_node(PlaneVisual)

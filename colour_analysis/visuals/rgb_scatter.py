@@ -14,9 +14,12 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.color.color_array import ColorArray
 
-from colour import DEFAULT_FLOAT_DTYPE, RGB_to_XYZ, XYZ_to_colourspace_model
-from colour.plotting import get_RGB_colourspace
-from colour.plotting.volume import (common_colourspace_model_axis_reorder)
+from colour import RGB_to_XYZ
+from colour.constants import DEFAULT_FLOAT_DTYPE
+from colour.models import XYZ_to_colourspace_model
+from colour.plotting import filter_RGB_colourspaces
+from colour.plotting.volume import common_colourspace_model_axis_reorder
+from colour.utilities import first_item
 
 from colour_analysis.visuals import Symbol
 
@@ -92,7 +95,7 @@ def RGB_scatter_visual(RGB,
         *RGB* scatter visual.
     """
 
-    colourspace = get_RGB_colourspace(colourspace)
+    colourspace = first_item(filter_RGB_colourspaces(colourspace))
 
     RGB = np.asarray(RGB)
 
@@ -113,8 +116,9 @@ def RGB_scatter_visual(RGB,
     RGB = np.clip(RGB, 0, 1)
 
     if uniform_colour is None:
-        RGB = np.hstack((RGB, np.full((RGB.shape[0], 1), uniform_opacity,
-                                      DEFAULT_FLOAT_DTYPE)))
+        RGB = np.hstack((RGB,
+                         np.full((RGB.shape[0], 1), uniform_opacity,
+                                 DEFAULT_FLOAT_DTYPE)))
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 

@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Commands
 ========
@@ -22,15 +21,13 @@ import traceback
 import warnings
 from vispy.app import run
 
-from colour import RGB_COLOURSPACES, is_openimageio_installed, read_image, \
-    warning
+from colour import RGB_COLOURSPACES, read_image
+from colour.utilities import warning
 
 from colour_analysis import __application_name__, __version__
 from colour_analysis.analysis import ColourAnalysis
-from colour_analysis.constants import (
-    DEFAULT_IMAGE_PATH,
-    LINEAR_IMAGE_FORMATS,
-    SETTINGS_FILE)
+from colour_analysis.constants import (DEFAULT_IMAGE_PATH,
+                                       LINEAR_IMAGE_FORMATS, SETTINGS_FILE)
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -39,10 +36,7 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['ManualAction',
-           'system_exit',
-           'command_line_arguments',
-           'main']
+__all__ = ['ManualAction', 'system_exit', 'command_line_arguments', 'main']
 
 
 class ManualAction(argparse.Action):
@@ -183,93 +177,106 @@ def command_line_arguments():
 
     parser = argparse.ArgumentParser(add_help=False)
 
-    parser.add_argument('-v',
-                        '--version',
-                        action='store_true',
-                        dest='version',
-                        help='Displays application release version.')
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='store_true',
+        dest='version',
+        help='Displays application release version.')
 
-    parser.add_argument('-h',
-                        '--help',
-                        action='help',
-                        help=('Displays this help message and exit. Please '
-                              'use -m/--manual for examples.'))
+    parser.add_argument(
+        '-h',
+        '--help',
+        action='help',
+        help=('Displays this help message and exit. Please '
+              'use -m/--manual for examples.'))
 
-    parser.add_argument('-m',
-                        '--manual',
-                        action=ManualAction,
-                        help='Displays detailed manual with usage examples.',
-                        nargs=0)
+    parser.add_argument(
+        '-m',
+        '--manual',
+        action=ManualAction,
+        help='Displays detailed manual with usage examples.',
+        nargs=0)
 
-    parser.add_argument('--input-image',
-                        '-i',
-                        action='store',
-                        dest='input_image',
-                        default=DEFAULT_IMAGE_PATH,
-                        help='Image to analyse.')
+    parser.add_argument(
+        '--input-image',
+        '-i',
+        action='store',
+        dest='input_image',
+        default=DEFAULT_IMAGE_PATH,
+        help='Image to analyse.')
 
-    parser.add_argument('--input-colourspace',
-                        '-c',
-                        action='store',
-                        dest='input_colourspace',
-                        default='ITU-R BT.709',
-                        help='Input image colourspace.')
+    parser.add_argument(
+        '--input-colourspace',
+        '-c',
+        action='store',
+        dest='input_colourspace',
+        default='ITU-R BT.709',
+        help='Input image colourspace.')
 
-    parser.add_argument('--input-oecf',
-                        '-f',
-                        action='store',
-                        dest='input_oecf',
-                        default='ITU-R BT.709',
-                        help='Input image OECF.')
+    parser.add_argument(
+        '--input-oecf',
+        '-f',
+        action='store',
+        dest='input_oecf',
+        default='ITU-R BT.709',
+        help='Input image OECF.')
 
-    parser.add_argument('--input-linearity',
-                        '-l',
-                        action='store',
-                        dest='input_linearity',
-                        default='auto',
-                        help='Input image linearity.')
+    parser.add_argument(
+        '--input-linearity',
+        '-l',
+        action='store',
+        dest='input_linearity',
+        default='auto',
+        help='Input image linearity.')
 
-    parser.add_argument('--input-resample',
-                        '-z',
-                        action='store',
-                        dest='input_resample',
-                        default=1,
-                        help='Input will be resampled by given factor.')
+    parser.add_argument(
+        '--input-resample',
+        '-z',
+        action='store',
+        dest='input_resample',
+        default=1,
+        help='Input will be resampled by given factor.')
 
-    parser.add_argument('--reference-colourspace',
-                        '-r',
-                        action='store',
-                        dest='reference_colourspace',
-                        default='CIE xyY',
-                        help='Reference colourspace to perform the analysis.')
+    parser.add_argument(
+        '--reference-colourspace',
+        '-r',
+        action='store',
+        dest='reference_colourspace',
+        default='CIE xyY',
+        help='Reference colourspace to perform the analysis.')
 
-    parser.add_argument('--correlate-colourspace',
-                        '-t',
-                        action='store',
-                        dest='correlate_colourspace',
-                        default='ACEScg',
-                        help='Correlate colourspace.')
+    parser.add_argument(
+        '--correlate-colourspace',
+        '-t',
+        action='store',
+        dest='correlate_colourspace',
+        default='ACEScg',
+        help='Correlate colourspace.')
 
-    parser.add_argument('--settings-file',
-                        '-s',
-                        action='store',
-                        dest='settings_file',
-                        default=None,
-                        help='Settings file.')
+    parser.add_argument(
+        '--settings-file',
+        '-s',
+        action='store',
+        dest='settings_file',
+        default=None,
+        help='Settings file.')
 
-    parser.add_argument('--layout',
-                        '-y',
-                        action='store',
-                        dest='layout',
-                        default='layout_1',
-                        help='Application layout.')
+    parser.add_argument(
+        '--layout',
+        '-y',
+        action='store',
+        dest='layout',
+        default='layout_1',
+        help='Application layout.')
 
-    parser.add_argument('--enable-warnings',
-                        '-w',
-                        action='store_true',
-                        dest='enable_warnings',
-                        default=False,
-                        help='Enable warnings.')
+    parser.add_argument(
+        '--enable-warnings',
+        '-w',
+        action='store_true',
+        dest='enable_warnings',
+        default=False,
+        help='Enable warnings.')
 
     return parser.parse_args()
 
@@ -294,8 +301,9 @@ def main():
 
     settings = json.load(open(SETTINGS_FILE))
     if arguments.settings_file is not None:
-        assert os.path.exists(arguments.settings_file), (
-            '"{0}" file doesn\'t exists!'.format(arguments.settings_file))
+        assert os.path.exists(
+            arguments.settings_file), ('"{0}" file doesn\'t exists!'.format(
+                arguments.settings_file))
         settings.update(json.load(open(arguments.settings_file)))
 
     input_linearity = arguments.input_linearity.lower()
@@ -327,8 +335,8 @@ def main():
         # Keeping RGB channels only.
         image = image[..., 0:3]
 
-        image = image[::int(arguments.input_resample),
-                ::int(arguments.input_resample)]
+        image = image[::int(arguments.input_resample), ::int(
+            arguments.input_resample)]
     except ImportError:
         warning(
             '"OpenImageIO" is not available, image reading is not supported, '
@@ -339,15 +347,10 @@ def main():
     if not arguments.enable_warnings:
         warnings.filterwarnings("ignore")
 
-    ColourAnalysis(image,
-                   arguments.input_image,
-                   arguments.input_colourspace,
-                   arguments.input_oecf,
-                   input_linear,
+    ColourAnalysis(image, arguments.input_image, arguments.input_colourspace,
+                   arguments.input_oecf, input_linear,
                    arguments.reference_colourspace,
-                   arguments.correlate_colourspace,
-                   settings,
-                   arguments.layout)
+                   arguments.correlate_colourspace, settings, arguments.layout)
     return run()
 
 

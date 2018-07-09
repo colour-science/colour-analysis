@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Image Visual
 ============
@@ -15,7 +14,6 @@ from __future__ import division, unicode_literals
 import numpy as np
 from vispy.scene.visuals import Image
 
-
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
 __license__ = 'New BSD License - http://opensource.org/licenses/BSD-3-Clause'
@@ -26,8 +24,7 @@ __status__ = 'Production'
 __all__ = ['image_visual']
 
 
-def image_visual(image,
-                 parent=None):
+def image_visual(image, parent=None):
     """
     Returns a :class:`vispy.scene.visuals.Image` class instance using given
     image.

@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Constants
 =========
@@ -14,7 +13,8 @@ import numpy as np
 import os
 import scipy.ndimage
 
-from colour import COLOURSPACE_MODELS_LABELS, ILLUMINANTS
+from colour import ILLUMINANTS
+from colour.models import COLOURSPACE_MODELS_LABELS
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -23,18 +23,13 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['RESOURCES_DIRECTORY',
-           'SETTINGS_FILE',
-           'IMAGES_DIRECTORY',
-           'DEFAULT_IMAGE_PATH',
-           'DEFAULT_FAILSAFE_IMAGE',
-           'DEFAULT_ENCODING_CCTF',
-           'DEFAULT_PLOTTING_ILLUMINANT',
-           'REFERENCE_COLOURSPACES',
-           'REFERENCE_COLOURSPACES_TITLES',
-           'CHROMATICITY_DIAGRAMS',
-           'CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE',
-           'LINEAR_IMAGE_FORMATS']
+__all__ = [
+    'RESOURCES_DIRECTORY', 'SETTINGS_FILE', 'IMAGES_DIRECTORY',
+    'DEFAULT_IMAGE_PATH', 'DEFAULT_FAILSAFE_IMAGE', 'DEFAULT_ENCODING_CCTF',
+    'DEFAULT_PLOTTING_ILLUMINANT', 'REFERENCE_COLOURSPACES',
+    'REFERENCE_COLOURSPACES_TITLES', 'CHROMATICITY_DIAGRAMS',
+    'CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE', 'LINEAR_IMAGE_FORMATS'
+]
 
 RESOURCES_DIRECTORY = os.path.join(os.path.dirname(__file__), 'resources')
 """
@@ -101,9 +96,9 @@ REFERENCE_COLOURSPACES = (
     'CIE XYZ',
     'CIE xyY',
     'CIE Lab',
-# 'CIE LCHab',
+    # 'CIE LCHab',
     'CIE Luv',
-# 'CIE LCHuv',
+    # 'CIE LCHuv',
     'CIE UCS',
     'CIE UVW',
     'IPT',
@@ -136,7 +131,8 @@ CHROMATICITY_DIAGRAMS : tuple
 CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE = {
     'CIE 1931': 'CIE xy',
     'CIE 1960 UCS': 'CIE UCS uv',
-    'CIE 1976 UCS': 'CIE Luv uv'}
+    'CIE 1976 UCS': 'CIE Luv uv'
+}
 """
 Chromaticity diagrams associated colourspace.
 

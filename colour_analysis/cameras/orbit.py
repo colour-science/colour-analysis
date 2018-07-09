@@ -5,7 +5,7 @@ from __future__ import division
 import numpy as np
 from vispy.scene.cameras import TurntableCamera
 
-from colour import is_numeric
+from colour.utilities import is_numeric
 
 
 class OrbitCamera(TurntableCamera):
@@ -17,12 +17,7 @@ class OrbitCamera(TurntableCamera):
                  distance=None,
                  translate_speed=1.0,
                  **kwargs):
-        TurntableCamera.__init__(self,
-                                 fov,
-                                 elevation,
-                                 azimuth,
-                                 roll,
-                                 distance,
+        TurntableCamera.__init__(self, fov, elevation, azimuth, roll, distance,
                                  **kwargs)
 
         self._translate_speed = None
@@ -53,8 +48,8 @@ class OrbitCamera(TurntableCamera):
         """
 
         if value is not None:
-            assert is_numeric(value), (
-                '"{0}" is not a numeric!'.format('translate_speed', value))
+            assert is_numeric(value), ('"{0}" is not a numeric!'.format(
+                'translate_speed', value))
         self._translate_speed = value
 
     def _dist_to_trans(self, distance):

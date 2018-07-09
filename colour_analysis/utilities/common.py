@@ -1,6 +1,5 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
 Common Utilities
 ================
@@ -10,15 +9,8 @@ Defines common utilities objects that don't fall in any specific category.
 
 from __future__ import division, unicode_literals
 
-from colour import (
-    Luv_to_uv,
-    Luv_uv_to_xy,
-    UCS_to_uv,
-    UCS_uv_to_xy,
-    xy_to_XYZ,
-    XYZ_to_Luv,
-    XYZ_to_UCS,
-    XYZ_to_xy)
+from colour import (Luv_to_uv, Luv_uv_to_xy, UCS_to_uv, UCS_uv_to_xy,
+                    xy_to_XYZ, XYZ_to_Luv, XYZ_to_UCS, XYZ_to_xy)
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -27,16 +19,22 @@ __maintainer__ = 'Colour Developers'
 __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
-__all__ = ['CHROMATICITY_DIAGRAM_TRANSFORMATIONS',
-           'Cycle']
+__all__ = ['CHROMATICITY_DIAGRAM_TRANSFORMATIONS', 'Cycle']
 
 CHROMATICITY_DIAGRAM_TRANSFORMATIONS = {
-    'CIE 1931': {'XYZ_to_ij': lambda a, i: XYZ_to_xy(a, i),
-                 'ij_to_XYZ': lambda a, i: xy_to_XYZ(a)},
-    'CIE 1960 UCS': {'XYZ_to_ij': lambda a, i: UCS_to_uv(XYZ_to_UCS(a)),
-                     'ij_to_XYZ': lambda a, i: xy_to_XYZ(UCS_uv_to_xy(a))},
-    'CIE 1976 UCS': {'XYZ_to_ij': lambda a, i: Luv_to_uv(XYZ_to_Luv(a, i), i),
-                     'ij_to_XYZ': lambda a, i: xy_to_XYZ(Luv_uv_to_xy(a))}}
+    'CIE 1931': {
+        'XYZ_to_ij': lambda a, i: XYZ_to_xy(a, i),
+        'ij_to_XYZ': lambda a, i: xy_to_XYZ(a)
+    },
+    'CIE 1960 UCS': {
+        'XYZ_to_ij': lambda a, i: UCS_to_uv(XYZ_to_UCS(a)),
+        'ij_to_XYZ': lambda a, i: xy_to_XYZ(UCS_uv_to_xy(a))
+    },
+    'CIE 1976 UCS': {
+        'XYZ_to_ij': lambda a, i: Luv_to_uv(XYZ_to_Luv(a, i), i),
+        'ij_to_XYZ': lambda a, i: xy_to_XYZ(Luv_uv_to_xy(a))
+    }
+}
 """
 Chromaticity diagram specific helper conversion objects.
 

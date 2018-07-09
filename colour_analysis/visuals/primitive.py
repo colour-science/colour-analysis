@@ -18,7 +18,7 @@ from vispy.gloo import set_state
 from vispy.scene.visuals import create_visual_node
 from vispy.visuals.mesh import MeshVisual
 
-from colour import DEFAULT_FLOAT_DTYPE
+from colour.constants import DEFAULT_FLOAT_DTYPE
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -75,9 +75,10 @@ class PrimitiveVisual(MeshVisual):
         uniform_colour = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
         if vertex_colours is not None:
             if vertex_colours.shape[-1] == 3:
-                vertex_colours = np.hstack((vertex_colours, np.full(
-                    (vertex_colours.shape[0],
-                     1), uniform_opacity, DEFAULT_FLOAT_DTYPE)))
+                vertex_colours = np.hstack(
+                    (vertex_colours,
+                     np.full((vertex_colours.shape[0], 1), uniform_opacity,
+                             DEFAULT_FLOAT_DTYPE)))
             else:
                 vertex_colours[..., 3] = uniform_opacity
 

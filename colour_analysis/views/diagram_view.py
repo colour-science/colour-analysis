@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 """
 Diagram View
 ============
@@ -18,22 +17,17 @@ from vispy.scene.cameras import PanZoomCamera
 from vispy.scene.visuals import GridLines
 from vispy.scene.widgets import Label, ViewBox, Widget
 
-from colour import RGB_COLOURSPACES, is_string
+from colour import RGB_COLOURSPACES
+from colour.utilities import is_string
 
 from colour_analysis.constants import (
-    CHROMATICITY_DIAGRAMS,
-    CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE)
+    CHROMATICITY_DIAGRAMS, CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE)
 from colour_analysis.utilities import Cycle
 from colour_analysis.visuals import (
-    CIE_1931_chromaticity_diagram,
-    CIE_1960_UCS_chromaticity_diagram,
-    CIE_1976_UCS_chromaticity_diagram,
-    RGB_colourspace_triangle_visual,
-    RGB_scatter_visual,
-    axis_visual,
-    pointer_gamut_boundaries_visual,
-    pointer_gamut_visual,
-    spectral_locus_visual)
+    CIE_1931_chromaticity_diagram, CIE_1960_UCS_chromaticity_diagram,
+    CIE_1976_UCS_chromaticity_diagram, RGB_colourspace_triangle_visual,
+    RGB_scatter_visual, axis_visual, pointer_gamut_boundaries_visual,
+    pointer_gamut_visual, spectral_locus_visual)
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2018 - Colour Developers'
@@ -136,13 +130,11 @@ class DiagramView(ViewBox):
         self._axis_visual = None
 
         self._visuals = ('chromaticity_diagram_visual',
-                         'spectral_locus_visual',
-                         'RGB_scatter_visual',
+                         'spectral_locus_visual', 'RGB_scatter_visual',
                          'input_colourspace_visual',
                          'correlate_colourspace_visual',
                          'pointer_gamut_visual',
-                         'pointer_gamut_boundaries_visual',
-                         'grid_visual',
+                         'pointer_gamut_boundaries_visual', 'grid_visual',
                          'axis_visual')
 
         self._visuals_visibility = None
@@ -192,9 +184,9 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), (
-                ('"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
-                 'or "matrix" instance!').format('image', value))
+            assert isinstance(value, (tuple, list, np.ndarray, np.matrix)), ((
+                '"{0}" attribute: "{1}" is not a "tuple", "list", "ndarray" '
+                'or "matrix" instance!').format('image', value))
 
         self._image = value
 
@@ -231,13 +223,13 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('input_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'input_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
-                '"{1}".').format(
-                value, ', '.join(sorted(RGB_COLOURSPACES.keys())))
+                '"{1}".').format(value, ', '.join(
+                    sorted(RGB_COLOURSPACES.keys())))
 
         self._input_colourspace = value
 
@@ -272,14 +264,13 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format(
-                    'correlate_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'correlate_colourspace', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" colourspace not found in factory RGB colourspaces: '
                 '"{1}".').format(value, ', '.join(
-                sorted(RGB_COLOURSPACES.keys())))
+                    sorted(RGB_COLOURSPACES.keys())))
         self._correlate_colourspace = value
 
         if self._initialised:
@@ -313,13 +304,13 @@ class DiagramView(ViewBox):
         """
 
         if value is not None:
-            assert is_string(value), (
-                ('"{0}" attribute: "{1}" is not a '
-                 '"string" like object!').format('input_colourspace', value))
+            assert is_string(value), (('"{0}" attribute: "{1}" is not a '
+                                       '"string" like object!').format(
+                                           'input_colourspace', value))
             assert value in CHROMATICITY_DIAGRAMS, (
                 '"{0}" diagram not found in factory chromaticity diagrams: '
                 '"{1}".').format(value, ', '.join(
-                sorted(CHROMATICITY_DIAGRAMS.keys())))
+                    sorted(CHROMATICITY_DIAGRAMS.keys())))
 
         if self._initialised:
             self._store_visuals_visibility()
@@ -346,9 +337,11 @@ class DiagramView(ViewBox):
 
         diagram = self._diagram if diagram is None else diagram
 
-        diagrams = {'CIE 1931': CIE_1931_chromaticity_diagram,
-                    'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
-                    'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram}
+        diagrams = {
+            'CIE 1931': CIE_1931_chromaticity_diagram,
+            'CIE 1960 UCS': CIE_1960_UCS_chromaticity_diagram,
+            'CIE 1976 UCS': CIE_1976_UCS_chromaticity_diagram
+        }
 
         self._chromaticity_diagram_visual = diagrams[diagram]()
 
@@ -402,9 +395,10 @@ class DiagramView(ViewBox):
         """
 
         self._pointer_gamut_boundaries_visual = (
-            pointer_gamut_boundaries_visual(reference_colourspace=(
-                CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[
-                    self._diagram])))
+            pointer_gamut_boundaries_visual(
+                reference_colourspace=(
+                    CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE[
+                        self._diagram])))
 
     def _create_input_colourspace_visual(self):
         """
@@ -456,8 +450,7 @@ class DiagramView(ViewBox):
         Creates the *Diagram View* camera.
         """
 
-        self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1),
-                                    aspect=1)
+        self.camera = PanZoomCamera(rect=(-0.1, -0.1, 1.1, 1.1), aspect=1)
 
     def _attach_visuals(self):
         """
@@ -485,8 +478,7 @@ class DiagramView(ViewBox):
 
         visibility = OrderedDict()
         for visual in self._visuals:
-            visibility[visual] = (
-                getattr(self, '_{0}'.format(visual)).visible)
+            visibility[visual] = (getattr(self, '_{0}'.format(visual)).visible)
 
         self._visuals_visibility = visibility
 
@@ -498,8 +490,7 @@ class DiagramView(ViewBox):
 
         visibility = self._visuals_visibility
         for visual in self._visuals:
-            getattr(self, '_{0}'.format(visual)).visible = (
-                visibility[visual])
+            getattr(self, '_{0}'.format(visual)).visible = (visibility[visual])
 
     def _create_label(self):
         """
@@ -650,8 +641,7 @@ class DiagramView(ViewBox):
             Definition success.
         """
 
-        self._axis_visual.visible = (
-            not self._axis_visual.visible)
+        self._axis_visual.visible = (not self._axis_visual.visible)
 
         return True
 

@@ -16,9 +16,10 @@ from __future__ import division, unicode_literals
 import numpy as np
 from scipy.spatial import Delaunay
 
-from colour import (XYZ_to_sRGB, DEFAULT_FLOAT_DTYPE, normalise_maximum,
-                    tstack)
-from colour.plotting import get_cmfs
+from colour import XYZ_to_sRGB
+from colour.constants import DEFAULT_FLOAT_DTYPE
+from colour.plotting import filter_cmfs
+from colour.utilities import first_item, normalise_maximum, tstack
 
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
@@ -65,7 +66,7 @@ def chromaticity_diagram_visual(samples=256,
         Chromaticity diagram visual.
     """
 
-    cmfs = get_cmfs(cmfs)
+    cmfs = first_item(filter_cmfs(cmfs))
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
