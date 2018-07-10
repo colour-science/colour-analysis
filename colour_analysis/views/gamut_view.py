@@ -14,6 +14,7 @@ from collections import OrderedDict, namedtuple
 
 import numpy as np
 from vispy.scene.widgets import Label, ViewBox, Widget
+from vispy.scene.visuals import GridLines
 
 from colour import RGB_COLOURSPACES
 from colour.utilities import is_string
@@ -33,7 +34,8 @@ __email__ = 'colour-science@googlegroups.com'
 __status__ = 'Production'
 
 __all__ = [
-    'CameraPreset', 'RGB_colourspaceVisualPreset', 'AxisPreset', 'GamutView'
+    'CameraPreset', 'RGB_ColourspaceVisualPreset', 'GridVisualPreset',
+    'AxisPreset', 'GamutView'
 ]
 
 CameraPreset = namedtuple(
@@ -46,14 +48,22 @@ Defines a camera settings preset.
 CameraPreset : namedtuple
 """
 
-RGB_colourspaceVisualPreset = namedtuple(
-    'RGB_colourspaceVisualPreset',
+RGB_ColourspaceVisualPreset = namedtuple(
+    'RGB_ColourspaceVisualPreset',
     ('name', 'description', 'segments', 'uniform_colour', 'uniform_opacity',
      'wireframe', 'wireframe_colour', 'wireframe_opacity'))
 """
 Defines a *RGB* colourspace volume visual style preset.
 
-RGB_colourspaceVisualPreset : namedtuple
+RGB_ColourspaceVisualPreset : namedtuple
+"""
+
+GridVisualPreset = namedtuple('GridVisualPreset',
+                              ('name', 'description', 'uniform_colour'))
+"""
+Defines a grid visual style preset.
+
+GridVisualPreset : namedtuple
 """
 
 AxisPreset = namedtuple(
@@ -175,12 +185,13 @@ class GamutView(ViewBox):
         self._pointer_gamut_visual = None
         self._pointer_gamut_hull_visual = None
         self._spectral_locus_visual = None
+        self._grid_visual = None
         self._axis_visual = None
 
         self._visuals = ('RGB_scatter_visual', 'input_colourspace_visual',
                          'correlate_colourspace_visual',
                          'pointer_gamut_visual', 'pointer_gamut_hull_visual',
-                         'spectral_locus_visual', 'axis_visual')
+                         'spectral_locus_visual', 'grid_visual', 'axis_visual')
 
         self._visuals_visibility = None
 
@@ -435,16 +446,24 @@ class GamutView(ViewBox):
             self._visuals_style_presets[visual] = []
 
             for style in styles:
-                self._visuals_style_presets[style['visual']].append(
-                    RGB_colourspaceVisualPreset(
-                        name=style['name'],
-                        description=style['description'],
-                        segments=style['segments'],
-                        uniform_colour=style['uniform_colour'],
-                        uniform_opacity=style['uniform_opacity'],
-                        wireframe=style['wireframe'],
-                        wireframe_colour=style['wireframe_colour'],
-                        wireframe_opacity=style['wireframe_opacity']))
+                if visual in ('input_colourspace_visual',
+                              'correlate_colourspace_visual'):
+                    self._visuals_style_presets[style['visual']].append(
+                        RGB_ColourspaceVisualPreset(
+                            name=style['name'],
+                            description=style['description'],
+                            segments=style['segments'],
+                            uniform_colour=style['uniform_colour'],
+                            uniform_opacity=style['uniform_opacity'],
+                            wireframe=style['wireframe'],
+                            wireframe_colour=style['wireframe_colour'],
+                            wireframe_opacity=style['wireframe_opacity']))
+                elif visual in 'grid_visual':
+                    self._visuals_style_presets[style['visual']].append(
+                        GridVisualPreset(
+                            name=style['name'],
+                            description=style['description'],
+                            uniform_colour=style['uniform_colour']))
 
             self._visuals_style_presets[visual] = Cycle(
                 self._visuals_style_presets[visual])
@@ -471,6 +490,21 @@ class GamutView(ViewBox):
         self._create_visuals_style_presets()
         self._create_axis_presets()
 
+    def _create_grid_visual(self, style=None):
+        """
+        Creates the grid visual.
+
+        Parameters
+        ----------
+        style : GridVisualPreset
+            Grid visual style.
+        """
+
+        style = (self._visuals_style_presets['grid_visual'].current_item()
+                 if style is None else style)
+
+        self._grid_visual = GridLines(color=style.uniform_colour)
+
     def _create_RGB_colourspace_visual(self, colourspace, style):
         """
         Creates a *RGB* colourspace volume visual with given colourspace and
@@ -491,7 +525,7 @@ class GamutView(ViewBox):
             'Xtreme RGB', 'sRGB'}**,
             :class:`colour.RGB_Colourspace` class instance name defining the
             colourspace the visual will be using.
-        style : RGB_colourspaceVisualPreset
+        style : RGB_ColourspaceVisualPreset
             *RGB* colourspace volume visual style.
 
         Returns
@@ -517,7 +551,7 @@ class GamutView(ViewBox):
 
         Parameters
         ----------
-        style : RGB_colourspaceVisualPreset
+        style : RGB_ColourspaceVisualPreset
             *RGB* colourspace volume visual style.
         """
 
@@ -535,7 +569,7 @@ class GamutView(ViewBox):
 
         Parameters
         ----------
-        style : RGB_colourspaceVisualPreset
+        style : RGB_ColourspaceVisualPreset
             *RGB* colourspace volume visual style.
         """
 
@@ -653,7 +687,7 @@ class GamutView(ViewBox):
 
         visibility = OrderedDict()
         for visual in self._visuals:
-            visibility[visual] = (getattr(self, '_{0}'.format(visual)).visible)
+            visibility[visual] = getattr(self, '_{0}'.format(visual)).visible
 
         self._visuals_visibility = visibility
 
@@ -874,6 +908,21 @@ class GamutView(ViewBox):
         self._detach_visuals()
         self._create_spectral_locus_visual()
         self._attach_visuals()
+
+        return True
+
+    def toggle_grid_visual_visibility_action(self):
+        """
+        Defines the slot triggered by the *toggle_grid_visual_visibility*
+        action.
+
+        Returns
+        -------
+        bool
+            Definition success.
+        """
+
+        self._grid_visual.visible = not self._grid_visual.visible
 
         return True
 

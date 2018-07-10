@@ -478,7 +478,7 @@ class DiagramView(ViewBox):
 
         visibility = OrderedDict()
         for visual in self._visuals:
-            visibility[visual] = (getattr(self, '_{0}'.format(visual)).visible)
+            visibility[visual] = getattr(self, '_{0}'.format(visual)).visible
 
         self._visuals_visibility = visibility
 

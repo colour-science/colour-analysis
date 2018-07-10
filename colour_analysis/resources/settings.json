@@ -1,13 +1,14 @@
 {
   "scene_canvas": {
+    "samples": 8,
+    "size": [
+      1280,
+      720
+    ],
     "scene_canvas_background_colour": [
       0.2,
       0.2,
       0.2
-    ],
-    "size": [
-      1280,
-      720
     ],
     "views_background_colour": [
       0.3,
@@ -15,11 +16,10 @@
       0.3
     ],
     "views_border_colour": [
-      0.35,
-      0.35,
-      0.35
-    ],
-    "samples": 4
+      0.4,
+      0.4,
+      0.4
+    ]
   },
   "layouts": [
     {
@@ -386,6 +386,48 @@
   },
   "styles": {
     "gamut_view": {
+      "grid_visual": [
+        {
+          "name": "grid_visual_style_1",
+          "description": "Grid - Visual Style 1",
+          "visual": "grid_visual",
+          "uniform_colour": [
+            0.1,
+            0.1,
+            0.1
+          ]
+        },
+        {
+          "name": "grid_visual_style_2",
+          "description": "Grid - Visual Style 2",
+          "visual": "grid_visual",
+          "uniform_colour": [
+            0.2,
+            0.2,
+            0.2
+          ]
+        },
+        {
+          "name": "grid_visual_style_3",
+          "description": "Grid - Visual Style 3",
+          "visual": "grid_visual",
+          "uniform_colour": [
+            0.8,
+            0.8,
+            0.8
+          ]
+        },
+        {
+          "name": "grid_visual_style_4",
+          "description": "Grid - Visual Style 4",
+          "visual": "grid_visual",
+          "uniform_colour": [
+            0.4,
+            0.6,
+            0.8
+          ]
+        }
+      ],
       "input_colourspace_visual": [
         {
           "name": "input_colourspace_visual_style_1",
@@ -393,7 +435,7 @@
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
-          "uniform_opacity": 0.5,
+          "uniform_opacity": 1.0,
           "wireframe": true,
           "wireframe_colour": null,
           "wireframe_opacity": 1.0
@@ -404,7 +446,7 @@
           "visual": "input_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
-          "uniform_opacity": 0.5,
+          "uniform_opacity": 0.75,
           "wireframe": false,
           "wireframe_colour": null,
           "wireframe_opacity": 1.0
@@ -493,7 +535,7 @@
           "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
-          "uniform_opacity": 0.5,
+          "uniform_opacity": 0.75,
           "wireframe": false,
           "wireframe_colour": null,
           "wireframe_opacity": 1.0
@@ -504,7 +546,7 @@
           "visual": "correlate_colourspace_visual",
           "segments": 16,
           "uniform_colour": null,
-          "uniform_opacity": 0.5,
+          "uniform_opacity": 0.75,
           "wireframe": true,
           "wireframe_colour": null,
           "wireframe_opacity": 1.0
@@ -520,7 +562,7 @@
         "reference_colourspace": "CIE XYZ",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 3.0,
         "translate_speed": 0.25,
         "depth_value": 100,
@@ -537,7 +579,7 @@
         "reference_colourspace": "CIE xyY",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 2.0,
         "translate_speed": 0.25,
         "depth_value": 100,
@@ -554,7 +596,7 @@
         "reference_colourspace": "CIE Lab",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 500.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -571,7 +613,7 @@
         "reference_colourspace": "CIE Luv",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 500.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -588,7 +630,7 @@
         "reference_colourspace": "CIE UCS",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 3.0,
         "translate_speed": 0.25,
         "depth_value": 100,
@@ -605,7 +647,7 @@
         "reference_colourspace": "CIE UVW",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 400.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -622,7 +664,7 @@
         "reference_colourspace": "IPT",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 3.0,
         "translate_speed": 0.25,
         "depth_value": 100,
@@ -639,7 +681,7 @@
         "reference_colourspace": "CIE LCHab",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 500.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -656,7 +698,7 @@
         "reference_colourspace": "CIE LCHuv",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 500.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -673,7 +715,7 @@
         "reference_colourspace": "Hunter Lab",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 250.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
@@ -690,7 +732,7 @@
         "reference_colourspace": "Hunter Rdab",
         "fov": 45,
         "elevation": 30,
-        "azimuth": 30,
+        "azimuth": 15,
         "distance": 250.0,
         "translate_speed": 8.0,
         "depth_value": 1000,
