@@ -19,7 +19,7 @@ from vispy.scene.visuals import Node, Line
 from colour import RGB_to_XYZ, xy_to_XYZ
 from colour.models import XYZ_to_colourspace_model
 from colour.plotting import filter_RGB_colourspaces
-from colour.plotting.volume import (common_colourspace_model_axis_reorder)
+from colour.plotting.volume import common_colourspace_model_axis_reorder
 from colour.utilities import first_item
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
