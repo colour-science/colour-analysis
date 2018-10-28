@@ -95,7 +95,7 @@ def RGB_scatter_visual(RGB,
         *RGB* scatter visual.
     """
 
-    colourspace = first_item(filter_RGB_colourspaces(colourspace))
+    colourspace = first_item(filter_RGB_colourspaces(colourspace).values())
 
     RGB = np.asarray(RGB)
 

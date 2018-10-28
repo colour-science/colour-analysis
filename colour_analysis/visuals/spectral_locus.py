@@ -73,7 +73,7 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
         Spectral locus visual.
     """
 
-    cmfs = first_item(filter_cmfs(cmfs))
+    cmfs = first_item(filter_cmfs(cmfs).values())
     XYZ = cmfs.values
 
     XYZ = np.vstack((XYZ, XYZ[0, ...]))
@@ -152,7 +152,7 @@ def chromaticity_diagram_construction_visual(
         parent=node)
 
     lines = []
-    for XYZ in first_item(filter_cmfs(cmfs)).values:
+    for XYZ in first_item(filter_cmfs(cmfs).values()).values:
         lines.append(XYZ * 1.75)
         lines.append((0, 0, 0))
     lines = np.array(lines)

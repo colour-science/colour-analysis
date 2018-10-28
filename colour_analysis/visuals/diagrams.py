@@ -66,7 +66,7 @@ def chromaticity_diagram_visual(samples=256,
         Chromaticity diagram visual.
     """
 
-    cmfs = first_item(filter_cmfs(cmfs))
+    cmfs = first_item(filter_cmfs(cmfs).values())
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 

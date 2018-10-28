@@ -163,7 +163,7 @@ def RGB_colourspace_volume_visual(colourspace='ITU-R BT.709',
 
     node = Node(parent)
 
-    colourspace = first_item(filter_RGB_colourspaces(colourspace))
+    colourspace = first_item(filter_RGB_colourspaces(colourspace).values())
 
     RGB_cube_f = RGB_identity_cube(
         width_segments=segments,
@@ -233,7 +233,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
         RGB colourspace whitepoint axis.
     """
 
-    colourspace = first_item(filter_RGB_colourspaces(colourspace))
+    colourspace = first_item(filter_RGB_colourspaces(colourspace).values())
     XYZ_o = xy_to_XYZ(colourspace.whitepoint + (0, ))
     XYZ_f = xy_to_XYZ(colourspace.whitepoint + (1.1, ))
     XYZ_l = np.vstack((XYZ_o, XYZ_f))
@@ -282,7 +282,7 @@ def RGB_colourspace_triangle_visual(colourspace='ITU-R BT.709',
     if uniform_colour is None:
         uniform_colour = (0.8, 0.8, 0.8)
 
-    colourspace = first_item(filter_RGB_colourspaces(colourspace))
+    colourspace = first_item(filter_RGB_colourspaces(colourspace).values())
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
