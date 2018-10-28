@@ -35,10 +35,10 @@ class ConsoleView(Console):
 
     Other Parameters
     ----------------
-    \*args : list, optional
+    \\*args : list, optional
         Arguments passed to :class:`vispy.scene.widgets.Console` class
         constructor.
-    \**kwargs : dict, optional
+    \\**kwargs : dict, optional
         Keywords arguments passed to :class:`vispy.scene.widgets.Console`
         class constructor.
 

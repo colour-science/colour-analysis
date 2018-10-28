@@ -76,10 +76,10 @@ def RGB_identity_cube(width_segments=16,
 
     Other Parameters
     ----------------
-    \*args : list, optional
+    \\*args : list, optional
         Arguments passed to :class:`colour_analysis.visuals.Box` class
         constructor.
-    \**kwargs : dict, optional
+    \\**kwargs : dict, optional
         Keywords arguments passed to :class:`colour_analysis.visuals.Box` class
         constructor.
     """

@@ -65,7 +65,7 @@ class DiagramView(ViewBox):
 
     Other Parameters
     ----------------
-    \**kwargs : dict, optional
+    \\**kwargs : dict, optional
         Keywords arguments passed to
         :class:`vispy.scene.widgets.viewbox.Viewbox` class constructor.
 
