@@ -76,7 +76,7 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
     cmfs = first_item(filter_cmfs(cmfs).values())
     XYZ = cmfs.values
 
-    XYZ = np.vstack((XYZ, XYZ[0, ...]))
+    XYZ = np.vstack([XYZ, XYZ[0, ...]])
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
@@ -87,9 +87,9 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
 
     if uniform_colour is None:
         RGB = normalise_maximum(XYZ_to_sRGB(XYZ, illuminant), axis=-1)
-        RGB = np.hstack((RGB,
+        RGB = np.hstack([RGB,
                          np.full((RGB.shape[0], 1), uniform_opacity,
-                                 DEFAULT_FLOAT_DTYPE)))
+                                 DEFAULT_FLOAT_DTYPE)])
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 

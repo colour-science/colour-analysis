@@ -295,7 +295,7 @@ class ImageView(ViewBox):
 
             # TODO: Investigate why stacking implies that image needs to be
             # inverted.
-            image = 1 - tstack((image, image, image))
+            image = 1 - tstack([image, image, image])
             has_overlay = True
 
         if self._display_hdr_colours:

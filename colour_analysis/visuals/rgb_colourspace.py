@@ -236,7 +236,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
     colourspace = first_item(filter_RGB_colourspaces(colourspace).values())
     XYZ_o = xy_to_XYZ(colourspace.whitepoint + (0, ))
     XYZ_f = xy_to_XYZ(colourspace.whitepoint + (1.1, ))
-    XYZ_l = np.vstack((XYZ_o, XYZ_f))
+    XYZ_l = np.vstack([XYZ_o, XYZ_f])
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
@@ -290,11 +290,11 @@ def RGB_colourspace_triangle_visual(colourspace='ITU-R BT.709',
 
     ij = XYZ_to_ij(xy_to_XYZ(colourspace.primaries), illuminant)
     # TODO: Remove following hack dealing with 'agg' method issues.
-    ij = np.vstack((ij[-1, ...], ij, ij[0, ...]))
+    ij = np.vstack([ij[-1, ...], ij, ij[0, ...]])
 
     ij[np.isnan(ij)] = 0
 
-    RGB = np.hstack((uniform_colour, uniform_opacity)),
+    RGB = np.hstack([uniform_colour, uniform_opacity])
 
     line = Line(ij, RGB, width=width, method='agg', parent=parent)
 

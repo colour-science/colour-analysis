@@ -141,8 +141,8 @@ def pointer_gamut_boundaries_visual(reference_colourspace='CIE xyY',
         Pointer's Gamut boundaries visual.
     """
 
-    XYZ = np.vstack((POINTER_GAMUT_BOUNDARIES,
-                     POINTER_GAMUT_BOUNDARIES[0, ...]))
+    XYZ = np.vstack([POINTER_GAMUT_BOUNDARIES,
+                     POINTER_GAMUT_BOUNDARIES[0, ...]])
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
@@ -195,8 +195,8 @@ def pointer_gamut_hull_visual(reference_colourspace='CIE xyY',
     for i in range(16):
         points = common_colourspace_model_axis_reorder(
             XYZ_to_colourspace_model(
-                np.vstack((pointer_gamut_data[i],
-                           pointer_gamut_data[i][0, ...])),
+                np.vstack([pointer_gamut_data[i],
+                           pointer_gamut_data[i][0, ...]]),
                 POINTER_GAMUT_ILLUMINANT, reference_colourspace),
             reference_colourspace)
 

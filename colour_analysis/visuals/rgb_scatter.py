@@ -102,7 +102,7 @@ def RGB_scatter_visual(RGB,
     if resampling == 'auto':
         resampling = max(int((0.0078125 * np.average(RGB.shape[0:1])) // 2), 1)
 
-        RGB = RGB[::resampling, ::resampling].reshape((-1, 3))
+        RGB = RGB[::resampling, ::resampling].reshape([-1, 3])
 
     XYZ = RGB_to_XYZ(RGB, colourspace.whitepoint, colourspace.whitepoint,
                      colourspace.RGB_to_XYZ_matrix)
@@ -116,9 +116,9 @@ def RGB_scatter_visual(RGB,
     RGB = np.clip(RGB, 0, 1)
 
     if uniform_colour is None:
-        RGB = np.hstack((RGB,
+        RGB = np.hstack([RGB,
                          np.full((RGB.shape[0], 1), uniform_opacity,
-                                 DEFAULT_FLOAT_DTYPE)))
+                                 DEFAULT_FLOAT_DTYPE)])
     else:
         RGB = ColorArray(uniform_colour, alpha=uniform_opacity).rgba
 
