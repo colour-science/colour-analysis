@@ -14,7 +14,7 @@ import os
 import scipy.ndimage
 
 from colour import ILLUMINANTS
-from colour.models import COLOURSPACE_MODELS_LABELS
+from colour.models import COLOURSPACE_MODELS_AXIS_LABELS
 
 __author__ = 'Colour Developers'
 __copyright__ = 'Copyright (C) 2013-2019 - Colour Developers'
@@ -112,7 +112,7 @@ REFERENCE_COLOURSPACES : dict
     'IPT', 'Hunter Lab', 'Hunter Rdab'}**
 """
 
-REFERENCE_COLOURSPACES_TITLES = COLOURSPACE_MODELS_LABELS
+REFERENCE_COLOURSPACES_TITLES = COLOURSPACE_MODELS_AXIS_LABELS
 """
 Reference colourspaces to labels mapping.
 
