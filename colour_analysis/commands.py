@@ -330,7 +330,7 @@ def main():
         image = read_image(str(image_path))
         if not input_linear:
             colourspace = RGB_COLOURSPACES[arguments.input_oecf]
-            image = colourspace.decoding_cctf(image)
+            image = colourspace.cctf_decoding(image)
 
         # Keeping RGB channels only.
         image = image[..., 0:3]

@@ -305,7 +305,7 @@ class ImageView(ViewBox):
         if self._image_overlay and has_overlay:
             image = self._image + image
 
-        oecf = RGB_COLOURSPACES[DEFAULT_ENCODING_CCTF].encoding_cctf
+        oecf = RGB_COLOURSPACES[DEFAULT_ENCODING_CCTF].cctf_encoding
 
         return oecf(image)
 
