@@ -18,7 +18,7 @@ from colour import RGB_to_XYZ
 from colour.constants import DEFAULT_FLOAT_DTYPE
 from colour.models import XYZ_to_colourspace_model
 from colour.plotting import filter_RGB_colourspaces
-from colour.plotting.volume import common_colourspace_model_axis_reorder
+from colour.plotting.volume import colourspace_model_axis_reorder
 from colour.utilities import first_item
 
 from colour_analysis.visuals import Symbol
@@ -107,7 +107,7 @@ def RGB_scatter_visual(RGB,
     XYZ = RGB_to_XYZ(RGB, colourspace.whitepoint, colourspace.whitepoint,
                      colourspace.RGB_to_XYZ_matrix)
 
-    points = common_colourspace_model_axis_reorder(
+    points = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(XYZ, colourspace.whitepoint,
                                  reference_colourspace), reference_colourspace)
 

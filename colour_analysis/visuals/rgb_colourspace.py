@@ -19,7 +19,7 @@ from vispy.scene.visuals import Node, Line
 from colour import RGB_to_XYZ, xy_to_XYZ
 from colour.models import XYZ_to_colourspace_model
 from colour.plotting import filter_RGB_colourspaces
-from colour.plotting.volume import common_colourspace_model_axis_reorder
+from colour.plotting.volume import colourspace_model_axis_reorder
 from colour.utilities import first_item
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
@@ -177,7 +177,7 @@ def RGB_colourspace_volume_visual(colourspace='ITU-R BT.709',
     vertices = RGB_cube_f.mesh_data.get_vertices()
     XYZ = RGB_to_XYZ(vertices, colourspace.whitepoint, colourspace.whitepoint,
                      colourspace.RGB_to_XYZ_matrix)
-    value = common_colourspace_model_axis_reorder(
+    value = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(XYZ, colourspace.whitepoint,
                                  reference_colourspace), reference_colourspace)
     value[np.isnan(value)] = 0
@@ -240,7 +240,7 @@ def RGB_colourspace_whitepoint_axis_visual(colourspace='ITU-R BT.709',
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-    points = common_colourspace_model_axis_reorder(
+    points = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(XYZ_l, illuminant, reference_colourspace),
         reference_colourspace)
 

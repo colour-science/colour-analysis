@@ -20,7 +20,7 @@ from colour import XYZ_to_sRGB
 from colour.constants import DEFAULT_FLOAT_DTYPE
 from colour.models import XYZ_to_colourspace_model
 from colour.plotting import filter_cmfs
-from colour.plotting.volume import common_colourspace_model_axis_reorder
+from colour.plotting.volume import colourspace_model_axis_reorder
 from colour.utilities import first_item, normalise_maximum
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
@@ -80,7 +80,7 @@ def spectral_locus_visual(reference_colourspace='CIE xyY',
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-    points = common_colourspace_model_axis_reorder(
+    points = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(XYZ, illuminant, reference_colourspace),
         reference_colourspace)
     points[np.isnan(points)] = 0

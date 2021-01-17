@@ -20,7 +20,7 @@ from vispy.scene.visuals import Line, Node
 from colour import (Lab_to_XYZ, LCHab_to_Lab, POINTER_GAMUT_BOUNDARIES,
                     POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT, xy_to_XYZ)
 from colour.models import XYZ_to_colourspace_model
-from colour.plotting.volume import (common_colourspace_model_axis_reorder)
+from colour.plotting.volume import colourspace_model_axis_reorder
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Symbol
@@ -92,7 +92,7 @@ def pointer_gamut_visual(reference_colourspace='CIE xyY',
         Pointer's Gamut visual.
     """
 
-    points = common_colourspace_model_axis_reorder(
+    points = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT,
                                  reference_colourspace), reference_colourspace)
 
@@ -146,7 +146,7 @@ def pointer_gamut_boundaries_visual(reference_colourspace='CIE xyY',
 
     illuminant = DEFAULT_PLOTTING_ILLUMINANT
 
-    points = common_colourspace_model_axis_reorder(
+    points = colourspace_model_axis_reorder(
         XYZ_to_colourspace_model(XYZ, illuminant, reference_colourspace),
         reference_colourspace)
     points[np.isnan(points)] = 0
@@ -193,7 +193,7 @@ def pointer_gamut_hull_visual(reference_colourspace='CIE xyY',
 
     pointer_gamut_data = np.reshape(POINTER_GAMUT_DATA, (16, -1, 3))
     for i in range(16):
-        points = common_colourspace_model_axis_reorder(
+        points = colourspace_model_axis_reorder(
             XYZ_to_colourspace_model(
                 np.vstack([pointer_gamut_data[i],
                            pointer_gamut_data[i][0, ...]]),
