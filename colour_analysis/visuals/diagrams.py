@@ -17,9 +17,10 @@ import numpy as np
 from scipy.spatial import Delaunay
 
 from colour import XYZ_to_sRGB
+from colour.algebra import normalise_maximum
 from colour.constants import DEFAULT_FLOAT_DTYPE
 from colour.plotting import filter_cmfs
-from colour.utilities import first_item, normalise_maximum, tstack
+from colour.utilities import first_item, tstack
 
 from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
