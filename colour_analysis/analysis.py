@@ -4,7 +4,7 @@
 Colour Analysis
 ===============
 
-Defines *Colour - Analysis* main class:
+Defines the *Colour - Analysis* main class:
 
 -   :class:`ColourAnalysis`
 """
