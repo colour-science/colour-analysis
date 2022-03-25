@@ -4,7 +4,7 @@ Contributors
 Colour - Analysis
 --------------
 
--   **Thomas Mansencal**, *Visual Effects Artist @ Weta Digital*
+-   **Thomas Mansencal**, *Lead Pipeline Developer @ WetaFX*
 
     Project coordination.
     
