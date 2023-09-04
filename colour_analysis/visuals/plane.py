@@ -9,19 +9,17 @@ Defines the *Plane Visual*:
 -   :class:`PlaneVisual`
 """
 
-from __future__ import division, unicode_literals
-
-from vispy.geometry.generation import create_plane
-from vispy.scene.visuals import create_visual_node
+# from vispy.geometry.generation import create_plane
+# from vispy.scene.visuals import create_visual_node
 
 from colour_analysis.visuals import PrimitiveVisual
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['PlaneVisual', 'Plane']
 
@@ -84,4 +82,4 @@ class PlaneVisual(PrimitiveVisual):
                                  wireframe_offset)
 
 
-Plane = create_visual_node(PlaneVisual)
+Plane = None # create_visual_node(PlaneVisual)

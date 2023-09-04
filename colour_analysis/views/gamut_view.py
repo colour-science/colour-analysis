@@ -8,13 +8,11 @@ Defines the *Gamut View* related objects:
 -   :class:`GamutView`
 """
 
-from __future__ import division, unicode_literals
-
 from collections import OrderedDict, namedtuple
 
 import numpy as np
-from vispy.scene.widgets import Label, ViewBox, Widget
-from vispy.scene.visuals import GridLines
+# from vispy.scene.widgets import Label, ViewBox, Widget
+# from vispy.scene.visuals import GridLines
 
 from colour import RGB_COLOURSPACES
 from colour.utilities import is_string
@@ -23,15 +21,15 @@ from colour_analysis.cameras import OrbitCamera
 from colour_analysis.constants import REFERENCE_COLOURSPACES
 from colour_analysis.utilities import Cycle
 from colour_analysis.visuals import (
-    RGB_colourspace_volume_visual, RGB_scatter_visual, axis_visual,
+    VisualRGBColourspace3d, VisualRGBScatter3d, axis_visual,
     spectral_locus_visual, pointer_gamut_visual, pointer_gamut_hull_visual)
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = [
     'CameraPreset', 'RGB_ColourspaceVisualPreset', 'GridVisualPreset',
@@ -75,7 +73,7 @@ AxisPreset : namedtuple
 """
 
 
-class GamutView(ViewBox):
+class GamutView:
     """
     Defines the *Gamut View*.
 
@@ -530,11 +528,11 @@ class GamutView(ViewBox):
 
         Returns
         -------
-        RGB_colourspace_volume_visual
+        VisualRGBColourspace3d
             *RGB* colourspace volume visual.
         """
 
-        return RGB_colourspace_volume_visual(
+        return VisualRGBColourspace3d(
             colourspace=colourspace,
             reference_colourspace=self._reference_colourspace,
             segments=self._colourspace_visual_resolution,

@@ -11,46 +11,44 @@ Defines the *Pointer's Gamut*:
 -   :func:`pointer_gamut_hull_visual`
 """
 
-from __future__ import division, unicode_literals
-
 import numpy as np
-from vispy.color.color_array import ColorArray
-from vispy.scene.visuals import Line, Node
+# from vispy.color.color_array import ColorArray
+# from vispy.scene.visuals import Line, Node
 
-from colour import (Lab_to_XYZ, LCHab_to_Lab, POINTER_GAMUT_BOUNDARIES,
-                    POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT, xy_to_XYZ)
-from colour.models import XYZ_to_colourspace_model
+# from colour import (Lab_to_XYZ, LCHab_to_Lab, POINTER_GAMUT_BOUNDARIES,
+#                     POINTER_GAMUT_DATA, POINTER_GAMUT_ILLUMINANT, xy_to_XYZ)
+# from colour.models import XYZ_to_colourspace_model
 from colour.plotting.volume import colourspace_model_axis_reorder
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 from colour_analysis.visuals import Symbol
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = [
     'POINTER_GAMUT_DATA', 'POINTER_GAMUT_BOUNDARIES', 'pointer_gamut_visual',
     'pointer_gamut_boundaries_visual', 'pointer_gamut_hull_visual'
 ]
 
-POINTER_GAMUT_DATA = Lab_to_XYZ(
-    LCHab_to_Lab(POINTER_GAMUT_DATA), POINTER_GAMUT_ILLUMINANT)
-"""
-Pointer's Gamut data converted to *CIE XYZ* tristimulus values.
-
-POINTER_GAMUT_DATA : ndarray
-"""
-
-POINTER_GAMUT_BOUNDARIES = xy_to_XYZ(POINTER_GAMUT_BOUNDARIES)
-"""
-Pointer's Gamut boundaries data converted to *CIE XYZ* tristimulus values.
-
-POINTER_GAMUT_BOUNDARIES : ndarray
-"""
+# POINTER_GAMUT_DATA = Lab_to_XYZ(
+#     LCHab_to_Lab(POINTER_GAMUT_DATA), POINTER_GAMUT_ILLUMINANT)
+# """
+# Pointer's Gamut data converted to *CIE XYZ* tristimulus values.
+#
+# POINTER_GAMUT_DATA : ndarray
+# """
+#
+# POINTER_GAMUT_BOUNDARIES = xy_to_XYZ(POINTER_GAMUT_BOUNDARIES)
+# """
+# Pointer's Gamut boundaries data converted to *CIE XYZ* tristimulus values.
+#
+# POINTER_GAMUT_BOUNDARIES : ndarray
+# """
 
 
 def pointer_gamut_visual(reference_colourspace='CIE xyY',

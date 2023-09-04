@@ -8,23 +8,21 @@ Defines the *Console View* related objects:
 -   :class:`ConsoleView`
 """
 
-from __future__ import division, unicode_literals
-
-from vispy.scene.widgets import Console
+# from vispy.scene.widgets import Console
 
 from colour.utilities import message_box
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['ConsoleView']
 
 
-class ConsoleView(Console):
+class ConsoleView:
     """
     Defines the *Console View*.
 
@@ -115,7 +113,7 @@ class ConsoleView(Console):
         state.append('- Input image: {0}'.format(self.canvas.image_path))
         state.append('- Input RGB colourspace: {0}'.format(
             self.canvas.input_colourspace))
-        state.append('- Input OECF: {0}'.format(self.canvas.input_oecf))
+        state.append('- Input OECF: {0}'.format(self.canvas.encoding_cctf))
         state.append('- Input linearity: {0}'.format(self.canvas.input_linear))
         state.append('- Reference colourspace: {0}'.format(
             self.canvas.reference_colourspace))

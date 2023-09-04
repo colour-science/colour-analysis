@@ -10,28 +10,26 @@ Defines the *Spectral Locus Visual* and related visuals:
 -   :func:`chromaticity_diagram_construction_visual`
 """
 
-from __future__ import division, unicode_literals
-
 import numpy as np
-from vispy.color.color_array import ColorArray
-from vispy.scene.visuals import Line, Node
+# from vispy.color.color_array import ColorArray
+# from vispy.scene.visuals import Line, Node
 
 from colour import XYZ_to_sRGB
 from colour.algebra import normalise_maximum
 from colour.constants import DEFAULT_FLOAT_DTYPE
-from colour.models import XYZ_to_colourspace_model
+# from colour.models import XYZ_to_colourspace_model
 from colour.plotting import filter_cmfs
 from colour.plotting.volume import colourspace_model_axis_reorder
 from colour.utilities import first_item
 
 from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['spectral_locus_visual', 'chromaticity_diagram_construction_visual']
 

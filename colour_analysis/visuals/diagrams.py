@@ -10,168 +10,186 @@ Defines the *Chromaticity Diagram Visuals*:
 -   :func:`CIE_1960_UCS_chromaticity_diagram`
 -   :func:`CIE_1976_UCS_chromaticity_diagram`
 """
-
-from __future__ import division, unicode_literals
-
+import colour.algebra
 import numpy as np
-from scipy.spatial import Delaunay
+from pygfx import (
+    Geometry,
+    Line,
+    LineSegmentMaterial,
+    Mesh,
+    MeshAbstractMaterial,
+    MeshBasicMaterial,
+)
+from scipy.spatial import ConvexHull, Delaunay
 
 from colour import XYZ_to_sRGB
 from colour.algebra import normalise_maximum
-from colour.constants import DEFAULT_FLOAT_DTYPE
-from colour.plotting import filter_cmfs
-from colour.utilities import first_item, tstack
+from colour.hints import ArrayLike
+from colour.plotting import (
+    CONSTANTS_COLOUR_STYLE,
+    XYZ_to_plotting_colourspace,
+    filter_cmfs,
+)
+from colour.utilities import first_item, full, tstack
 
-from colour_analysis.utilities import CHROMATICITY_DIAGRAM_TRANSFORMATIONS
-from colour_analysis.constants import DEFAULT_PLOTTING_ILLUMINANT
+from colour_analysis.utilities import (
+    METHODS_CHROMATICITY_DIAGRAM,
+    append_alpha_channel,
+    as_contiguous_array,
+)
+from colour_analysis.constants import DEFAULT_FLOAT_DTYPE, DEFAULT_INT_DTYPE
 from colour_analysis.visuals import Primitive
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = [
-    'chromaticity_diagram_visual', 'CIE_1931_chromaticity_diagram',
-    'CIE_1960_UCS_chromaticity_diagram', 'CIE_1976_UCS_chromaticity_diagram'
+    "VisualChromaticityDiagram",
+    "CIE_1931_chromaticity_diagram",
+    "CIE_1960_UCS_chromaticity_diagram",
+    "CIE_1976_UCS_chromaticity_diagram",
 ]
 
 
-def chromaticity_diagram_visual(samples=256,
-                                cmfs='CIE 1931 2 Degree Standard Observer',
-                                transformation='CIE 1931',
-                                parent=None):
+class VisualChromaticityDiagram(Mesh):
     """
-    Creates a chromaticity diagram visual based on
-    :class:`colour_analysis.visuals.Primitive` class.
-
-    Parameters
-    ----------
-    samples : int, optional
-        Inner samples count used to construct the chromaticity diagram
-        triangulation.
-    cmfs : unicode, optional
-        Standard observer colour matching functions used for the chromaticity
-        diagram boundaries.
-    transformation : unicode, optional
-        **{'CIE 1931', 'CIE 1960 UCS', 'CIE 1976 UCS'}**,
-        Chromaticity diagram transformation.
-    parent : Node, optional
-        Parent of the chromaticity diagram in the `SceneGraph`.
-
-    Returns
-    -------
-    Primitive
-        Chromaticity diagram visual.
+    Create a chromaticity diagram visual.
     """
 
-    cmfs = first_item(filter_cmfs(cmfs).values())
+    def __init__(
+        self,
+        samples=32,
+        cmfs="CIE 1931 2 Degree Standard Observer",
+        method="CIE 1931",
+        material: MeshAbstractMaterial = MeshBasicMaterial,
+        colors: ArrayLike | None = None,
+        opacity: float = 0.5,
+        wireframe: bool = False,
+    ):
+        cmfs = first_item(filter_cmfs(cmfs).values())
 
-    illuminant = DEFAULT_PLOTTING_ILLUMINANT
+        illuminant = CONSTANTS_COLOUR_STYLE.colour.colourspace.whitepoint
 
-    XYZ_to_ij = (
-        CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['XYZ_to_ij'])
-    ij_to_XYZ = (
-        CHROMATICITY_DIAGRAM_TRANSFORMATIONS[transformation]['ij_to_XYZ'])
+        XYZ_to_ij = METHODS_CHROMATICITY_DIAGRAM[method]["XYZ_to_ij"]
+        ij_to_XYZ = METHODS_CHROMATICITY_DIAGRAM[method]["ij_to_XYZ"]
 
-    ij_c = XYZ_to_ij(cmfs.values, illuminant)
+        # CMFS
+        ij_l = XYZ_to_ij(cmfs.values, illuminant)
 
-    triangulation = Delaunay(ij_c, qhull_options='QJ')
-    samples = np.linspace(0, 1, samples)
-    ii, jj = np.meshgrid(samples, samples)
-    ij = tstack([ii, jj])
-    ij = np.vstack([ij_c, ij[triangulation.find_simplex(ij) > 0]])
+        # Line of Purples
+        d = colour.algebra.euclidean_distance(ij_l[0], ij_l[-1])
+        ij_p = tstack(
+            [
+                np.linspace(ij_l[0][0], ij_l[-1][0], int(d * samples)),
+                np.linspace(ij_l[0][1], ij_l[-1][1], int(d * samples)),
+            ]
+        )
 
-    ij_p = np.hstack([ij, np.full((ij.shape[0], 1), 0, DEFAULT_FLOAT_DTYPE)])
-    triangulation = Delaunay(ij, qhull_options='QJ')
-    RGB = normalise_maximum(
-        XYZ_to_sRGB(ij_to_XYZ(ij, illuminant), illuminant), axis=-1)
+        # Grid
+        triangulation = Delaunay(ij_l, qhull_options="QJ")
+        samples = np.linspace(0, 1, samples)
+        ii_g, jj_g = np.meshgrid(samples, samples)
+        ij_g = tstack([ii_g, jj_g])
+        ij_g = ij_g[triangulation.find_simplex(ij_g) > 0]
 
-    diagram = Primitive(
-        vertices=ij_p,
-        faces=triangulation.simplices,
-        vertex_colours=RGB,
-        parent=parent)
+        ij = np.vstack([ij_l, illuminant, ij_p, ij_g])
+        triangulation = Delaunay(ij, qhull_options="QJ")
+        positions = np.hstack(
+            [ij, np.full((ij.shape[0], 1), 0, DEFAULT_FLOAT_DTYPE)]
+        )
 
-    return diagram
+        if colors is None:
+            colors = normalise_maximum(
+                XYZ_to_plotting_colourspace(
+                    ij_to_XYZ(positions[..., :2], illuminant), illuminant
+                ),
+                axis=-1,
+            )
+        else:
+            colors = np.tile(colors, (positions.shape[0], 1))
+
+        geometry = Geometry(
+            positions=as_contiguous_array(positions),
+            indices=as_contiguous_array(
+                triangulation.simplices, DEFAULT_INT_DTYPE
+            ),
+            colors=as_contiguous_array(append_alpha_channel(colors, opacity)),
+        )
+
+        super().__init__(
+            geometry,
+            material(vertex_colors=True, wireframe=wireframe)
+            if wireframe
+            else material(vertex_colors=True),
+        )
 
 
-def CIE_1931_chromaticity_diagram(samples=256,
-                                  cmfs='CIE 1931 2 Degree Standard Observer',
-                                  parent=None):
+def VisualChromaticityDiagram_CIE1931(
+    samples=32, cmfs="CIE 1931 2 Degree Standard Observer", **kwargs
+):
     """
-    Creates the *CIE 1931* chromaticity diagram visual based on
-    :class:`colour_analysis.visuals.Primitive` class.
-
-    Parameters
-    ----------
-    samples : int, optional
-        Inner samples count used to construct the *CIE 1931* chromaticity
-        diagram triangulation.
-    cmfs : unicode, optional
-        Standard observer colour matching functions used for the chromaticity
-        diagram boundaries.
-    parent : Node, optional
-        Parent of the *CIE 1931* chromaticity diagram in the `SceneGraph`.
-
-    Returns
-    -------
-    Primitive
-        *CIE 1931* chromaticity diagram visual.
-    """
-
-    return chromaticity_diagram_visual(samples, cmfs, 'CIE 1931', parent)
-
-
-def CIE_1960_UCS_chromaticity_diagram(
-        samples=256, cmfs='CIE 1931 2 Degree Standard Observer', parent=None):
-    """
-    Creates the *CIE 1960 UCS* chromaticity diagram visual based on
-    :class:`colour_analysis.visuals.Primitive` class.
-
-    Parameters
-    ----------
-    samples : int, optional
-        Inner samples count used to construct the *CIE 1960 UCS* chromaticity
-        diagram triangulation.
-    cmfs : unicode, optional
-        Standard observer colour matching functions used for the chromaticity
-        diagram boundaries.
-    parent : Node, optional
-        Parent of the *CIE 1960 UCS* chromaticity diagram in the `SceneGraph`.
-
-    Returns
-    -------
-    Primitive
-        *CIE 1960 UCS* chromaticity diagram visual.
+    Create the *CIE 1931* chromaticity diagram visual.
     """
 
-    return chromaticity_diagram_visual(samples, cmfs, 'CIE 1960 UCS', parent)
+    return VisualChromaticityDiagram(samples, cmfs, "CIE 1931", **kwargs)
 
 
-def CIE_1976_UCS_chromaticity_diagram(
-        samples=256, cmfs='CIE 1931 2 Degree Standard Observer', parent=None):
+def VisualChromaticityDiagram_CIE1960UCS(
+    samples=32, cmfs="CIE 1931 2 Degree Standard Observer", **kwargs
+):
     """
-    Creates the *CIE 1976 UCS* chromaticity diagram visual based on
-    :class:`colour_analysis.visuals.Primitive` class.
-
-    Parameters
-    ----------
-    samples : int, optional
-        Inner samples count used to construct the *CIE 1976 UCS* chromaticity
-        diagram triangulation.
-    cmfs : unicode, optional
-        Standard observer colour matching functions used for the chromaticity
-        diagram boundaries.
-    parent : Node, optional
-        Parent of the *CIE 1976 UCS* chromaticity diagram in the `SceneGraph`.
-
-    Returns
-    -------
-    Primitive
-        *CIE 1976 UCS* chromaticity diagram visual.
+    Create the*CIE 1976 UCS* chromaticity diagram visual.
     """
 
-    return chromaticity_diagram_visual(samples, cmfs, 'CIE 1976 UCS', parent)
+    return VisualChromaticityDiagram(samples, cmfs, "CIE 1960 UCS", **kwargs)
+
+
+def VisualChromaticityDiagram_CIE1976UCS(
+    samples=32, cmfs="CIE 1931 2 Degree Standard Observer", **kwargs
+):
+    """
+    Create the*CIE 1960 UCS* chromaticity diagram visual.
+    """
+
+    return VisualChromaticityDiagram(samples, cmfs, "CIE 1976 UCS", **kwargs)
+
+
+if __name__ == "__main__":
+    from pygfx import (
+        Background,
+        BackgroundMaterial,
+        Display,
+        Scene,
+    )
+
+    scene = Scene()
+
+    scene.add(
+        Background(None, BackgroundMaterial(np.array([0.18, 0.18, 0.18])))
+    )
+
+    mesh_1 = VisualChromaticityDiagram_CIE1931()
+    scene.add(mesh_1)
+
+    mesh_2 = VisualChromaticityDiagram_CIE1931(wireframe=True)
+    mesh_2.local.position = np.array([1, 0, 0])
+    scene.add(mesh_2)
+
+    mesh_3 = VisualChromaticityDiagram_CIE1931(colors=[0.36, 0.36, 0.36])
+    mesh_3.local.position = np.array([2, 0, 0])
+    scene.add(mesh_3)
+
+    mesh_4 = VisualChromaticityDiagram_CIE1960UCS()
+    mesh_4.local.position = np.array([3, 0, 0])
+    scene.add(mesh_4)
+
+    mesh_5 = VisualChromaticityDiagram_CIE1976UCS()
+    mesh_5.local.position = np.array([4, 0, 0])
+    scene.add(mesh_5)
+
+    display = Display()
+    display.show(scene, up=np.array([0, 0, 1]))

@@ -7,8 +7,6 @@ Commands
 Defines the command line related objects.
 """
 
-from __future__ import division, unicode_literals
-
 import os
 import sys
 
@@ -29,12 +27,12 @@ from colour_analysis.analysis import ColourAnalysis
 from colour_analysis.constants import (DEFAULT_IMAGE_PATH,
                                        LINEAR_IMAGE_FORMATS, SETTINGS_FILE)
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['ManualAction', 'system_exit', 'command_line_arguments', 'main']
 
@@ -101,8 +99,8 @@ ARGUMENTS
         'Russell RGB', 'S-Gamut', 'S-Gamut3', 'S-Gamut3.Cine', 'SMPTE-C RGB',
         'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         Input image colourspace.
-    -f, --input-oecf, None
-        Input image OECF, see *input-colourspace* for possible values.
+    -f, --encoding-cctf, None
+        Input encoding CCTF, see *input-colourspace* for possible values.
     -l, --input-linearity
         **{'auto', 'linear', 'oecf'}**,
         Input image linearity.
@@ -218,7 +216,7 @@ def command_line_arguments():
         '--input-oecf',
         '-f',
         action='store',
-        dest='input_oecf',
+        dest='encoding_cctf',
         default='ITU-R BT.709',
         help='Input image OECF.')
 
@@ -329,7 +327,7 @@ def main():
     try:
         image = read_image(str(image_path))
         if not input_linear:
-            colourspace = RGB_COLOURSPACES[arguments.input_oecf]
+            colourspace = RGB_COLOURSPACES[arguments.encoding_cctf]
             image = colourspace.cctf_decoding(image)
 
         # Keeping RGB channels only.
@@ -348,7 +346,7 @@ def main():
         warnings.filterwarnings("ignore")
 
     ColourAnalysis(image, arguments.input_image, arguments.input_colourspace,
-                   arguments.input_oecf, input_linear,
+                   arguments.encoding_cctf, input_linear,
                    arguments.reference_colourspace,
                    arguments.correlate_colourspace, settings, arguments.layout)
     return run()

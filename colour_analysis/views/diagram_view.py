@@ -8,14 +8,12 @@ Defines the *Diagram View* related objects:
 -   :class:`DiagramView`
 """
 
-from __future__ import division, unicode_literals
-
 import numpy as np
 from collections import OrderedDict
 
-from vispy.scene.cameras import PanZoomCamera
-from vispy.scene.visuals import GridLines
-from vispy.scene.widgets import Label, ViewBox, Widget
+# from vispy.scene.cameras import PanZoomCamera
+# from vispy.scene.visuals import GridLines
+# from vispy.scene.widgets import Label, ViewBox, Widget
 
 from colour import RGB_COLOURSPACES
 from colour.utilities import is_string
@@ -24,22 +22,23 @@ from colour_analysis.constants import (
     CHROMATICITY_DIAGRAMS, CHROMATICITY_DIAGRAM_TO_REFERENCE_COLOURSPACE)
 from colour_analysis.utilities import Cycle
 from colour_analysis.visuals import (
-    CIE_1931_chromaticity_diagram, CIE_1960_UCS_chromaticity_diagram,
-    CIE_1976_UCS_chromaticity_diagram, RGB_colourspace_triangle_visual,
-    RGB_scatter_visual, axis_visual, pointer_gamut_boundaries_visual,
+    VisualChromaticityDiagram_CIE1931,
+VisualChromaticityDiagram_CIE1960UCS,
+VisualChromaticityDiagram_CIE1976UCS, VisualRGBColourspace2d,
+    VisualRGBScatter3d, axis_visual, pointer_gamut_boundaries_visual,
     pointer_gamut_visual, spectral_locus_visual)
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['DiagramView']
 
 
-class DiagramView(ViewBox):
+class DiagramView:
     """
     Defines the *Diagram View*.
 
@@ -129,7 +128,7 @@ class DiagramView(ViewBox):
         self._grid_visual = None
         self._axis_visual = None
 
-        self._visuals = ('chromaticity_diagram_visual',
+        self._visuals = ('VisualChromaticityDiagram',
                          'spectral_locus_visual', 'RGB_scatter_visual',
                          'input_colourspace_visual',
                          'correlate_colourspace_visual',
@@ -406,10 +405,10 @@ class DiagramView(ViewBox):
         :attr:`DiagramView.input_colourspace` attribute value.
         """
 
-        self._input_colourspace_visual = RGB_colourspace_triangle_visual(
+        self._input_colourspace_visual = VisualRGBColourspace2d(
             self._input_colourspace,
             self._diagram,
-            uniform_colour=(0.8, 0.0, 0.8))
+            colors=(0.8, 0.0, 0.8))
 
     def _create_correlate_colourspace_visual(self):
         """
@@ -417,10 +416,10 @@ class DiagramView(ViewBox):
         :attr:`DiagramView.correlate_colourspace` attribute value.
         """
 
-        self._correlate_colourspace_visual = RGB_colourspace_triangle_visual(
+        self._correlate_colourspace_visual = VisualRGBColourspace2d(
             self._correlate_colourspace,
             self._diagram,
-            uniform_colour=(0.0, 0.8, 0.8))
+            colors=(0.0, 0.8, 0.8))
 
     def _create_grid_visual(self):
         """

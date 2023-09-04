@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 
-from vispy.scene.visuals import Markers
+# from vispy.scene.visuals import Markers
 
 
-class Symbol(Markers):
+class Symbol:
     def __init__(self,
                  symbol='disc',
                  positions=None,

@@ -3,12 +3,12 @@
 from __future__ import division
 
 import numpy as np
-from vispy.scene.cameras import TurntableCamera
+# from vispy.scene.cameras import TurntableCamera
 
 from colour.utilities import is_numeric
 
 
-class OrbitCamera(TurntableCamera):
+class OrbitCamera:
     def __init__(self,
                  fov=0.0,
                  elevation=30.0,

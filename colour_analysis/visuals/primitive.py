@@ -9,28 +9,26 @@ Defines the *Primitive Visual*:
 -   :class:`PrimitiveVisual`
 """
 
-from __future__ import division, unicode_literals
-
 import numpy as np
 
-from vispy.color.color_array import ColorArray
-from vispy.gloo import set_state
-from vispy.scene.visuals import create_visual_node
-from vispy.visuals.mesh import MeshVisual
+# from vispy.color.color_array import ColorArray
+# from vispy.gloo import set_state
+# from vispy.scene.visuals import create_visual_node
+# from vispy.visuals.mesh import MeshVisual
 
 from colour.constants import DEFAULT_FLOAT_DTYPE
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['PrimitiveVisual', 'Primitive']
 
 
-class PrimitiveVisual(MeshVisual):
+class PrimitiveVisual:
     def __init__(self,
                  vertices,
                  faces,
@@ -99,4 +97,4 @@ class PrimitiveVisual(MeshVisual):
                 polygon_offset_fill=True)
 
 
-Primitive = create_visual_node(PrimitiveVisual)
+Primitive = None # create_visual_node(PrimitiveVisual)

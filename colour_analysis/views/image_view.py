@@ -8,12 +8,10 @@ Defines the *Image View* related objects:
 -   :class:`ImageView`
 """
 
-from __future__ import division, unicode_literals
-
 import numpy as np
 
-from vispy.scene.cameras import PanZoomCamera
-from vispy.scene.widgets import Label, ViewBox, Widget
+# from vispy.scene.cameras import PanZoomCamera
+# from vispy.scene.widgets import Label, ViewBox, Widget
 
 from colour import (RGB_COLOURSPACES, RGB_to_RGB, RGB_to_XYZ,
                     is_within_pointer_gamut)
@@ -22,17 +20,17 @@ from colour.utilities import is_string, tstack
 from colour_analysis.constants import DEFAULT_ENCODING_CCTF
 from colour_analysis.visuals import image_visual
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['ImageView']
 
 
-class ImageView(ViewBox):
+class ImageView:
     """
     Defines the *Diagram View*.
 

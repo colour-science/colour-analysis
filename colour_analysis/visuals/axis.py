@@ -9,17 +9,15 @@ Defines the *Axis Visual*:
 -   :func:`axis_visual`
 """
 
-from __future__ import division, unicode_literals
+# from vispy.scene.visuals import XYZAxis
+# from vispy.visuals.transforms import MatrixTransform
 
-from vispy.scene.visuals import XYZAxis
-from vispy.visuals.transforms import MatrixTransform
-
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = ['axis_visual']
 
@@ -49,3 +47,4 @@ def axis_visual(scale=1.0, parent=None):
     axis.transform = transform
 
     return axis
+

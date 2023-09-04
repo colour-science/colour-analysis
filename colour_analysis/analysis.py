@@ -9,15 +9,13 @@ Defines the *Colour - Analysis* main class:
 -   :class:`ColourAnalysis`
 """
 
-from __future__ import division, unicode_literals
-
 import json
 import os
 from collections import OrderedDict, deque, namedtuple
 from itertools import cycle
 
 import numpy as np
-from vispy.scene import SceneCanvas
+# from vispy.scene import SceneCanvas
 
 from colour import RGB_COLOURSPACES
 from colour.utilities import is_string
@@ -28,12 +26,12 @@ from colour_analysis.constants import (DEFAULT_FAILSAFE_IMAGE, SETTINGS_FILE,
 from colour_analysis.views import (ConsoleView, DiagramView, GamutView,
                                    ImageView)
 
-__author__ = 'Colour Developers'
-__copyright__ = 'Copyright (C) 2013-2021 - Colour Developers'
-__license__ = 'New BSD License - https://opensource.org/licenses/BSD-3-Clause'
-__maintainer__ = 'Colour Developers'
-__email__ = 'colour-developers@colour-science.org'
-__status__ = 'Production'
+__author__ = "Colour Developers"
+__copyright__ = "Copyright 2013 Colour Developers"
+__license__ = "BSD-3-Clause - https://opensource.org/licenses/BSD-3-Clause"
+__maintainer__ = "Colour Developers"
+__email__ = "colour-developers@colour-science.org"
+__status__ = "Production"
 
 __all__ = [
     'Sequence', 'Action', 'ViewPreset', 'LayoutPreset', 'ColourAnalysis'
@@ -77,7 +75,7 @@ LayoutPreset : namedtuple
 """
 
 
-class ColourAnalysis(SceneCanvas):
+class ColourAnalysis:
     """
     Defines *Colour - Analysis* artist, a class inheriting from
     :class:`vispy.scene.SceneCanvas`.
@@ -100,7 +98,7 @@ class ColourAnalysis(SceneCanvas):
         'V-Gamut', 'Xtreme RGB', 'sRGB'}**,
         :class:`colour.RGB_Colourspace` class instance name defining `image`
         argument colourspace.
-    input_oecf : unicode, optional
+    encoding_cctf : unicode, optional
         See `input_colourspace` argument for possible values.
 
         :class:`colour.RGB_Colourspace` class instance name defining the image
@@ -127,7 +125,7 @@ class ColourAnalysis(SceneCanvas):
     image
     image_path
     input_colourspace
-    input_oecf
+    encoding_cctf
     input_linear
     reference_colourspace
     correlate_colourspace
@@ -154,7 +152,7 @@ class ColourAnalysis(SceneCanvas):
                  image=None,
                  image_path=None,
                  input_colourspace='ITU-R BT.709',
-                 input_oecf='ITU-R BT.709',
+                 encoding_cctf='ITU-R BT.709',
                  input_linear=True,
                  reference_colourspace='CIE xyY',
                  correlate_colourspace='ACEScg',
@@ -181,8 +179,8 @@ class ColourAnalysis(SceneCanvas):
         self.image_path = image_path
         self._input_colourspace = None
         self.input_colourspace = input_colourspace
-        self._input_oecf = None
-        self.input_oecf = input_oecf
+        self._encoding_cctf = None
+        self.encoding_cctf = encoding_cctf
         self._input_linear = None
         self.input_linear = input_linear
         self._reference_colourspace = None
@@ -333,22 +331,22 @@ class ColourAnalysis(SceneCanvas):
         self._input_colourspace = value
 
     @property
-    def input_oecf(self):
+    def encoding_cctf(self):
         """
-        Property for **self._input_oecf** private attribute.
+        Property for **self._encoding_cctf** private attribute.
 
         Returns
         -------
         unicode
-            self._input_oecf.
+            self._encoding_cctf.
         """
 
-        return self._input_oecf
+        return self._encoding_cctf
 
-    @input_oecf.setter
-    def input_oecf(self, value):
+    @encoding_cctf.setter
+    def encoding_cctf(self, value):
         """
-        Setter for **self._input_oecf** private attribute.
+        Setter for **self._encoding_cctf** private attribute.
 
         Parameters
         ----------
@@ -359,12 +357,12 @@ class ColourAnalysis(SceneCanvas):
         if value is not None:
             assert is_string(value), (('"{0}" attribute: "{1}" is not a '
                                        '"string" like object!').format(
-                                           'input_oecf', value))
+                                           'encoding_cctf', value))
             assert value in RGB_COLOURSPACES, (
                 '"{0}" OECF is not associated with any factory '
                 'RGB colourspaces: "{1}".').format(value, ', '.join(
                     sorted(RGB_COLOURSPACES.keys())))
-        self._input_oecf = value
+        self._encoding_cctf = value
 
     @property
     def input_linear(self):
